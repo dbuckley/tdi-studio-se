@@ -359,8 +359,8 @@
     private void readJobInfo(java.io.File jobInfoFile){
 	
         if(jobInfoFile.exists()) {
-            try {
-            	jobInfo.load(new java.io.FileInputStream(jobInfoFile));
+            try (java.io.InputStream is = new java.io.FileInputStream(jobInfoFile)) {
+            	jobInfo.load(is);
             } catch (IOException e) {
             	 <%if(isLog4jEnabled){%>
                 log.debug("Read jobInfo.properties file fail: " + e.getMessage());

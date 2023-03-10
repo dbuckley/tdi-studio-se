@@ -3827,6 +3827,15 @@
                name="Rename Netsuite components to NetSuiteLegacy"
                version="8.0.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="8.0.1"
+              class="org.talend.repository.model.migration.ChangeReturnKeysDefault4tAS400Output"
+              description="Chanage default value of Return generated keys for tAS400Outpu"
+              id="org.talend.repository.model.migration.ChangeReturnKeysDefault4tAS400Output"
+              name="ChangeReturnKeysDefault4tAS400Output"
+              version="8.0.1">
+        </projecttask>
    </extension>
 
    <extension

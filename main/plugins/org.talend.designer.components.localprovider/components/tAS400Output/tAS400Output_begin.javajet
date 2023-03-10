@@ -52,6 +52,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 	
 	boolean useBatchSize = "true".equals(ElementParameterParser.getValue(node,"__USE_BATCH_SIZE__"));
 	String batchSize=ElementParameterParser.getValue(node,"__BATCH_SIZE__");
+	
+	boolean returnKeys = "true".equals(ElementParameterParser.getValue(node,"__RETURN_GENERATED_KEYS__"));
 
 	boolean setQueryTimeOut = "true".equals(ElementParameterParser.getValue(node,"__SET_QUERY_TIMEOUT__"));
 	
@@ -186,7 +188,15 @@ if(columnList != null && columnList.size() > 0) {
 	if(("INSERT").equals(dataAction)) {
 	    %>
 	    String insert_<%=cid%> = "INSERT INTO " + <%=table%> + " (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
-	    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>, java.sql.Statement.RETURN_GENERATED_KEYS);
+	    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>
+	    <%
+	    if(returnKeys){
+	    %>
+	    , java.sql.Statement.RETURN_GENERATED_KEYS
+        <%
+        }
+        %>
+	    );
 		resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    <%
 	} else if (("UPDATE").equals(dataAction)) {

@@ -66,8 +66,12 @@ if ( previousNode != null && ("INSERT").equals(dataAction)) {
 	                }
 	                %>
 	                java.sql.ResultSet rs_<%=cid %> = pstmt_<%=previousCID %>.getGeneratedKeys();
-	                if(rs_<%=cid %>.next()) {
-	                    <%=outgoingConn.getName() %>.last_insert_id = rs_<%=cid %>.getInt(1);
+	                if(rs_<%=cid %> == null){
+                        throw new RuntimeException("Auto-generated column resultset is null, please check confiugration of <%=previousCID %>");
+	                } else {
+    	                if(rs_<%=cid %>.next()) {
+    	                    <%=outgoingConn.getName() %>.last_insert_id = rs_<%=cid %>.getInt(1);
+    	                }
 	                }
 	                nb_line_<%=cid%>++;
 	                <%

@@ -199,7 +199,7 @@ String inputConnName = null;
 	  	%>
 			
 			String osName_<%=cid %> = System.getProperty("os.name");
-			if (osName_<%=cid %> != null && osName_<%=cid %>.toLowerCase().startsWith("win")){
+			if (osName_<%=cid %> != null && osName_<%=cid %>.toLowerCase(java.util.Locale.US).startsWith("win")){
 				<%
 				boolean isCP = false;
 				for (int i = 0; i < commandLineWindows.length; i++) {
