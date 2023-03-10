@@ -127,6 +127,11 @@ public class Connection extends Element implements IConnection, IPerformance, IA
             String linkName, final boolean monitorConnection) {
         init(source, target, lineStyle, connectorName, metaName, linkName, monitorConnection);
     }
+    public Connection(INode source, INode target, EConnectionType lineStyle, String connectorName, String metaName,
+            String linkName, final boolean monitorConnection, int inputOrder) {
+        this.inputOrder = inputOrder;
+        init(source, target, lineStyle, connectorName, metaName, linkName, monitorConnection);
+    }
 
     // used only when loading a process && connection creation
     public Connection(INode source, INode target, EConnectionType lineStyle, String connectorName, String metaName,
@@ -139,6 +144,14 @@ public class Connection extends Element implements IConnection, IPerformance, IA
             String linkName, String uniqueName, final boolean monitorConnection, final Map<EParameterName, Object> paramValues) {
         this.uniqueName = uniqueName;
         this.paramValues = paramValues;
+        init(source, target, lineStyle, connectorName, metaName, linkName, monitorConnection);
+    }
+    
+    public Connection(INode source, INode target, EConnectionType lineStyle, String connectorName, String metaName,
+            String linkName, String uniqueName, final boolean monitorConnection, final Map<EParameterName, Object> paramValues, int inputOrder) {
+        this.uniqueName = uniqueName;
+        this.paramValues = paramValues;
+        this.inputOrder = inputOrder;
         init(source, target, lineStyle, connectorName, metaName, linkName, monitorConnection);
     }
 
@@ -1258,6 +1271,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
     }
 
     int order = -1;
+    int inputOrder = -1;
 
     public int getOrder() {
         return this.order;
@@ -1265,6 +1279,14 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     public void setOrder(int order) {
         this.order = order;
+    }
+    
+    public int getInputOrder() {
+        return inputOrder;
+    }
+    
+    public void setInputOrder(int inputOrder) {
+        this.inputOrder = inputOrder;
     }
 
     /**

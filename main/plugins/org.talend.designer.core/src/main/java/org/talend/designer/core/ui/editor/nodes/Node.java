@@ -1292,7 +1292,31 @@ public class Node extends Element implements IGraphicalNode {
      */
     @Override
     public void addInput(final IConnection conn) {
-        this.inputs.add(conn);
+        if(inputs.size() == 0) {
+            this.inputs.add(conn);
+        } else {
+            if(conn instanceof Connection) {
+                int order = ((Connection) conn).getInputOrder();
+                if (order != -1) {
+                    int index = 0;
+                    for(; index < inputs.size() && index < order; index++) {
+                        IConnection iConnection = inputs.get(index);
+                        if(iConnection instanceof Connection && ((Connection)iConnection).getInputOrder() >= order) {
+                            break;
+                        }
+                    }
+                    if(index == 0) {
+                        this.inputs.add(0, conn);
+                    } else if(index == inputs.size()) {
+                        this.inputs.add(conn);
+                    } else {
+                        this.inputs.add(index - 1, conn);
+                    }
+                } else {
+                    this.inputs.add(conn);
+                }
+            }
+        }
         fireStructureChange(INPUTS, conn);
 
         if (conn instanceof Connection) {

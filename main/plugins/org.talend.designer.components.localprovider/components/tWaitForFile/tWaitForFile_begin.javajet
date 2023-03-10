@@ -223,7 +223,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ex.getMessage());
         
         <%if(waitRelease) {%>
         String osName_<%=cid %> = System.getProperty("os.name");
-        boolean isWindows_<%=cid %> = osName_<%=cid %> != null && osName_<%=cid %>.toLowerCase().startsWith("win");
+        boolean isWindows_<%=cid %> = osName_<%=cid %> != null && osName_<%=cid %>.toLowerCase(java.util.Locale.US).startsWith("win");
         <%}%>
         
         while (true) {

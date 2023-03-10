@@ -178,6 +178,27 @@ public class DataMapExpressionParserTest {
     }
 
     @Test
+    public void testIsContainsGlobalMapExpressionString() {
+        String sqlQuery = "\"+((String)globalMap.get(\"TECH_SYSTEM_SOURCE\"))+\"";
+        boolean isContains = parser.isContainsGlobalMapExpression(sqlQuery);
+        Assert.assertTrue(isContains);
+    }
+
+    @Test
+    public void testIsContainsGlobalMapExpressionStringInteger1() {
+        String sqlQuery = "((Integer)globalMap.get(\"TECH_SYSTEM_SOURCE\"))";
+        boolean isContains = parser.isContainsGlobalMapExpression(sqlQuery);
+        Assert.assertTrue(isContains);
+    }
+
+    @Test
+    public void testIsContainsGlobalMapExpressionStringInteger2() {
+        String sqlQuery = "\"+((Integer)globalMap.get(\"TECH_SYSTEM_SOURCE\"))+\"";
+        boolean isContains = parser.isContainsGlobalMapExpression(sqlQuery);
+        Assert.assertTrue(isContains);
+    }
+
+    @Test
     public void testReplaceLocation() {
         String expression = "((String)globalMap.get(\"schema\")). ((String)globalMap.get(\"main_table\")).column ";
         String expectedExp = "((String)globalMap.get(\"schema_1\")). ((String)globalMap.get(\"main_table_1\")).column ";
