@@ -324,6 +324,7 @@
     <%}%>
     
     private final static java.util.Properties jobInfo = new java.util.Properties();
+    private final static java.util.Map<String,String> mdcInfo = new java.util.HashMap<>();
 
     public static void main(String[] args){
         final <%=className %> <%=className %>Class = new <%=className %>();
@@ -965,6 +966,7 @@
         <%if(isLog4jEnabled && isLog4j2Enabled) {%>
             <%=MDC_CLASS%>.put("_context", contextStr);
             log.info("TalendJob: '<%=codeGenArgument.getJobName()%>' - Started.");
+            mdcInfo.putAll(<%=MDC_CLASS%>.getCopyOfContextMap());
         <%}%>
 
 <%
@@ -1176,6 +1178,10 @@ this.globalResumeTicket = false;//to run others jobs
         runningThreadCount.add(1);
         new Thread(){
             public void run() {
+                <%if(isLog4jEnabled && isLog4j2Enabled) {%>
+                    mdcInfo.forEach(<%=MDC_CLASS%>::put);
+                <% } %>
+
                 java.util.Map threadRunResultMap = new java.util.HashMap();
                 threadRunResultMap.put("errorCode", null);
                 threadRunResultMap.put("status", "");
