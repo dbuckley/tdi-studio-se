@@ -48,6 +48,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     boolean setQueryTimeOut = "true".equals(ElementParameterParser.getValue(node,"__SET_QUERY_TIMEOUT__"));
     
     String queryTimeOutInSeconds = ElementParameterParser.getValue(node,"__QUERY_TIMEOUT_IN_SECONDS__");
+    
+    boolean returnKeys = "true".equals(ElementParameterParser.getValue(node,"__RETURN_GENERATED_KEYS__"));
 
 	String incomingConnName = null;
 	List<IMetadataColumn> columnList = getColumnList(node);
@@ -141,7 +143,15 @@ skeleton="../templates/db_output_bulk.skeleton"
 				}
 			}
 	    %>
-	    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>, java.sql.Statement.RETURN_GENERATED_KEYS);
+	    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>
+        <%
+        if(returnKeys){
+        %>
+        , java.sql.Statement.RETURN_GENERATED_KEYS
+        <%
+        }
+        %>
+        );
 		resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    <%
 	} else if (("UPDATE").equals(dataAction)) {

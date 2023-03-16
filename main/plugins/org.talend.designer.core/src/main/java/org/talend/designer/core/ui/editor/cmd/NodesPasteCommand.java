@@ -683,6 +683,9 @@ public class NodesPasteCommand extends Command {
                                 connection.isMonitorConnection());
                     }
 
+                    if (connection instanceof Connection) {
+                        ((Connection) pastedConnection).setInputOrder(((Connection) connection).getInputOrder());
+                    }
                     connections.add(pastedConnection);
                     oldNameTonewNameMap.put(connection.getUniqueName(), pastedConnection.getUniqueName());
                     // pastedConnection.setActivate(pastedSourceNode.isActivate());

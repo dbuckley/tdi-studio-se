@@ -903,7 +903,7 @@
 		 <IMPORT NAME="Driver-Redshift-v2" MODULE="redshift-jdbc42-2.1.0.10.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc42/2.1.0.10" REQUIRED_IF="(DBTYPE=='REDSHIFT') AND (USE_EXISTING_CONNECTION == 'false') AND (REDSHIFT_DRIVER_VERSION == 'DRIVER_V2')" />
 		 <IMPORT NAME="Driver-Redshift-v1" MODULE="redshift-jdbc42-no-awssdk-1.2.55.1083.jar" MVN="mvn:com.amazon.redshift/redshift-jdbc42-no-awssdk/1.2.55.1083" REQUIRED_IF="(DBTYPE=='REDSHIFT') and (USE_EXISTING_CONNECTION == 'false') AND (REDSHIFT_DRIVER_VERSION == 'DRIVER_V1')" />
 		<IMPORT NAME="antlr4-runtime-4.8-1.jar" MODULE="antlr4-runtime-4.8-1.jar" MVN="mvn:org.antlr/antlr4-runtime/4.8-1"  REQUIRED_IF="(DBTYPE=='REDSHIFT') and (USE_EXISTING_CONNECTION == 'false')" />
-		<IMPORT NAME="Driver-Snowflake" MODULE="snowflake-jdbc-3.13.14.jar" MVN="mvn:net.snowflake/snowflake-jdbc/3.13.14"  REQUIRED_IF="(DBTYPE=='SNOWFLAKE') and (USE_EXISTING_CONNECTION == 'false')" />
+		<IMPORT NAME="Driver-Snowflake" MODULE="snowflake-jdbc-3.13.28.jar" MVN="mvn:net.snowflake/snowflake-jdbc/3.13.28"  REQUIRED_IF="(DBTYPE=='SNOWFLAKE') and (USE_EXISTING_CONNECTION == 'false')" />
 		<IMPORT NAME="Driver-VERTICA_9.0" MODULE="vertica-jdbc-9.3.1-0.jar" MVN="mvn:com.vertica/vertica-jdbc/9.3.1-0"   REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_9_0')"/>
 
 		 <!-- java 11 dependencies for jdbc driver HSQLDB-->

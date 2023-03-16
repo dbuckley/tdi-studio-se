@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Level;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -32,6 +33,8 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.runtime.model.emf.EmfHelper;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.components.ComponentCategory;
@@ -43,6 +46,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IExternalData;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.service.ICoreTisRuntimeService;
 import org.talend.core.ui.metadata.dialog.CustomTableManager;
 import org.talend.core.ui.metadata.editor.MetadataTableEditor;
 import org.talend.core.ui.metadata.editor.MetadataTableEditorView;
@@ -56,6 +60,7 @@ import org.talend.designer.abstractmap.ui.visualmap.link.IMapperLink;
 import org.talend.designer.abstractmap.ui.visualmap.link.LinkState;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.utils.emf.talendfile.AbstractExternalData;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.mapper.MapperComponent;
 import org.talend.designer.mapper.PluginUtils;
@@ -1046,6 +1051,22 @@ public class MapperManager extends AbstractMapperManager {
     public void pendoMapperTrack() {
         if (isDataChanged()) {
             pendoTrackManager.sendTrackToPendo();
+            trackPTPData();
+        }
+    }
+
+    private void trackPTPData() {
+        try {
+            MapperComponent component = (MapperComponent) getAbstractMapComponent();
+            AbstractExternalData externalEmfData = component.getExternalEmfData();
+            String resource = EmfHelper.getEmfModelContent(externalEmfData);
+            ICoreTisRuntimeService service = ICoreTisRuntimeService.get();
+            if (service != null) {
+                service.sendPTPTrackData(component.getComponent().getName(), component.getUniqueName(),
+                        component.getProcess().getId(), resource);
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e, Level.WARN);
         }
     }
 

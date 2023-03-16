@@ -2755,19 +2755,9 @@ public abstract class DbGenerationManager {
             if (whereFlag) {
                 appendSqlQuery(sb, whereClauses);
             }
-            if (additionalWhereFlag) {
-                if (whereFlag) {
-                    appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
-                    appendSqlQuery(sb, tabSpaceString);
-                    appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                    appendSqlQuery(sb, DbMapSqlConstants.AND);
-                }
-                appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                appendSqlQuery(sb, additionalWhereClause);
-            }
             if (whereAddFlag) {
                 for (int i = 0; i < whereAddition.size(); i++) {
-                    if ((i == 0 && (whereFlag || additionalWhereFlag)) || i > 0) {
+                    if ((i == 0 && whereFlag) || i > 0) {
                         appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
                         appendSqlQuery(sb, tabSpaceString);
                         appendSqlQuery(sb, DbMapSqlConstants.SPACE);
@@ -2792,6 +2782,16 @@ public abstract class DbGenerationManager {
                     appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
                     appendSqlQuery(sb, tabSpaceString);
                 }
+            }
+            if (additionalWhereFlag) {
+                if (whereFlag || whereAddFlag) {
+                    appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                    appendSqlQuery(sb, tabSpaceString);
+                    appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                    appendSqlQuery(sb, DbMapSqlConstants.AND);
+                }
+                appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sb, additionalWhereClause);
             }
         }
 

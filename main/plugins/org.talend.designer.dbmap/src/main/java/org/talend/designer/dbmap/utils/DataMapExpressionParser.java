@@ -241,6 +241,10 @@ public class DataMapExpressionParser {
             while (matcher.contains(sqlQuery, pattern)) {
                 return true;
             }
+            recompilePatternIfNecessary(GLOBALMAP_PATTERN2);
+            while (matcher.contains(sqlQuery, pattern)) {
+                return true;
+            }
         }
         return false;
     }
