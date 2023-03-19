@@ -1801,9 +1801,7 @@ public class DataProcess implements IGeneratingProcess {
         }
         // Build a simple copy of the process (to have new objects, avoid to modify the ones in the designer..)
         List<INode> newGraphicalNodeList = buildCopyOfGraphicalNodeList(graphicalNodeList);
-        clearNodeReplaceProviderCache();
         replaceNodeFromProviders(newGraphicalNodeList);
-        clearNodeReplaceProviderCache();
         // job settings extra (feature 2710)
         if (JobSettingsManager.isImplicittContextLoadActived(duplicatedProcess)) {
             List<DataNode> contextLoadNodes = JobSettingsManager.createExtraContextLoadNodes(duplicatedProcess);
@@ -3783,12 +3781,6 @@ public class DataProcess implements IGeneratingProcess {
         // such as ReplaceParallelization for Partition row in Joblet
         if (needReplaceForJoblet) {
             replaceNodeFromProviders(graphicalNodeList);
-        }
-    }
-
-    public void clearNodeReplaceProviderCache() {
-        if (IJobletProviderService.get() != null) {
-            IJobletProviderService.get().clearJobletProcessProviderCache();
         }
     }
 
