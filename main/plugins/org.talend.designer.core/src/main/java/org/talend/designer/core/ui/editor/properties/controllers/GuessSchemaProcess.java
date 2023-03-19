@@ -132,7 +132,7 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
                 if (connectionNode == null) {
                     // for connection node in joblet
                     for (INode generatingNode : generatingNodes) {
-                        if (generatingNode.getGeneratingUniqueName().equals(connectorValue)) {
+                        if (generatingNode.getUniqueName().equals(connectorValue)) {
                             connectionNode = generatingNode;
                             break;
                         }

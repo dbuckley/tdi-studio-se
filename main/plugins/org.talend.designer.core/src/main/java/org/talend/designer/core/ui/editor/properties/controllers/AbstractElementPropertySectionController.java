@@ -1703,7 +1703,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
                     List<? extends INode> nodes = part.getProcess().getGeneratingNodes();
 
                     for (INode node : nodes) {
-                        if (node.getGeneratingUniqueName().equals(compValue) && (node instanceof INode)) {
+                        if (node.getUniqueName().equals(compValue) && (node instanceof INode)) {
                             connectionNode = node;
                             break;
                         }
@@ -2294,7 +2294,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 if (connectionNode == null) {
                     nodes = part.getProcess().getGeneratingNodes();
                     for (INode node : nodes) {
-                        if (node.getGeneratingUniqueName().equals(compValue) && (node instanceof INode)) {
+                        if (node.getUniqueName().equals(compValue) && (node instanceof INode)) {
                             connectionNode = node;
                             break;
                         }

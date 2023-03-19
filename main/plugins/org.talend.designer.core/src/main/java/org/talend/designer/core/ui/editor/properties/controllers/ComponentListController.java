@@ -48,6 +48,7 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.utils.TalendPropertiesUtil;
 import org.talend.core.runtime.services.IGenericService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.process.IGraphicalNode;
@@ -57,6 +58,7 @@ import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.AbstractTalendEditor;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.utils.DesignerUtilities;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
@@ -305,19 +307,20 @@ public class ComponentListController extends AbstractElementPropertySectionContr
             if (node.getJobletNode() != null) {
                 node = node.getJobletNode();
             }
-            final String uniqueName = node.getGeneratingUniqueName();
+            String uniqueName = node.getUniqueName();
             if (uniqueName.equals(currentNode.getUniqueName())) {
                 continue;
             }
             String displayName = (String) node.getElementParameter("LABEL").getValue(); //$NON-NLS-1$
+            String displayUniqueName = getDisplayUniqueName(node, uniqueName);
             if (displayName == null) {
-                displayName = uniqueName;
+                displayName = displayUniqueName;
             }
             if (displayName.indexOf("__UNIQUE_NAME__") != -1) { //$NON-NLS-1$
-                displayName = displayName.replaceAll("__UNIQUE_NAME__", uniqueName); //$NON-NLS-1$
+                displayName = displayName.replaceAll("__UNIQUE_NAME__", displayUniqueName); //$NON-NLS-1$
             }
-            if (!displayName.equals(uniqueName)) {
-                displayName = uniqueName + " - " + displayName; //$NON-NLS-1$
+            if (!displayName.equals(displayUniqueName)) {
+                displayName = displayUniqueName + " - " + displayName; //$NON-NLS-1$
             }
             componentUniqueNames.add(uniqueName);
             componentDisplayNames.add(displayName);
@@ -359,6 +362,13 @@ public class ComponentListController extends AbstractElementPropertySectionContr
                 }
             }
         }
+    }
+
+    private static String getDisplayUniqueName(INode node, String uniqueName) {
+        if (TalendPropertiesUtil.isEnabledUseShortJobletName()) {
+            return DesignerUtilities.getNodeInJobletCompleteUniqueName(node, uniqueName);
+        }
+        return uniqueName;
     }
 
     SelectionListener listenerSelection = new SelectionAdapter() {

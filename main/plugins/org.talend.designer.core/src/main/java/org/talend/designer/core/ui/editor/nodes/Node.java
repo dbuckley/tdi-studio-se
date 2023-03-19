@@ -99,6 +99,7 @@ import org.talend.core.model.repository.ExternalNodesFactory;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.NodeUtil;
+import org.talend.core.model.utils.TalendPropertiesUtil;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -612,6 +613,22 @@ public class Node extends Element implements IGraphicalNode {
         }
 
         setPropertyValue(EParameterName.UNIQUE_NAME.getName(), uniqueName2);
+
+        IElementParameter shortUniqueNameParam = getElementParameter(EParameterName.SHORT_UNIQUE_NAME.getName());
+        if (shortUniqueNameParam != null) {
+            // only for SHORT_UNIQUE_NAME element parameter exist
+            String shortUniqueName = "";
+            if (shortUniqueNameParam.getValue() != null && !"".equals(shortUniqueNameParam.getValue())) {
+                shortUniqueName = (String) shortUniqueNameParam.getValue();
+            }
+            if (!reloadingComponent && shortUniqueName != null
+                    && (shortUniqueNameParam.getValue() == null || "".equals(shortUniqueNameParam.getValue()))) {
+                shortUniqueName = ((Process) getProcess()).generateUniqueNodeName(this, true);
+                ((Process) getProcess()).addUniqueNodeName(shortUniqueName);
+            }
+            setPropertyValue(EParameterName.SHORT_UNIQUE_NAME.getName(), shortUniqueName);
+        }
+
         /*
          * for implements [TESB-10335], need to replace "__NODE_UNIQUE_NAME__" to node unique name in expression.
          */
@@ -880,10 +897,21 @@ public class Node extends Element implements IGraphicalNode {
      */
     @Override
     public String getUniqueName() {
+        return getUniqueName(TalendPropertiesUtil.isEnabledUseShortJobletName());
+    }
+
+    public String getUniqueName(boolean enableShortName) {
         String uniqueName = null;
         IElementParameter param = getElementParameter(EParameterName.UNIQUE_NAME.getName());
         if (param != null) {
             uniqueName = (String) param.getValue();
+        }
+
+        if (enableShortName) {
+            IElementParameter parameter = getElementParameter(EParameterName.SHORT_UNIQUE_NAME.getName());
+            if (parameter != null) {
+                uniqueName = (String) parameter.getValue();
+            }
         }
         return uniqueName;
     }
@@ -2104,13 +2132,10 @@ public class Node extends Element implements IGraphicalNode {
             externalNode.setIncomingConnections(inputs);
             externalNode.setOutgoingConnections(outputs);
             externalNode.setElementParameters(getElementParameters());
-            externalNode.setUniqueName(getUniqueName());
+            externalNode.setUniqueName(getUniqueName(false));
             externalNode.setSubProcessStart(isSubProcessStart());
             externalNode.setProcess(getProcess());
             externalNode.setComponent(getComponent());
-            if (!getUniqueName().equals(getGeneratingUniqueName())) {
-                externalNode.setGeneratingUniqueName(getGeneratingUniqueName());
-            }
         }
         return this.externalNode;
     }
@@ -3015,8 +3040,12 @@ public class Node extends Element implements IGraphicalNode {
                                     break;
                                 }
                                 boolean foundValue = false;
+                                Object paramValue = param.getValue();
+                                if (TalendPropertiesUtil.isEnabledUseShortJobletName()) {
+                                    paramValue = getCurrentDataNode().getElementParameter(param.getName()).getValue();
+                                }
                                 for (INode datanode : nodeList) {
-                                    if (datanode.getGeneratingUniqueName().equals(param.getValue())) {
+                                    if (datanode.getUniqueName().equals(paramValue)) {
                                         foundValue = true;
                                         break;
                                     }
@@ -3088,6 +3117,17 @@ public class Node extends Element implements IGraphicalNode {
             }
         }
 
+    }
+
+    public INode getCurrentDataNode() {
+        INode dataNode = null;
+        List<? extends INode> generatingNodes = this.getProcess().getGeneratingNodes();
+        for (INode iNode : generatingNodes) {
+            if (this.getUniqueName().equals(iNode.getUniqueName())) {
+                return iNode;
+            }
+        }
+        return dataNode;
     }
 
     private Object[] getContextParamsFromProcess() {

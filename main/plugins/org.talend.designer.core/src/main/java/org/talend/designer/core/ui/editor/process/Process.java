@@ -125,6 +125,7 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.routines.RoutinesUtil;
 import org.talend.core.model.update.IUpdateManager;
 import org.talend.core.model.utils.NodeUtil;
+import org.talend.core.model.utils.TalendPropertiesUtil;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ConvertJobsUtil;
@@ -746,6 +747,10 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         String uniqueName = nodeContainer.getNode().getUniqueName();
         removeUniqueNodeName(uniqueName);
         if (nodeContainer instanceof AbstractJobletContainer) {
+            // remove SHORT_UNIQUE_NAME and UNIQUE_NAME for joblet
+            String name = nodeContainer.getNode().getUniqueName(false);
+            removeUniqueNodeName(name);
+
             // use readedContainers to record the containers alreay be read, in case of falling into dead loop
             Set<NodeContainer> readedContainers = new HashSet<NodeContainer>();
             removeUniqueNodeNamesInJoblet((AbstractJobletContainer) nodeContainer, readedContainers);
@@ -1287,6 +1292,13 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             }
         } else if (EParameterFieldType.isPassword(param.getFieldType()) && value instanceof String) {
             pType.setRawValue((String) value);
+        } else if (param.getFieldType().equals(EParameterFieldType.COMPONENT_LIST) && value != null) {
+            String componentValue = value.toString();
+            if (TalendPropertiesUtil.isEnabledUseShortJobletName() && (param.getElement() instanceof INode)) {
+                INode node = (INode) param.getElement();
+                componentValue = DesignerUtilities.getNodeInJobletCompleteUniqueName(node, componentValue);
+            }
+            pType.setValue(componentValue);
         } else {
             if (value == null) {
                 pType.setValue(""); //$NON-NLS-1$
@@ -2231,6 +2243,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         loadNotes(processType);
         loadSubjobs(processType);
 
+        checkNodeComponentListElementParameters();
         initExternalComponents();
         initJobletComponents();
         setActivate(true);
@@ -2263,6 +2276,22 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         Collection<Node> nodes = nodesHashtable.values();
         for (Node node : nodes) {
             ValidationRulesUtil.updateRejectMetatable(node, null);
+        }
+    }
+
+    private void checkNodeComponentListElementParameters() {
+        if (!TalendPropertiesUtil.isEnabledUseShortJobletName()) {
+            return;
+        }
+        // load short unique name value for component list value
+        for (INode node : getGraphicalNodes()) {
+            for (IElementParameter param : node.getElementParameters()) {
+                if (param.getFieldType() == EParameterFieldType.COMPONENT_LIST) {
+                    String originalValue = param.getValue().toString();
+                    String shortUniqueName = DesignerUtilities.getNodeInJobletShortUniqueName(node, originalValue);
+                    param.setValue(shortUniqueName);
+                }
+            }
         }
     }
 
@@ -3491,12 +3520,18 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     }
 
     public String generateUniqueNodeName(INode node) {
+        return generateUniqueNodeName(node, false);
+    }
+
+    public String generateUniqueNodeName(INode node, boolean useShortName) {
         IComponent component = node.getComponent();
         if (node instanceof Node) {
             component = ((Node) node).getDelegateComponent();
         }
         String baseName = component.getOriginalName();
-        if (EComponentType.GENERIC.equals(component.getComponentType())) {
+        if (useShortName) {
+            baseName = component.getShortName();
+        } else if (EComponentType.GENERIC.equals(component.getComponentType())) {
             baseName = component.getDisplayName();
         }
         return UniqueNodeNameGenerator.generateUniqueNodeName(baseName, uniqueNodeNameList);

@@ -599,9 +599,6 @@ public class DataProcess implements IGeneratingProcess {
             uniqueName = prefix + uniqueName;
         }
         dataNode.setUniqueName(uniqueName);
-        if (!graphicalNode.getUniqueName().equals(graphicalNode.getGeneratingUniqueName())) {
-            dataNode.setGeneratingUniqueName(graphicalNode.getGeneratingUniqueName());
-        }
         //TUP-27184:Pass the label to DataNode from GraphicNode since it may be different from unique name.
         dataNode.setLabel(graphicalNode.getLabel());
         dataNode.setSubProcessStart(graphicalNode.isSubProcessStart());
@@ -955,9 +952,6 @@ public class DataProcess implements IGeneratingProcess {
             AbstractNode curNode;
             if (component.getPluginExtension() == null) {
                 curNode = new DataNode(component, uniqueName);
-                if (!graphicalNode.getUniqueName().equals(graphicalNode.getGeneratingUniqueName())) {
-                    curNode.setGeneratingUniqueName(graphicalNode.getGeneratingUniqueName() + "_" + curItem.getName());
-                }
                 //TUP-27184, Pass the label to multiple components
                 curNode.setLabel(label);
             } else {
@@ -979,9 +973,6 @@ public class DataProcess implements IGeneratingProcess {
                 curNode.setListConnector(graphicalNode.getListConnector());
                 copyElementParametersValue(graphicalNode, curNode);
                 curNode.setUniqueName(uniqueName);
-                if (!graphicalNode.getUniqueName().equals(graphicalNode.getGeneratingUniqueName())) {
-                    curNode.setGeneratingUniqueName(graphicalNode.getGeneratingUniqueName() + "_" + curItem.getName());
-                }
                 //TUP-27184, Pass the label to multiple components
                 curNode.setLabel(label);
                 curNode.setSubProcessStart(graphicalNode.isSubProcessStart());
