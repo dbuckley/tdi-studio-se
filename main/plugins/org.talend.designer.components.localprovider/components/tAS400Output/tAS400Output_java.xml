@@ -313,6 +313,15 @@
 	  >
 	  <DEFAULT>10000</DEFAULT>
 	</PARAMETER>
+	
+    <PARAMETER
+        NAME="RETURN_GENERATED_KEYS"
+        FIELD="CHECK"
+        NUM_ROW="18"
+        SHOW_IF="DATA_ACTION == 'INSERT'"
+        >
+          <DEFAULT>false</DEFAULT>
+    </PARAMETER>
 
 	<PARAMETER
 		NAME="SUPPORT_NULL_WHERE"

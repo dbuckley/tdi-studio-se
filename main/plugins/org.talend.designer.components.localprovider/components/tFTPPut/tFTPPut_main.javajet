@@ -245,6 +245,13 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 
             if(listings<%=cid %> != null && listings<%=cid %>.length > 0){
                 for (int m<%=cid %> = 0; m<%=cid %> < listings<%=cid %>.length; m<%=cid %>++){
+<%
+                if (!ftps) {
+%>
+                  try {
+<%
+                }
+%>
                     if (listings<%=cid %>[m<%=cid %>].getName().matches(mask<%=cid %>)){
                         java.io.File file_in_localDir_<%=cid%> = listings<%=cid %>[m<%=cid %>];
                         java.io.FileInputStream file_stream_<%=cid %> = new java.io.FileInputStream(file_in_localDir_<%=cid%>);
@@ -314,6 +321,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 <%
                         if (!ftps) {
 %>
+                            currentStatus_<%=cid %> = "File rename OK.";
                             msg_<%=cid%>.add("file: " + file_in_localDir_<%=cid%>.getAbsolutePath() + ", size: "
                                             + file_in_localDir_<%=cid%>.length() + " bytes upload successfully");
 <%
@@ -321,6 +329,17 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
 %>
                         nb_file_<%=cid%>++;
                     }
+<%
+                if (!ftps) {
+%>
+                  }catch(java.io.IOException e_<%=cid%>){
+                    currentStatus_<%=cid %> = "File rename fail.";
+                    globalMap.put("<%=cid %>_CURRENT_STATUS", currentStatus_<%=cid %>);
+                    throw e_<%=cid%>;
+                  }
+<%
+                }
+%>
                 }
             }else{
                 <%if(isLog4jEnabled){%>
@@ -329,6 +348,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
                 System.err.println("No matches found for mask '" + key<%=cid %> + "'!");
             }
                     }
+	globalMap.put("<%=cid %>_CURRENT_STATUS", currentStatus_<%=cid %>);
  <%}%>
     }catch(java.lang.Exception e_<%=cid%>){
 globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
