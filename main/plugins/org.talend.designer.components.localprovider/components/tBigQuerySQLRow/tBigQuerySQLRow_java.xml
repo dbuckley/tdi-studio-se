@@ -184,6 +184,10 @@
                 <ITEM NAME="AUTO" VALUE="AUTO"/>
             </ITEMS>
         </PARAMETER>
+
+        <PARAMETER NAME="FORCE_SINGLE_QUERY_EXEC" FIELD="CHECK" REQUIRED="true"  NUM_ROW="40">
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
     </ADVANCED_PARAMETERS>
     <CODEGENERATION>
         <IMPORTS>
