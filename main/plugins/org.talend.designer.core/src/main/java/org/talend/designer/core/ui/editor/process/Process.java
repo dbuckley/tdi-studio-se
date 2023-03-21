@@ -1868,10 +1868,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         for (Connection element : connList) {
             connec = element;
             cType = fileFact.createConnectionType();
-            cType.setSource(node.getUniqueName());
+            cType.setSource(node.getUniqueName(false));
             INode jTarget = connec.getTarget();
             String targetUniqueName = jTarget.getUniqueName();
             if (jTarget instanceof Node) {
+                targetUniqueName = ((Node) jTarget).getUniqueName(false);
                 Node jn = (Node) jTarget.getJobletNode();
                 if (jn != null) {
                     targetUniqueName = jn.getUniqueName();
@@ -2608,7 +2609,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         }
 
         loadElementParameters(nc, listParamType);
-        if (nodesHashtable.containsKey(nc.getUniqueName())) {
+        if (nodesHashtable.containsKey(nc.getUniqueName(false))) {
             // if the uniquename is already in the list, there must be a problem with the job.
             // simply don't load the component
             return null;
@@ -2651,7 +2652,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         NodeContainer nodeContainer = loadNodeContainer(nc, isJunitContainer);
 
         addNodeContainer(nodeContainer);
-        nodesHashtable.put(nc.getUniqueName(), nc);
+        nodesHashtable.put(nc.getUniqueName(false), nc);
         updateAllMappingTypes();
         nc.setNeedLoadLib(false);
         if (nc.isJoblet()) {
