@@ -21,6 +21,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -36,7 +38,7 @@ public class OpenContextChooseComboDialog extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(300, 100);
+        return new Point(400, 180);
     }
 
     private List<IContext> allContexts;
@@ -82,29 +84,16 @@ public class OpenContextChooseComboDialog extends Dialog {
 
         // basicComp = new Composite(parent.getShell(), SWT.NONE);
         basicComp = (Composite) super.createDialogArea(parent);
-        basicComp.setLayout(new FormLayout());
+        final GridLayout gridLayout = new GridLayout();
+        gridLayout.numColumns = 2;
+        basicComp.setLayout(gridLayout);
         basicComp.setSize(200, 200);
 
         Label label = new Label(basicComp, SWT.NONE);
         label.setText(Messages.getString("OpenContextChooseComboDialog.context")); //$NON-NLS-1$
-
+        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
         contextCombo = new Combo(basicComp, SWT.DROP_DOWN | SWT.READ_ONLY);
-
-        // layout for label
-        FormData labelCompData = new FormData();
-        labelCompData.top = new FormAttachment(20, 0);
-        labelCompData.bottom = new FormAttachment(50, 10);
-        labelCompData.left = new FormAttachment(0, 10);
-        labelCompData.right = new FormAttachment(contextCombo, 0);
-        label.setLayoutData(labelCompData);
-
-        // layout for combo
-        FormData contexComboFormData = new FormData();
-        contexComboFormData.top = new FormAttachment(10, 0);
-        contexComboFormData.bottom = new FormAttachment(50, 10);
-        contexComboFormData.left = new FormAttachment(label, 30);
-        contexComboFormData.right = new FormAttachment(60, 10);
-        contextCombo.setLayoutData(contexComboFormData);
+        contextCombo.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, false, false));
 
         List<String> names = new ArrayList<String>();
         for (IContext context : allContexts) {
