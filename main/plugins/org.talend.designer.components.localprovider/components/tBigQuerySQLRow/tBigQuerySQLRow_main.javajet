@@ -112,7 +112,15 @@
                 %>
             } else {
                 com.google.gson.Gson gsonObject_<%=cid%> = new com.google.gson.Gson();
-                globalMap.put("<%=cid%>_STATISTICS", gsonObject_<%=cid%>.toJson(job_<%=cid%>.getStatistics()));
+                try {
+                    globalMap.put("<%=cid%>_STATISTICS", gsonObject_<%=cid%>.toJson(job_<%=cid%>.getStatistics()));
+                } catch (NullPointerException npeex_<%=cid%>) {
+                    // quick fix for TDI-49549 (google-cloud-bigquery library problem)
+                    globalMap.put("<%=cid%>_STATISTICS", null);
+                    <%if(isLog4jEnabled){%>
+                        log.warn("<%=cid%> - Can't retrieve statistics " + jobId_<%=cid%> + " with query: " + <%=query%>);
+                    <%}%>
+                }
                 java.util.List<com.google.cloud.bigquery.Job> childJobs_<%=cid%>;
                 if (!<%=forceSingleQueryExecution%> && job_<%=cid%>.getStatistics().getNumChildJobs() != null) {
                     childJobs_<%=cid%> = java.util.Optional.ofNullable(bigquery_<%=cid%>.listJobs(com.google.cloud.bigquery.BigQuery.JobListOption.parentJobId(jobId_<%=cid%>.getJob())))
