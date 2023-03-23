@@ -23,6 +23,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PlatformUI;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
@@ -263,5 +264,74 @@ public class DesignerUtilities {
             }
         }
         return null;
+    }
+
+    /**
+     * Get the complete unique name for the node in joblet by short unique name.
+     * 
+     * e.g. jc_1_tDBConnection_1 =>testjoblet_1_tDBConnection_1
+     * 
+     * @param node
+     * @param shortUniqueName
+     * @return
+     */
+    public static String getNodeInJobletCompleteUniqueName(INode node, String shortUniqueName) {
+        String graphicalName = "";
+        StringBuffer graphNameBuffer = new StringBuffer();
+        boolean findOut = findGraphicNodeInJoblet(node.getProcess(), shortUniqueName, graphNameBuffer, true);
+        if (findOut) {
+            graphicalName = graphNameBuffer.toString();
+        } else {
+            ExceptionHandler.process(new Exception("Can't find out " + shortUniqueName));
+        }
+        return graphicalName;
+    }
+
+    /**
+     * Get the complete unique name for the node in joblet by short unique name.
+     * 
+     * e.g. testjoblet_1_tDBConnection_1 => jc_1_tDBConnection_1
+     * 
+     * @param node
+     * @param shortUniqueName
+     * @return
+     */
+    public static String getNodeInJobletShortUniqueName(INode node, String completeUniqueName) {
+        String graphicalName = "";
+        StringBuffer graphNameBuffer = new StringBuffer();
+        boolean findOut = findGraphicNodeInJoblet(node.getProcess(), completeUniqueName, graphNameBuffer, false);
+        if (findOut) {
+            graphicalName = graphNameBuffer.toString();
+        } else {
+            ExceptionHandler.process(new Exception("Can't find out " + completeUniqueName));
+        }
+        return graphicalName;
+    }
+
+    private static boolean findGraphicNodeInJoblet(IProcess process, String uniqueName, StringBuffer graphNameBuffer,
+            boolean matchShortName) {
+        List<? extends INode> nodes = process.getGraphicalNodes();
+        for (INode iNode : nodes) {
+            Node graphNode = (Node) iNode;
+            String graphNodeName = graphNode.getUniqueName(matchShortName);
+            if (isJobletComponent(graphNode) && uniqueName.startsWith(graphNodeName)) {
+                String nonJobletName = uniqueName.replaceFirst(graphNodeName + "_", "");
+                graphNameBuffer.append(graphNode.getUniqueName(!matchShortName)).append("_");
+                boolean findOut = findGraphicNodeInJoblet(graphNode.getComponent().getProcess(), nonJobletName, graphNameBuffer,
+                        matchShortName);
+                if (findOut) {
+                    return true;
+                }
+            }
+            if (graphNodeName.equals(uniqueName)) {
+                graphNameBuffer.append(uniqueName);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isJobletComponent(INode node) {
+        return node.getComponent().getComponentType() == EComponentType.JOBLET;
     }
 }

@@ -512,7 +512,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
         String subjobStartUniqueName = (String) getPropertyValue(EParameterName.UNIQUE_NAME.getName());
         if (process != null && (List<Node>) process.getGraphicalNodes() != null) {
             for (Node node : (List<Node>) process.getGraphicalNodes()) {
-                if (node.getUniqueName() != null && node.getUniqueName().equals(subjobStartUniqueName)) {
+                if (node.getUniqueName(false) != null && node.getUniqueName(false).equals(subjobStartUniqueName)) {
                     return node;
                 }
             }
@@ -521,7 +521,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
     }
 
     public void setSubjobStartNode(Node node) {
-        setPropertyValue(EParameterName.UNIQUE_NAME.getName(), node.getUniqueName());
+        setPropertyValue(EParameterName.UNIQUE_NAME.getName(), node.getUniqueName(false));
 
         if (node.getComponent().getName().equals("tPrejob") || node.getComponent().getName().equals("tPostjob")) { //$NON-NLS-1$ //$NON-NLS-2$
             setPropertyValue(EParameterName.SHOW_SUBJOB_TITLE.getName(), Boolean.TRUE);
