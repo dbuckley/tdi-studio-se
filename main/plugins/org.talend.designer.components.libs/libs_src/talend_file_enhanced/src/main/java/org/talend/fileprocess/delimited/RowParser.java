@@ -267,7 +267,7 @@ public class RowParser extends DelimitedDataReader {
                         }
                     } else {
                         separatorIndex = j + 1;
-                        if (!skipEmptyRecord || !"".equals(rowRecord)) {
+                        if (!skipEmptyRecord || (!"".equals(rowRecord) && !"\r".equals(rowRecord))) {
                             currentRecord++;
                             return true;
                         }
