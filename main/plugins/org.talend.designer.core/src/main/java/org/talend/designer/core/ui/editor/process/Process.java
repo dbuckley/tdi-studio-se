@@ -1159,7 +1159,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 || param.getFieldType().equals(EParameterFieldType.PROPERTY_TYPE)
                 || param.getFieldType().equals(EParameterFieldType.VALIDATION_RULE_TYPE)
                 || param.getFieldType().equals(EParameterFieldType.UNIFIED_COMPONENTS)
-                || param.getName().equals(EParameterName.UPDATE_COMPONENTS.getName())) {
+                || param.getName().equals(EParameterName.UPDATE_COMPONENTS.getName())
+                || param.getName().equals(EParameterName.SHORT_UNIQUE_NAME.getName())) {
             return;
         }
         if (param.getParentParameter() != null) {

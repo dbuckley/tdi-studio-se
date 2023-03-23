@@ -612,7 +612,8 @@ public class Node extends Element implements IGraphicalNode {
 
         IElementParameter shortUniqueNameParam = getElementParameter(EParameterName.SHORT_UNIQUE_NAME.getName());
         if (shortUniqueNameParam != null) {
-            // only for SHORT_UNIQUE_NAME element parameter exist
+            // Only for SHORT_UNIQUE_NAME element parameter exist.
+            // Joblet SHORT_UNIQUE_NAME init in AbstractJobletComponent.createElementParameters(INode)
             String shortUniqueName = "";
             if (shortUniqueNameParam.getValue() != null && !"".equals(shortUniqueNameParam.getValue())) {
                 shortUniqueName = (String) shortUniqueNameParam.getValue();
