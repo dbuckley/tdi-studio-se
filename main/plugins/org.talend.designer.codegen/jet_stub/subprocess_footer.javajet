@@ -24,6 +24,7 @@
 	boolean stat = codeGenArgument.isStatistics();
 	IProcess process = subTree.getRootNode().getProcess();
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__"));
+	String MDC_CLASS = "org.slf4j.MDC";
 	for(INode node : subTree.getNodes()){
 		List<IMetadataTable> metadatas = node.getMetadataList();
 		List< ? extends IConnection> conns = node.getOutgoingConnections();
@@ -323,6 +324,16 @@
 					//ignore
 				}catch(java.lang.Error error){
 					//ignore
+				}
+				<%=MDC_CLASS%>.remove("_subJobName");
+				<%=MDC_CLASS%>.remove("_subJobPid");
+				String subJobNameMdcBackup = (String) globalMap.remove("BACKUP_SUB_JOB_NAME_<%=subTree.getName()%>");
+				if (null != subJobNameMdcBackup) {
+					<%=MDC_CLASS%>.put("_subJobName", subJobNameMdcBackup);
+				}
+				String subJobPidMdcBackup = (String) globalMap.remove("BACKUP_SUB_JOB_PID_<%=subTree.getName()%>");
+				if (null != subJobPidMdcBackup) {
+					<%=MDC_CLASS%>.put("_subJobPid", subJobPidMdcBackup);
 				}
 				resourceMap = null;
 			}
