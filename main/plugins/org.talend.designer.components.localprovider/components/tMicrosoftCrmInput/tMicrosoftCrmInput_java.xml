@@ -27597,7 +27597,7 @@
             <IMPORT NAME="wstx-asl-3.2.9" MODULE="wstx-asl-3.2.9.jar" MVN="mvn:org.talend.libraries/wstx-asl-3.2.9/6.0.0" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
             <IMPORT NAME="xmlbeans-3.0.1" MODULE="xmlbeans-3.0.1.jar" MVN="mvn:org.apache.xmlbeans/xmlbeans/3.0.1" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
             <IMPORT NAME="xmlschema-core-2.3.0" MODULE="xmlschema-core-2.3.0.jar" MVN="mvn:org.apache.ws.xmlschema/xmlschema-core/2.3.0" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')"/>
-            <IMPORT NAME="commons-fileupload-1.4" MODULE="commons-fileupload-1.4.jar" MVN="mvn:commons-fileupload/commons-fileupload/1.4"  REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
+            <IMPORT NAME="commons-fileupload-1.5" MODULE="commons-fileupload-1.5.jar" MVN="mvn:commons-fileupload/commons-fileupload/1.5"  REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
             <IMPORT NAME="addressing-1.6.2" MODULE="addressing-1.6.2.jar" MVN="mvn:org.talend.libraries/addressing-1.6.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/addressing-1.6.2.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
             <IMPORT NAME="addressing" MODULE="addressing-1.6.2.mar" MVN="mvn:org.talend.libraries/addressing-1.6.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/addressing-1.6.2.mar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
             <IMPORT NAME="woden-core-1.0M10" MODULE="woden-core-1.0M10.jar" MVN="mvn:org.apache.woden/woden-core/1.0M10" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
