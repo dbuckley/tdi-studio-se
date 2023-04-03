@@ -62,13 +62,13 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
 
     private static final String CONTEXT_CHOOSE_DIALOG_TITLE = "Choose a context for query :";//$NON-NLS-1$
 
-    private IElement elem;
+    private final IElement elem;
 
-    private IElementParameter elementParameter;
+    private final IElementParameter elementParameter;
 
-    private CommandStack commandStack;
+    private final CommandStack commandStack;
 
-    private Composite composite;
+    private final Composite composite;
 
     public GuessSchemaSelectionAdapter(final IElement elem, final IElementParameter elementParameter,
             final Composite composite,
@@ -86,10 +86,10 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
                 .getProcess().getContextManager().getListContext();
         OpenContextChooseComboDialog dialog = new OpenContextChooseComboDialog(parentShell, allContexts);
         dialog.create();
-        dialog.getShell().setText(CONTEXT_CHOOSE_DIALOG_TITLE);
+        dialog.getShell().setText(GuessSchemaSelectionAdapter.CONTEXT_CHOOSE_DIALOG_TITLE);
         IContext selectContext = null;
         // job only have defoult context,or the query isn't context mode
-        if (allContexts.size() == 1) {
+        if (1 == allContexts.size()) {
             selectContext = Node.class.cast(elementParameter.getElement())
                     .getProcess().getContextManager().getDefaultContext();
         } else if (Window.OK == dialog.open()) {
@@ -102,13 +102,13 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
     public void widgetSelected(final SelectionEvent event) {
         super.widgetSelected(event);
         final IContext context = selectContext();
-        if (context == null) {
+        if (null == context) {
             return;
         }
 
         final GuessSchemaRunnable guessSchema = new GuessSchemaRunnable(context, elementParameter);
         try {
-            new ProgressMonitorDialog(this.composite.getShell())
+            new ProgressMonitorDialog(composite.getShell())
                     .run(true, true, guessSchema); //this block until the guessSchema is done
         } catch (InvocationTargetException | InterruptedException e) {
             Display.getDefault().asyncExec(() -> {
@@ -117,7 +117,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
                         Messages.getString("guessSchema.dialog.error.msg.default"), e); //$NON-NLS-1$
             });
 
-            if (InterruptedException.class.isInstance(e)) {
+            if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
 
@@ -129,7 +129,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
         }
 
         final GuessSchemaResult schema = guessSchema.getSchema();
-        if (schema == null || TaCoKitUtil.isBlank(schema.getResult())) {
+        if (null == schema || TaCoKitUtil.isBlank(schema.getResult())) {
             String errorMessage = schema.getError();
             if (!TaCoKitUtil.isBlank(errorMessage)) {
                 ExceptionHandler.process(new Exception(errorMessage));
@@ -142,22 +142,32 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
 
         final Node node = Node.class.cast(elementParameter.getElement());
         IMetadataTable newMeta = buildMetadata(schema.getResult());
-        if (newMeta == null) {
+        if (null == newMeta) {
             Exception causedBy = null;
-            String errMessage = schema.getError();
-            if (errMessage != null && !errMessage.trim().isEmpty()) {
-                causedBy = new Exception(causedBy);
+            String error = schema.getError();
+            String errMessage = "";
+            if (null != error && !error.trim().isEmpty()) {
+                causedBy = new Exception(error);
+                try {
+                    // remove "Exception in component <component-name> (Mock_job_for_Guess_schema)"
+                    final String err0 = error.substring(error.indexOf('\n') + 1);
+                    // get message raised by TaCoKitGuessSchema class
+                    errMessage = err0.substring(err0.indexOf(':') + 1, err0.indexOf('\n'));
+                } catch (Exception e){
+                    // no-op to possible indexoutofbounds
+                }
             }
             Exception ex = null;
-            if (causedBy != null) {
+            if (null != causedBy) {
                 ex = new Exception(schema.getResult(), causedBy);
             } else {
                 ex = new Exception(schema.getResult());
             }
             ExceptionHandler.process(ex);
-            ExceptionMessageDialog.openError(composite.getShell(), Messages.getString("guessSchema.dialog.error.title"), //$NON-NLS-1$
-                    Messages.getString("guessSchema.dialog.error.msg.default"), //$NON-NLS-1$
-                    ex);
+            ExceptionMessageDialog.openError(composite.getShell(),
+                                             Messages.getString("guessSchema.dialog.error.title"), //$NON-NLS-1$
+                                             errMessage.isBlank() ? Messages.getString("guessSchema.dialog.error.msg.default") : errMessage, //$NON-NLS-1$
+                                             ex);
             return;
         }
         MetadataDialog metaDialog = new MetadataDialog(composite.getShell(), newMeta, node, commandStack);
@@ -169,7 +179,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
             if (param instanceof IAdditionalInfo) {
                 IElementParameter schemaParam = (IElementParameter) ((IAdditionalInfo) param)
                         .getInfo(ADDITIONAL_PARAM_METADATA_ELEMENT);
-                if (schemaParam != null) {
+                if (null != schemaParam) {
                     param = node.getElementParameter(schemaParam.getName());
                 }
             }
@@ -178,11 +188,11 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
             final List<? extends INodeConnector> connectorsList = new ArrayList<>(node.getListConnector());
 
             try {
-                node.setIncomingConnections(EMPTY_LIST);
+                node.setIncomingConnections(java.util.Collections.emptyList());
                 node.setListConnector(singletonList(node.getConnectorFromName(outputMetaCopy.getTableName())));
                 node.setOutgoingConnections(node.getOutgoingConnections(outputMetaCopy.getTableName()));
                 final ChangeMetadataCommand cmd = new ChangeMetadataCommand(node, param, old, outputMetaCopy);
-                if (commandStack != null) {
+                if (null != commandStack) {
                     commandStack.execute(cmd);
                 } else {
                     cmd.execute();
@@ -196,7 +206,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
     }
 
     private IMetadataTable buildMetadata(final String schema) {
-        if (schema == null || schema.trim().isEmpty()) {
+        if (null == schema || schema.trim().isEmpty()) {
             return null;
         }
         Collection<MetadataColumn> jsonColumns = new ArrayList<>();
@@ -220,7 +230,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
                         return null;
                     }
                 });
-                if (columns != null && !columns.isEmpty()) {
+                if (null != columns && !columns.isEmpty()) {
                     jsonColumns.addAll(columns);
                 }
             } catch (final Exception e) {
@@ -237,7 +247,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
         for (final IMetadataColumn oneColumn : jsonColumns) {
             i++;
             oneColumn.setLabel(getLabel(columnLabels, i, oneColumn));
-            if (oneColumn.getOriginalDbColumnName() == null || oneColumn.getOriginalDbColumnName().isEmpty()) {
+            if (null == oneColumn.getOriginalDbColumnName() || oneColumn.getOriginalDbColumnName().isEmpty()) {
                 oneColumn.setOriginalDbColumnName(oneColumn.getLabel());
             }
             columns.add(oneColumn);
@@ -246,7 +256,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
 
         if (!columns.isEmpty()) {
             IElementParameter dqRule = elem.getElementParameter("DQRULES_LIST");
-            if (dqRule != null) {
+            if (null != dqRule) {
                 ITDQRuleService ruleService = null;
                 try {
                     ruleService =
@@ -255,7 +265,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
                     // nothing to do
                 }
                 IElementParameter queryParam = elem.getElementParameter("QUERY");
-                if (ruleService != null && queryParam != null) {
+                if (null != ruleService && null != queryParam) {
                     ruleService.updateOriginalColumnNames(columns, queryParam);
                 }
             }
@@ -271,9 +281,9 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
         String labelName = oneColumn.getLabel();
         String sub = ""; //$NON-NLS-1$
         String sub2 = ""; //$NON-NLS-1$
-        if (labelName != null && labelName.length() > 0 && labelName.startsWith("_")) { //$NON-NLS-1$
+        if (null != labelName && 0 < labelName.length() && labelName.startsWith("_")) { //$NON-NLS-1$
             sub = labelName.substring(1);
-            if (sub.length() > 0) {
+            if (0 < sub.length()) {
                 sub2 = sub.substring(1);
             }
         }
