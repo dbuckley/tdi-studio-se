@@ -86,11 +86,12 @@ if(!hasOutgoingDataConnection || columnList == null || columnList.size() < 1){
 globalMap.put("<%=cid %>_QUERY",query_<%=cid %>);
 <%
 if(("true").equals(propagateRecordset)){
-	%>
+%>
 	java.sql.ResultSet rs_<%=cid %> = null;
-	<%
+<%
 }
 %>
+boolean isResultSet_<%=cid %> = false;
 try {
 <%
 	if (usePrepareStatement) {
@@ -111,61 +112,65 @@ try {
 		}
 		if(("true").equals(propagateRecordset)){
 %>
-		rs_<%=cid %> = pstmt_<%=cid %>.executeQuery();
+			rs_<%=cid %> = pstmt_<%=cid %>.executeQuery();
 <%
 		} else {
 %>
-		pstmt_<%=cid %>.execute();
-		<%
+			isResultSet_<%=cid %> = pstmt_<%=cid %>.execute();
+<%
 		}
 	} else {
 		if(("true").equals(propagateRecordset)){
 %>
-		rs_<%=cid %> = stmt_<%=cid %>.executeQuery(query_<%=cid %>);
+			rs_<%=cid %> = stmt_<%=cid %>.executeQuery(query_<%=cid %>);
 <%
 		} else {
 %>
-		stmt_<%=cid %>.execute(query_<%=cid %>);
-		<%
+			isResultSet_<%=cid %> = stmt_<%=cid %>.execute(query_<%=cid %>);
+<%
 		}
 	}
 	log4jCodeGenerateUtil.logInfo(node,"debug",cid+" - Execute the query: '\" + query_" + cid  + " + \"' has finished.");
+	
+	if("true".equals(propagateRecordset)){
 %>
+		count_<%=cid %>++;
 <%
-	if(usePrepareStatement){
-		if ("NB_LINE_INSERTED".equals(use_NB_Line)) {
+	}else{
 %>
-		nb_line_inserted_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
-		globalMap.put("<%=cid%>_NB_LINE_INSERTED", nb_line_inserted_<%=cid%>);
+		java.sql.Statement commonSt_<%=cid %> = null;
+		java.sql.ResultSet rsMulti_<%=cid %> = null;
+		int rsCount_<%=cid %> = -1;
 <%
-		} else if ("NB_LINE_UPDATED".equals(use_NB_Line)) {
+		if (usePrepareStatement) {
 %>
-		nb_line_update_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
-		globalMap.put("<%=cid%>_NB_LINE_UPDATED", nb_line_update_<%=cid%>);
+			commonSt_<%=cid %> = pstmt_<%=cid %>;
+			rsMulti_<%=cid %> = pstmt_<%=cid %>.getResultSet();
 <%
-		} else if ("NB_LINE_DELETED".equals(use_NB_Line)) {
+		} else {
 %>
-		nb_line_deleted_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
-		globalMap.put("<%=cid%>_NB_LINE_DELETED", nb_line_deleted_<%=cid%>);
-<%
-		}
-	} else {
-		if ("NB_LINE_INSERTED".equals(use_NB_Line)) {
-%>
-		nb_line_inserted_<%=cid%> += stmt_<%=cid %>.getUpdateCount();
-		globalMap.put("<%=cid%>_NB_LINE_INSERTED", nb_line_inserted_<%=cid%>);
-<%
-		} else if ("NB_LINE_UPDATED".equals(use_NB_Line)) {
-%>
-		nb_line_update_<%=cid%> += stmt_<%=cid %>.getUpdateCount();
-		globalMap.put("<%=cid%>_NB_LINE_UPDATED", nb_line_update_<%=cid%>);
-<%
-		} else if ("NB_LINE_DELETED".equals(use_NB_Line)) {
-%>
-		nb_line_deleted_<%=cid%> += stmt_<%=cid %>.getUpdateCount();
-		globalMap.put("<%=cid%>_NB_LINE_DELETED", nb_line_deleted_<%=cid%>);
+			commonSt_<%=cid %> = stmt_<%=cid %>;
+			rsMulti_<%=cid %> = stmt_<%=cid %>.getResultSet();
 <%
 		}
+%>
+		do {
+		    if (isResultSet_<%=cid %>) {
+		        if(rsMulti_<%=cid %> != null){
+					while(rsMulti_<%=cid %>.next()){
+						count_<%=cid %>++;
+					}
+				}
+		    } else {
+		    	rsCount_<%=cid %> = commonSt_<%=cid %>.getUpdateCount();
+		        if (rsCount_<%=cid %> > 0) {
+		            count_<%=cid %> += commonSt_<%=cid %>.getUpdateCount();
+		        }
+		    }
+		    isResultSet_<%=cid %> = commonSt_<%=cid %>.getMoreResults();
+		    if (isResultSet_<%=cid %>) rsMulti_<%=cid %> = commonSt_<%=cid %>.getResultSet();
+		} while (isResultSet_<%=cid %> || rsCount_<%=cid %> != -1);
+<%
 	}
 %>
 	} catch (java.lang.Exception e) {

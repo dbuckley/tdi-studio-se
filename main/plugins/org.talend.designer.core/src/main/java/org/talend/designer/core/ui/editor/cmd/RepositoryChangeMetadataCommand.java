@@ -51,8 +51,6 @@ import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.IDragAndDropServiceHandler;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.seeker.RepositorySeekerManager;
-import org.talend.core.runtime.maven.MavenArtifact;
-import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.cwm.helper.SAPBWTableHelper;
@@ -336,11 +334,15 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
         }
         //Performs setting value for "table.tableName" or "module.moduleName" for Snowflake and Salesforce.
         IElementParameter param;
-        if ((param = node.getElementParameter("table.tableName")) != null || (param = node.getElementParameter("module.moduleName")) != null) {
+        boolean isTableName = (param = node.getElementParameter("table.tableName")) != null;
+        if (isTableName || (param = node.getElementParameter("module.moduleName")) != null) {
             String tableName = newOutputMetadata.getTableName();
             IElementParameter schemaParam;
             param.setValue(TalendQuoteUtils.addQuotes(tableName));
-            param.setRepositoryValueUsed(EmfComponent.REPOSITORY.equals(node.getPropertyValue(EParameterName.SCHEMA_TYPE.getName())));
+            if (!isTableName) {
+                param.setRepositoryValueUsed(
+                        EmfComponent.REPOSITORY.equals(node.getPropertyValue(EParameterName.SCHEMA_TYPE.getName())));
+            }
             //If tableName value is empty we have to erase schema value and repository_schema_type, to prevent setting previous values. New values must be set instead.
             if (tableName == null &&
                     ((schemaParam = node.getElementParameter("table.main.schema")) != null || (schemaParam = node.getElementParameter("module.main.schema")) != null)) {
