@@ -58,12 +58,12 @@ public class TaCoKitGuessSchemaProcess {
 
     private final Task guessSchemaTask;
 
-    private final ExecutorService executorService = ExecutorService.class.cast(Lookups.uiActionsThreadPool()
-            .getExecutor());
+    private final ExecutorService executorService = (ExecutorService) Lookups.uiActionsThreadPool()
+            .getExecutor();
 
     public TaCoKitGuessSchemaProcess(final Property property, final INode node, final IContext context,
             final String discoverSchemaAction, final String connectionName) {
-        this.guessSchemaTask = new Task(property, context, node, discoverSchemaAction, connectionName, executorService);
+        guessSchemaTask = new Task(property, context, node, discoverSchemaAction, connectionName, executorService);
     }
 
     public Future<GuessSchemaResult> run() {
@@ -82,7 +82,7 @@ public class TaCoKitGuessSchemaProcess {
 
         private final IContext context;
 
-        private INode node;
+        private final INode node;
 
         private final String actionName;
 
@@ -92,7 +92,7 @@ public class TaCoKitGuessSchemaProcess {
 
         private java.lang.Process executeProcess;
         
-        private Map<String, IElementParameter> clonedDatastoreParameters = new HashMap<String, IElementParameter>();
+        private final Map<String, IElementParameter> clonedDatastoreParameters = new HashMap<String, IElementParameter>();
 
         public Task(final Property property, final IContext context, final INode node, final String actionName,
                 final String connectionName, final ExecutorService executorService) {
@@ -111,14 +111,14 @@ public class TaCoKitGuessSchemaProcess {
             IProcessor processor = ProcessorUtilities.getProcessor(process, null);
             processor.setContext(context);
             final String debug = System.getProperty("org.talend.tacokit.guessschema.debug", null);
-            executeProcess = processor.run(debug == null || debug.isEmpty() ? null :
+            executeProcess = processor.run(null == debug || debug.isEmpty() ? null :
                             singletonList(debug).toArray(new String[0]),
-                    IProcessor.NO_STATISTICS,
-                    IProcessor.NO_TRACES);
+                                           IProcessor.NO_STATISTICS,
+                                           IProcessor.NO_TRACES);
             
             
             final Future<GuessSchemaResult> result = executorService.submit(() -> {
-                final Pattern pattern = Pattern.compile("^\\[\\s*(INFO|WARN|ERROR|DEBUG|TRACE)\\s*]");
+                final Pattern pattern = Pattern.compile("^\\[\\s*(INFO|WARN|ERROR|DEBUG|TRACE|FATAL)\\s*]");
                 String out;
                 final List<String> err = new ArrayList();
                 // read stderr stream
@@ -140,15 +140,15 @@ public class TaCoKitGuessSchemaProcess {
 
             executeProcess.waitFor();
             final GuessSchemaResult guessResult = result.get();
-            if (executeProcess.exitValue() != 0){
+            if (0 != executeProcess.exitValue()){
                 return new GuessSchemaResult(guessResult.getError(), guessResult.getError());
             }
             final String resultStr = guessResult.getResult();
-            if (resultStr != null && !resultStr.trim().isEmpty()) {
+            if (null != resultStr && !resultStr.trim().isEmpty()) {
                 return guessResult;
             }
             final String errMessage = guessResult.getError();
-            if (errMessage != null && !errMessage.isEmpty()) {
+            if (null != errMessage && !errMessage.isEmpty()) {
                 throw new IllegalStateException(errMessage);
             } else {
                 throw new IllegalStateException(Messages.getString("guessSchema.error.empty")); //$NON-NLS-1$
@@ -156,7 +156,7 @@ public class TaCoKitGuessSchemaProcess {
         }
 
         public synchronized void kill() {
-            if (executeProcess != null && executeProcess.isAlive()) {
+            if (null != executeProcess && executeProcess.isAlive()) {
                 restoreDatastoreParameters(node);
                 final java.lang.Process p = executeProcess.destroyForcibly();
                 try {
@@ -185,7 +185,7 @@ public class TaCoKitGuessSchemaProcess {
                  */
                 if (ComponentModel.class.isInstance(nodeComp)) {
                     ComponentModel compModel = (ComponentModel) nodeComp;
-                    if (ETaCoKitComponentType.input.equals(compModel.getTaCoKitComponentType())) {
+                    if (ETaCoKitComponentType.input == compModel.getTaCoKitComponentType()) {
 
                         node.setIncomingConnections(new ArrayList<>());
                         nodes.add(node);
@@ -207,7 +207,7 @@ public class TaCoKitGuessSchemaProcess {
                 process.getContextManager()
                         .getListContext()
                         .addAll(originalProcess.getContextManager().getListContext());
-                process.getContextManager().setDefaultContext(this.context);
+                process.getContextManager().setDefaultContext(context);
                 List<INode> nodeList = dataProcess.getNodeList();
                 INode newNode = null;
                 // INode newNode = dataProcess.buildNodeFromNode(node, process);
@@ -233,7 +233,7 @@ public class TaCoKitGuessSchemaProcess {
                     final IElementParameter actionNameParam = new ElementParameter(newNode);
                     actionNameParam.setName(TaCoKitConst.GUESS_SCHEMA_PARAMETER_ACTION_NAME);
                     final List<ActionReference> actions = cm.getDiscoverSchemaActions();
-                    if (actionName != null && !actions.isEmpty() && actions.stream()
+                    if (null != actionName && !actions.isEmpty() && actions.stream()
                             .anyMatch(a -> a.getName().equals(actionName))) {
                         actionNameParam.setValue(actions.stream()
                                 .filter(a -> a.getName().equals(actionName)).findFirst().get().getName());
@@ -260,15 +260,15 @@ public class TaCoKitGuessSchemaProcess {
 
         private void retrieveNodes(final List<INode> nodeList, final Set<INode> recordedNodes,
                 final INode currentNode) {
-            if (currentNode == null || recordedNodes.contains(currentNode)) {
+            if (null == currentNode || recordedNodes.contains(currentNode)) {
                 return;
             }
             nodeList.add(currentNode);
             recordedNodes.add(currentNode);
             List<? extends IConnection> incomingConnections = currentNode.getIncomingConnections();
-            if (incomingConnections != null && !incomingConnections.isEmpty()) {
+            if (null != incomingConnections && !incomingConnections.isEmpty()) {
                 for (IConnection conn : incomingConnections) {
-                    if (conn != null) {
+                    if (null != conn) {
                         retrieveNodes(nodeList, recordedNodes, conn.getSource());
                     }
                 }
@@ -320,7 +320,6 @@ public class TaCoKitGuessSchemaProcess {
         private String error;
 
         public GuessSchemaResult(String result, String error) {
-            super();
             this.result = result;
             this.error = error;
         }
