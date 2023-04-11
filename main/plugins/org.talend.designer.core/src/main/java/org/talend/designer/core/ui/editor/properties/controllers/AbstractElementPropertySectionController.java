@@ -171,7 +171,8 @@ import org.talend.repository.model.IProxyRepositoryFactory;
  *
  */
 
-public abstract class AbstractElementPropertySectionController implements PropertyChangeListener {
+public abstract class AbstractElementPropertySectionController
+        implements PropertyChangeListener, IStigmaElementPropertyController {
 
     protected static final String SQLEDITOR = "SQLEDITOR"; //$NON-NLS-1$
 

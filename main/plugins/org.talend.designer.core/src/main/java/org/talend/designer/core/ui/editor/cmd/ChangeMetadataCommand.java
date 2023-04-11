@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.GlobalServiceRegister;
@@ -63,7 +62,7 @@ import org.talend.designer.core.ui.editor.properties.controllers.ColumnListContr
  * DOC Administrator class global comment. Detailled comment <br/>
  *
  */
-public class ChangeMetadataCommand extends Command {
+public class ChangeMetadataCommand extends AbstractCommand {
 
     private INode node, inputNode;
 
@@ -101,10 +100,12 @@ public class ChangeMetadataCommand extends Command {
 
     // Default constructor.
     public ChangeMetadataCommand() {
+        super();
     }
 
     public ChangeMetadataCommand(INode node, IElementParameter schemaParam, INode inputNode, IMetadataTable currentInputMetadata,
             IMetadataTable newInputMetadata, IMetadataTable currentOutputMetadata, IMetadataTable newOutputMetadata) {
+        super();
         this.node = node;
         this.inputNode = inputNode;
         this.schemaParam = schemaParam;
