@@ -46,7 +46,7 @@ public class TGenKeyCheckController extends CheckController {
      * (org.eclipse.gef.commands.Command)
      */
     @Override
-    protected void executeCommand(Command c) {
+    public void executeCommand(Command c) {
         // change T_GEN_KEY field
         // because CheckGenerator has a check about this so elem do is a Node.
         super.executeCommand(c);

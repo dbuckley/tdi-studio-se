@@ -179,6 +179,10 @@ public class RepositoryReviewDialog extends Dialog {
         typeProcessor = createMultiTypesProcessor();
     }
 
+    public RepositoryReviewDialog(RepositoryReviewBusinessHandler handler) {
+        this(handler.getParentShell(), handler.getType(), handler.getRepositoryType());
+    }
+
     /**
      * DOC bqian RepositoryReviewDialog constructor comment.
      *

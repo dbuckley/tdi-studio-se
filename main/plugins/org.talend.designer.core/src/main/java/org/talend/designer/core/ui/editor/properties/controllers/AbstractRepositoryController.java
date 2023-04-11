@@ -241,13 +241,38 @@ public abstract class AbstractRepositoryController extends AbstractElementProper
 
         @Override
         public void widgetSelected(SelectionEvent e) {
-            Command cmd = createCommand(e);
-            if (cmd instanceof ChangeMetadataCommand) {
-                ((ChangeMetadataCommand) cmd).setConnection(getConnection());
-            }
-            executeCommand(cmd);
+            handleWidgetEvent(e);
         }
     };
+
+    private void handleWidgetEvent(SelectionEvent e) {
+        Command cmd = null;
+        Object source = e.getSource();
+        if (source instanceof Control) {
+            StudioControllerContext ctx = new StudioControllerContext((Control) source);
+            if (source instanceof Button) {
+                cmd = createButtonCommand(ctx);
+            }
+            if (source instanceof CCombo) {
+                cmd = createComboCommand(ctx);
+            }
+        }
+        if (cmd instanceof ChangeMetadataCommand) {
+            ((ChangeMetadataCommand) cmd).setConnection(getConnection());
+        }
+        executeCommand(cmd);
+    }
+
+    @Override
+    public boolean handleWidgetEvent(IControllerContext context) {
+        // TODO: judge Button or CCombo
+        Command cmd = createButtonCommand(context);
+        if (cmd instanceof ChangeMetadataCommand) {
+            ((ChangeMetadataCommand) cmd).setConnection(getConnection());
+        }
+        executeCommand(cmd);
+        return cmd != null;
+    }
 
     /**
      *
@@ -278,19 +303,9 @@ public abstract class AbstractRepositoryController extends AbstractElementProper
 
     }
 
-    private Command createCommand(SelectionEvent selectionEvent) {
-        if (selectionEvent.getSource() instanceof Button) {
-            return createButtonCommand((Button) selectionEvent.getSource());
-        }
-        if (selectionEvent.getSource() instanceof CCombo) {
-            return createComboCommand((CCombo) selectionEvent.getSource());
-        }
-        return null;
-    }
+    protected abstract Command createButtonCommand(IControllerContext button);
 
-    protected abstract Command createButtonCommand(Button button);
-
-    protected abstract Command createComboCommand(CCombo combo);
+    protected abstract Command createComboCommand(IControllerContext combo);
 
     /*
      * (non-Javadoc)

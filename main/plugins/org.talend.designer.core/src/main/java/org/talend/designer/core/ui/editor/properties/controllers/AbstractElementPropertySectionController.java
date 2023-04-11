@@ -171,7 +171,8 @@ import org.talend.repository.model.IProxyRepositoryFactory;
  *
  */
 
-public abstract class AbstractElementPropertySectionController implements PropertyChangeListener {
+public abstract class AbstractElementPropertySectionController
+        implements PropertyChangeListener, IStigmaElementPropertyController {
 
     protected static final String SQLEDITOR = "SQLEDITOR"; //$NON-NLS-1$
 
@@ -198,12 +199,12 @@ public abstract class AbstractElementPropertySectionController implements Proper
     protected static final String VARIABLE_TOOLTIP = Messages
             .getString("AbstractElementPropertySectionController.variableTooltip"); //$NON-NLS-1$
 
-    protected static final String NAME = "NAME"; //$NON-NLS-1$
+    public static final String NAME = "NAME"; //$NON-NLS-1$
 
     protected static final String COLUMN = "COLUMN"; //$NON-NLS-1$
 
     // PTODO qzhang use PARAMETER_NAME it for bug 853.
-    protected static final String PARAMETER_NAME = TypedTextCommandExecutor.PARAMETER_NAME;
+    public static final String PARAMETER_NAME = TypedTextCommandExecutor.PARAMETER_NAME;
 
     protected static final int MAX_PERCENT = 100;
 
@@ -1198,7 +1199,18 @@ public abstract class AbstractElementPropertySectionController implements Proper
         return (CommandStack) adapter;
     }
 
-    protected void executeCommand(Command c) {
+    @Override
+    public boolean handleWidgetEvent(IControllerContext context) {
+        return false;
+    }
+
+    @Override
+    public String getControllerName() {
+        return null;
+    }
+
+    @Override
+    public void executeCommand(Command c) {
         if (c == null) {
             return;
         }
@@ -2898,4 +2910,10 @@ public abstract class AbstractElementPropertySectionController implements Proper
     protected List<? extends IElementParameter> getPromptParameters(IElement element) {
         return element.getElementParameters();
     }
+
+    @Override
+    public Command createCommand(IControllerContext context) {
+        return null;
+    }
+
 }

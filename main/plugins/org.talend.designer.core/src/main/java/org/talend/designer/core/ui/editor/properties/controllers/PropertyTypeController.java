@@ -20,7 +20,6 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
@@ -327,7 +326,7 @@ public class PropertyTypeController extends AbstractRepositoryController {
      * org.eclipse.swt.widgets.Control)
      */
     @Override
-    protected Command createButtonCommand(Button button) {
+    protected Command createButtonCommand(IControllerContext button) {
         FileItem repositoryFileItem = null; // hwang add for feature 6484
         LinkRulesItem linkItem = null;
         Map<String, FileItem> repositoryFileItemMap = null;
@@ -701,7 +700,7 @@ public class PropertyTypeController extends AbstractRepositoryController {
      * .eclipse.swt.custom.CCombo)
      */
     @Override
-    protected Command createComboCommand(CCombo combo) {
+    protected Command createComboCommand(IControllerContext combo) {
         Connection repositoryConnection = null;
         ConnectionItem repositoryConnectionItem = null;
 

@@ -18,9 +18,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
+import org.talend.commons.ui.runtime.TalendUI.AbsStudioRunnable;
+import org.talend.commons.ui.runtime.custom.MessageDialogBusinessHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IODataComponent;
@@ -63,7 +64,7 @@ import org.talend.designer.core.ui.editor.properties.controllers.ColumnListContr
  * DOC Administrator class global comment. Detailled comment <br/>
  *
  */
-public class ChangeMetadataCommand extends Command {
+public class ChangeMetadataCommand extends AbstractCommand {
 
     private INode node, inputNode;
 
@@ -101,10 +102,12 @@ public class ChangeMetadataCommand extends Command {
 
     // Default constructor.
     public ChangeMetadataCommand() {
+        super();
     }
 
     public ChangeMetadataCommand(INode node, IElementParameter schemaParam, INode inputNode, IMetadataTable currentInputMetadata,
             IMetadataTable newInputMetadata, IMetadataTable currentOutputMetadata, IMetadataTable newOutputMetadata) {
+        super();
         this.node = node;
         this.inputNode = inputNode;
         this.schemaParam = schemaParam;
@@ -261,9 +264,21 @@ public class ChangeMetadataCommand extends Command {
     }
 
     public static boolean askPropagate() {
-        Boolean needPropagate = MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false),
-                Messages.getString("ChangeMetadataCommand.messageDialog.propagate"), //$NON-NLS-1$
-                Messages.getString("ChangeMetadataCommand.messageDialog.questionMessage")); //$NON-NLS-1$
+        MessageDialogBusinessHandler handler = new MessageDialogBusinessHandler(MessageDialog.QUESTION);
+        handler.setTitle(Messages.getString("ChangeMetadataCommand.messageDialog.propagate")); //$NON-NLS-1$
+        handler.setMessage(Messages.getString("ChangeMetadataCommand.messageDialog.questionMessage")); //$NON-NLS-1$
+        MessageDialogBusinessHandler result = handler.run(new AbsStudioRunnable<MessageDialogBusinessHandler>() {
+
+            @Override
+            public MessageDialogBusinessHandler doRun() {
+                boolean needPropagate = MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false), handler.getTitle(),
+                        handler.getMessage());
+                handler.setOpenResult(needPropagate);
+                return handler;
+            }
+
+        });
+        Boolean needPropagate = Boolean.valueOf(result.getOpenResult().toString());
         return needPropagate;
     }
 

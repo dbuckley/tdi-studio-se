@@ -38,8 +38,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.runtime.TalendUI.AbsStudioRunnable;
+import org.talend.commons.ui.runtime.custom.MessageDialogBusinessHandler;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.commons.ui.swt.dialogs.ModelSelectionBusinessHandler;
 import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog;
 import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog.EEditSelection;
 import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog.ESelectionType;
@@ -77,7 +80,9 @@ import org.talend.core.repository.seeker.RepositorySeekerManager;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.metadata.dialog.MetadataDialog;
+import org.talend.core.ui.metadata.dialog.MetadataDialogBusinessHandler;
 import org.talend.core.ui.metadata.dialog.MetadataDialogForMerge;
+import org.talend.core.ui.metadata.dialog.MetadataDialogForMergeBusinessHandler;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.designer.core.IDesignerCoreService;
@@ -98,6 +103,7 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
+import org.talend.repository.ui.dialog.RepositoryReviewBusinessHandler;
 import org.talend.repository.ui.dialog.RepositoryReviewDialog;
 
 /**
@@ -124,6 +130,11 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
 
     public AbstractSchemaController(IDynamicProperty dp) {
         super(dp);
+    }
+
+    @Override
+    public String getControllerName() {
+        return SCHEMA;
     }
 
     @Override
@@ -500,7 +511,7 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
      *
      * @param button
      */
-    public void updateRepositorySchema(Button button) {
+    public void updateRepositorySchema(IControllerContext button) {
         String paramName = (String) button.getData(PARAMETER_NAME);
         String fullParamName = paramName + ":" + getRepositoryChoiceParamName(); //$NON-NLS-1$
         IElementParameter schemaParam = elem.getElementParameter(fullParamName);
@@ -511,8 +522,18 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
 
         if (connection == null || names == null || names.length != 2) {
             // When no repository avaiable on "Repository" mode, open a MessageDialog.
-            MessageDialog.openError(composite.getShell(), Messages.getString("NoRepositoryDialog.Title"), Messages //$NON-NLS-1$
-                    .getString("NoRepositoryDialog.Text")); //$NON-NLS-1$
+            MessageDialogBusinessHandler handler = new MessageDialogBusinessHandler(MessageDialog.ERROR);
+            handler.setTitle(Messages.getString("NoRepositoryDialog.Title")); //$NON-NLS-1$
+            handler.setMessage(Messages.getString("NoRepositoryDialog.Text")); //$NON-NLS-1$
+            handler.run(new AbsStudioRunnable<MessageDialogBusinessHandler>() {
+
+                @Override
+                public MessageDialogBusinessHandler doRun() {
+                    MessageDialog.openError(composite.getShell(), handler.getTitle(), handler.getMessage());
+                    return handler;
+                }
+
+            });
             return;
         }
         // find IRepositoryObject from repository that contains current connection
@@ -558,7 +579,7 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
      *
      * @param button
      */
-    public boolean checkForRepositoryShema(Button button) {
+    public boolean checkForRepositoryShema(IControllerContext button) {
         boolean stop = false;
         if (button.getData(NAME).equals(SCHEMA)) {
             String paramName = (String) button.getData(PARAMETER_NAME);
@@ -575,19 +596,32 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                 if (node.getJobletNode() != null) {
                     isReadOnly = node.isReadOnly();
                 }
-                ModelSelectionDialog modelSelect = new ModelSelectionDialog(button.getShell(), ESelectionType.SCHEMA, isReadOnly);
+                ModelSelectionBusinessHandler modelSelect = new ModelSelectionBusinessHandler(
+                        ((StudioControllerContext) button).getShell(),
+                        ESelectionType.SCHEMA, isReadOnly);
                 stop = true;
-                if (modelSelect.open() == ModelSelectionDialog.OK) {
-                    if (modelSelect.getOptionValue() == EEditSelection.REPOSITORY) {
+                ModelSelectionBusinessHandler result = modelSelect.run(new AbsStudioRunnable<ModelSelectionBusinessHandler>() {
+
+                    @Override
+                    public ModelSelectionBusinessHandler doRun() {
+                        ModelSelectionDialog dialog = new ModelSelectionDialog(modelSelect);
+                        int open = dialog.open();
+                        modelSelect.setOpenResult(open);
+                        modelSelect.setOptionValue(dialog.getOptionValue());
+                        return modelSelect;
+                    }
+                });
+                if (result.getOpenResult().equals(ModelSelectionDialog.OK)) {
+                    if (result.getOptionValue() == EEditSelection.REPOSITORY) {
                         // update repository schema
                         button.setData(FORCE_READ_ONLY, false);
                         updateRepositorySchema(button);
-                    } else if (modelSelect.getOptionValue() == EEditSelection.BUILDIN) {
+                    } else if (result.getOptionValue() == EEditSelection.BUILDIN) {
                         // change the schema type to built in, then continue the original process
                         executeCommand(new RepositoryChangeSchemaBuiltinCommand(elem, paramName));
                         button.setData(FORCE_READ_ONLY, false);
                         stop = false;
-                    } else if (modelSelect.getOptionValue() == EEditSelection.SHOW_SCHEMA) {
+                    } else if (result.getOptionValue() == EEditSelection.SHOW_SCHEMA) {
                         button.setData(FORCE_READ_ONLY, true);
                         stop = false;
                     }
@@ -633,12 +667,12 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
     }
 
     @Override
-    protected Command createButtonCommand(Button button) {
+    protected Command createButtonCommand(IControllerContext button) {
         // see 0003766: Problems with the read only mode of the properties on repository mode.
         if (checkForRepositoryShema(button)) {
             return null;
         }
-        Button inputButton = button;
+        IControllerContext inputButton = button;
         IElementParameter switchParam = elem.getElementParameter(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
 
         if (inputButton.getData(NAME).equals(SCHEMA)) {
@@ -712,8 +746,19 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
             }
 
             if (connectionParam != null && inputMetadata == null) {
-                MessageDialog.openError(button.getShell(), Messages.getString("AbstractSchemaController.inputNotSet"), //$NON-NLS-1$
-                        Messages.getString("AbstractSchemaController.connectionNotAvaliable")); //$NON-NLS-1$
+                MessageDialogBusinessHandler handler = new MessageDialogBusinessHandler(MessageDialog.ERROR);
+                handler.setTitle(Messages.getString("AbstractSchemaController.inputNotSet")); //$NON-NLS-1$
+                handler.setMessage(Messages.getString("AbstractSchemaController.connectionNotAvaliable")); //$NON-NLS-1$
+                handler.run(new AbsStudioRunnable<MessageDialogBusinessHandler>() {
+
+                    @Override
+                    public MessageDialogBusinessHandler doRun() {
+                        MessageDialog.openError(((StudioControllerContext) button).getShell(), handler.getTitle(),
+                                handler.getMessage());
+                        return handler;
+                    }
+
+                });
                 return null;
             }
 
@@ -774,17 +819,28 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                 outputReadOnly = true;
             }
             // create the MetadataDialog
-            MetadataDialog metaDialog = null;
+            MetadataDialogBusinessHandler metadataDialog = null;
             if (inputMetadata != null) {
                 if (inputInfos != null && inputInfos.size() > 1 && connectionName == null) {
-                    MetadataDialogForMerge metaDialogForMerge = new MetadataDialogForMerge(composite.getShell(), inputInfos,
-                            outputMetaCopy, node, getCommandStack());
-                    metaDialogForMerge.setText(Messages.getString("AbstractSchemaController.schemaOf") + node.getLabel()); //$NON-NLS-1$
+                    MetadataDialogForMergeBusinessHandler metaDialogForMerge = new MetadataDialogForMergeBusinessHandler(
+                            composite, inputInfos, outputMetaCopy, node, getCommandStack());
+                    metaDialogForMerge.setTitle(Messages.getString("AbstractSchemaController.schemaOf") + node.getLabel()); //$NON-NLS-1$
                     metaDialogForMerge.setInputReadOnly(inputReadOnly);
                     metaDialogForMerge.setOutputReadOnly(outputReadOnly);
-                    if (metaDialogForMerge.open() == MetadataDialogForMerge.OK) {
+                    MetadataDialogForMergeBusinessHandler result = metaDialogForMerge
+                            .run(new AbsStudioRunnable<MetadataDialogForMergeBusinessHandler>() {
+
+                                @Override
+                                public MetadataDialogForMergeBusinessHandler doRun() {
+                                    MetadataDialogForMerge dialog = new MetadataDialogForMerge(metaDialogForMerge);
+                                    int open = dialog.open();
+                                    metaDialogForMerge.setOpenResult(open);
+                                    return metaDialogForMerge;
+                                }
+                            });
+                    if (result.getOpenResult().equals(MetadataDialogForMerge.OK)) {
                         // inputMetaCopy = metaDialog.getInputMetaData();
-                        outputMetaCopy = metaDialogForMerge.getOutputMetaData();
+                        outputMetaCopy = result.getOutputMetaTable();
 
                         // check if the metadata is modified
                         boolean modified = false;
@@ -847,24 +903,38 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                         }
                         inputMetaCopy.setAttachedConnector(mainConnector.getName());
                     }
-                    metaDialog = new MetadataDialog(composite.getShell(), inputMetaCopy, inputNode, outputMetaCopy, node,
-                            getCommandStack());
+                    metadataDialog = new MetadataDialogBusinessHandler(composite, inputMetaCopy, inputNode, outputMetaCopy,
+                            inputNode, getCommandStack());
                 }
             } else {
-                metaDialog = new MetadataDialog(composite.getShell(), outputMetaCopy, node, getCommandStack());
+                metadataDialog = new MetadataDialogBusinessHandler(composite, null, null, outputMetaCopy, node,
+                        getCommandStack());
             }
 
-            if (metaDialog != null) {
-                metaDialog.setText(Messages.getString("AbstractSchemaController.schema.title", node.getLabel())); //$NON-NLS-1$
-                metaDialog.setInputReadOnly(inputReadOnly);
-                metaDialog.setOutputReadOnly(outputReadOnly);
+            if (metadataDialog != null) {
+                metadataDialog.setTitle(Messages.getString("AbstractSchemaController.schema.title", node.getLabel())); //$NON-NLS-1$
+                metadataDialog.setInputReadOnly(inputReadOnly);
+                metadataDialog.setOutputReadOnly(outputReadOnly);
 
                 setMetadataTableOriginalNameList(inputMetadata, inputMetaCopy);
                 setMetadataTableOriginalNameList(originaleOutputTable, outputMetaCopy);
-                if (metaDialog.open() == MetadataDialog.OK) {
 
-                    inputMetaCopy = metaDialog.getInputMetaData();
-                    outputMetaCopy = metaDialog.getOutputMetaData();
+                MetadataDialogBusinessHandler metadata = metadataDialog;
+                MetadataDialogBusinessHandler result = metadataDialog.run(new AbsStudioRunnable<MetadataDialogBusinessHandler>() {
+
+                    @Override
+                    public MetadataDialogBusinessHandler doRun() {
+                        MetadataDialog dialog = new MetadataDialog(metadata);
+                        int open = dialog.open();
+                        metadata.setOpenResult(open);
+                        return metadata;
+                    }
+
+                });
+                if (result.getOpenResult().equals(MetadataDialog.OK)) {
+
+                    inputMetaCopy = result.getInputMetaTable();
+                    outputMetaCopy = result.getOutputMetaTable();
                     boolean modified = false;
                     if (!outputMetaCopy.sameMetadataAs(originaleOutputTable, IMetadataColumn.OPTIONS_NONE)) {
                         modified = true;
@@ -922,15 +992,28 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                 }
             }
 
-            RepositoryReviewDialog dialog = new RepositoryReviewDialog(button.getShell(), type, filter);
-            if (dialog.open() == RepositoryReviewDialog.OK) {
-                RepositoryNode node = dialog.getResult();
+            RepositoryReviewBusinessHandler dialog = new RepositoryReviewBusinessHandler(
+                    ((StudioControllerContext) button).getShell(), type,
+                    filter);
+            RepositoryReviewBusinessHandler result = dialog.run(new AbsStudioRunnable<RepositoryReviewBusinessHandler>() {
+
+                @Override
+                public RepositoryReviewBusinessHandler doRun() {
+                    RepositoryReviewDialog repoReviewDialog = new RepositoryReviewDialog(dialog);
+                    int open = repoReviewDialog.open();
+                    dialog.setOpenResult(open);
+                    dialog.setResult(repoReviewDialog.getResult());
+                    return dialog;
+                }
+            });
+            if (result.getOpenResult().equals(RepositoryReviewDialog.OK)) {
+                RepositoryNode node = result.getResult();
                 while (node.getObject().getProperty().getItem() == null
                         || (!(node.getObject().getProperty().getItem() instanceof ConnectionItem))) {
                     node = node.getParent();
                 }
 
-                IRepositoryViewObject object = dialog.getResult().getObject();
+                IRepositoryViewObject object = result.getResult().getObject();
                 Property property = object.getProperty();
                 String id = property.getId();
                 String name = object.getLabel();// The name is Table Name.
@@ -1055,9 +1138,24 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                     if (currentValRuleObj != null) {
                         List<IRepositoryViewObject> valRuleObjs = ValidationRulesUtil.getRelatedValidationRuleObjs(value);
                         if (!ValidationRulesUtil.isCurrentValRuleObjInList(valRuleObjs, currentValRuleObj)) {
-                            if (!MessageDialog.openConfirm(button.getShell(),
-                                    Messages.getString("AbstractSchemaController.validationrule.title.confirm"), //$NON-NLS-1$
-                                    Messages.getString("AbstractSchemaController.validationrule.selectMetadataMsg"))) { //$NON-NLS-1$
+                            MessageDialogBusinessHandler messageDialog = new MessageDialogBusinessHandler(MessageDialog.CONFIRM);
+                            messageDialog.setTitle(Messages.getString("AbstractSchemaController.validationrule.title.confirm")); //$NON-NLS-1$
+                            messageDialog
+                                    .setMessage(Messages.getString("AbstractSchemaController.validationrule.selectMetadataMsg")); //$NON-NLS-1$
+                            MessageDialogBusinessHandler run = messageDialog
+                                    .run(new AbsStudioRunnable<MessageDialogBusinessHandler>() {
+
+                                        @Override
+                                        public MessageDialogBusinessHandler doRun() {
+                                            boolean openConfirm = MessageDialog.openConfirm(
+                                                    ((StudioControllerContext) button).getShell(), messageDialog.getTitle(),
+                                                    messageDialog.getMessage());
+                                            messageDialog.setOpenResult(openConfirm);
+                                            return messageDialog;
+                                        }
+
+                                    });
+                            if (!run.getOpenResult().equals(Boolean.TRUE)) {
                                 return null;
                             } else {
                                 isValRulesLost = true;
@@ -1095,11 +1193,23 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
             Node node = (Node) elem;
             copySchemaFromChildJob(node, item);
             // pop up the schema dialog
-            MetadataDialog metaDialog = new MetadataDialog(composite.getShell(), node.getMetadataList().get(0), node,
+            MetadataDialogBusinessHandler metaDialog = new MetadataDialogBusinessHandler(composite, null, null,
+                    node.getMetadataList().get(0), node,
                     getCommandStack());
-            metaDialog.setText(Messages.getString("AbstractSchemaController.schemaOf") + node.getLabel()); //$NON-NLS-1$
-            if (metaDialog.open() == MetadataDialog.OK) {
-                IMetadataTable outputMetaData = metaDialog.getOutputMetaData();
+            metaDialog.setTitle(Messages.getString("AbstractSchemaController.schemaOf") + node.getLabel()); //$NON-NLS-1$
+            MetadataDialogBusinessHandler result = metaDialog.run(new AbsStudioRunnable<MetadataDialogBusinessHandler>() {
+
+                @Override
+                public MetadataDialogBusinessHandler doRun() {
+                    MetadataDialog dialog = new MetadataDialog(metaDialog);
+                    int open = dialog.open();
+                    metaDialog.setOpenResult(open);
+                    return metaDialog;
+                }
+
+            });
+            if (result.getOpenResult().equals(MetadataDialog.OK)) {
+                IMetadataTable outputMetaData = result.getOutputMetaTable();
                 return new ChangeMetadataCommand(node, param, null, outputMetaData);
             }
         }
@@ -1133,7 +1243,7 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
     }
 
     @Override
-    protected Command createComboCommand(CCombo combo) {
+    protected Command createComboCommand(IControllerContext combo) {
         IMetadataTable repositoryMetadata = null;
 
         String fullParamName = (String) combo.getData(PARAMETER_NAME);
@@ -1151,9 +1261,21 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
         boolean isValRulesLost = false;
         IRepositoryViewObject currentValRuleObj = ValidationRulesUtil.getCurrentValidationRuleObjs(elem);
         if (value.equals(EmfComponent.BUILTIN) && currentValRuleObj != null) {
-            if (!MessageDialog.openConfirm(combo.getShell(),
-                    Messages.getString("AbstractSchemaController.validationrule.title.confirm"), //$NON-NLS-1$
-                    Messages.getString("AbstractSchemaController.validationrule.selectBuildInMsg"))) { //$NON-NLS-1$
+            MessageDialogBusinessHandler dialog = new MessageDialogBusinessHandler(MessageDialog.CONFIRM);
+            dialog.setTitle(Messages.getString("AbstractSchemaController.validationrule.title.confirm")); //$NON-NLS-1$
+            dialog.setMessage(Messages.getString("AbstractSchemaController.validationrule.selectBuildInMsg")); //$NON-NLS-1$
+            MessageDialogBusinessHandler result = dialog.run(new AbsStudioRunnable<MessageDialogBusinessHandler>() {
+
+                @Override
+                public MessageDialogBusinessHandler doRun() {
+                    boolean openConfirm = MessageDialog.openConfirm(((StudioControllerContext) combo).getShell(),
+                            dialog.getTitle(), dialog.getMessage());
+                    dialog.setOpenResult(openConfirm);
+                    return dialog;
+                }
+
+            });
+            if (!result.getOpenResult().equals(Boolean.TRUE)) {
                 return null;
             } else {
                 isValRulesLost = true;
