@@ -38,6 +38,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.runtime.TalendUI;
+import org.talend.commons.ui.runtime.custom.MessageDialogCustomUI;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog;
@@ -510,9 +512,16 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
         String[] names = schemaId.split(" - "); //$NON-NLS-1$
 
         if (connection == null || names == null || names.length != 2) {
-            // When no repository avaiable on "Repository" mode, open a MessageDialog.
-            MessageDialog.openError(composite.getShell(), Messages.getString("NoRepositoryDialog.Title"), Messages //$NON-NLS-1$
-                    .getString("NoRepositoryDialog.Text")); //$NON-NLS-1$
+            String title = Messages.getString("NoRepositoryDialog.Title"); //$NON-NLS-1$
+            String message = Messages.getString("NoRepositoryDialog.Text"); //$NON-NLS-1$
+            TalendUI.get().run(new Runnable() {
+
+                @Override
+                public void run() {
+                    // When no repository avaiable on "Repository" mode, open a MessageDialog.
+                    MessageDialog.openError(composite.getShell(), title, message); // $NON-NLS-1$
+                }
+            }, new MessageDialogCustomUI(MessageDialog.ERROR, title, message));
             return;
         }
         // find IRepositoryObject from repository that contains current connection
