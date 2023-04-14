@@ -18,8 +18,6 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.widgets.Button;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -51,7 +49,7 @@ public class ValidationRuleTypeController extends AbstractRepositoryController {
     }
 
     @Override
-    protected Command createButtonCommand(Button button) {
+    protected Command createButtonCommand(IControllerContext button) {
         IElementParameter switchParam = elem.getElementParameter(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
         String paramName = (String) button.getData(PARAMETER_NAME);
         IElementParameter param = elem.getElementParameter(paramName);
@@ -61,7 +59,7 @@ public class ValidationRuleTypeController extends AbstractRepositoryController {
             if (EmfComponent.BUILTIN.equals(propertyType)) {
                 MessageDialog
                         .openWarning(
-                                button.getShell(),
+                                ((StudioControllerContext) button).getShell(),
                                 "Warning",
                                 "The schema type of component has been setted to 'Built-In', please set it to 'Repository' if you want to use the validation rule.");
                 return null;
@@ -69,7 +67,8 @@ public class ValidationRuleTypeController extends AbstractRepositoryController {
 
             ERepositoryObjectType type = ERepositoryObjectType.METADATA_VALIDATION_RULES;
 
-            RepositoryReviewDialog dialog = new RepositoryReviewDialog(button.getShell(), type, param.getRepositoryValue(),
+            RepositoryReviewDialog dialog = new RepositoryReviewDialog(((StudioControllerContext) button).getShell(), type,
+                    param.getRepositoryValue(),
                     new ViewerFilter[] { new ValidationRuleFilter() }, elem);
 
             if (dialog.open() == RepositoryReviewDialog.OK) {
@@ -104,7 +103,7 @@ public class ValidationRuleTypeController extends AbstractRepositoryController {
      * .eclipse.swt.custom.CCombo)
      */
     @Override
-    protected Command createComboCommand(CCombo combo) {
+    protected Command createComboCommand(IControllerContext combo) {
         Connection repositoryConnection = null;
 
         String paramName = (String) combo.getData(PARAMETER_NAME);

@@ -12,17 +12,16 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.properties.controllers;
 
-import org.eclipse.gef.commands.Command;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface IStigmaElementPropertyController {
+public interface IControllerContext {
 
-    void handleWidgetEvent(IControllerContext context);
+    String getText();
 
-    Command createCommand(IControllerContext context);
+    Object getData(String param);
 
-    void executeCommand(Command c);
+    void setData(String param, Object value);
 
 }

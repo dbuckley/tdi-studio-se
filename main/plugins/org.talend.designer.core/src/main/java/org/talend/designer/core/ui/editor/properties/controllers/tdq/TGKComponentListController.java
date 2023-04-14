@@ -46,7 +46,7 @@ public class TGKComponentListController extends ComponentListController {
      * (org.eclipse.gef.commands.Command)
      */
     @Override
-    protected void executeCommand(Command c) {
+    public void executeCommand(Command c) {
         super.executeCommand(c);
         Node source = (Node) elem;
         Node target = null;

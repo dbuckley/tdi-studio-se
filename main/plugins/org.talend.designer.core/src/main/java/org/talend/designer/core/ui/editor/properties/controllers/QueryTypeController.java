@@ -15,34 +15,26 @@ package org.talend.designer.core.ui.editor.properties.controllers;
 import java.util.List;
 
 import org.eclipse.gef.commands.Command;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.DecoratedField;
 import org.eclipse.jface.fieldassist.IControlCreator;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
-import org.talend.core.database.EDatabaseTypeName;
-import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataToolHelper;
-import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.QueriesConnection;
 import org.talend.core.model.metadata.builder.connection.Query;
 import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
 import org.talend.core.model.process.EParameterFieldType;
-import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
-import org.talend.core.model.process.IProcess;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.properties.Item;
@@ -51,14 +43,10 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
-import org.talend.cwm.helper.ConnectionHelper;
-import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
-import org.talend.designer.core.ui.editor.cmd.QueryGuessCommand;
 import org.talend.designer.core.ui.editor.cmd.RepositoryChangeQueryCommand;
-import org.talend.designer.core.ui.editor.connections.TracesConnectionUtils;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.RepositoryNode;
@@ -157,12 +145,12 @@ public class QueryTypeController extends AbstractRepositoryController {
      * .eclipse.swt.widgets.Button)
      */
     @Override
-    protected Command createButtonCommand(Button button) {
+    protected Command createButtonCommand(IControllerContext button) {
         if (button.getData(NAME).equals(GUESS_QUERY_NAME)) {
             return getGuessQueryCommand();
         }
         if (button.getData(NAME).equals(REPOSITORY_CHOICE)) {
-            RepositoryReviewDialog dialog = new RepositoryReviewDialog(button.getShell(),
+            RepositoryReviewDialog dialog = new RepositoryReviewDialog(((StudioControllerContext) button).getShell(),
                     ERepositoryObjectType.METADATA_CON_QUERY, null);
             if (dialog.open() == RepositoryReviewDialog.OK) {
                 RepositoryNode node = dialog.getResult();
@@ -197,7 +185,7 @@ public class QueryTypeController extends AbstractRepositoryController {
      * .eclipse.swt.custom.CCombo)
      */
     @Override
-    protected Command createComboCommand(CCombo combo) {
+    protected Command createComboCommand(IControllerContext combo) {
         String paramName = (String) combo.getData(PARAMETER_NAME);
 
         IElementParameter param = elem.getElementParameter(paramName);

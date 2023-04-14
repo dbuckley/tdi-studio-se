@@ -1199,7 +1199,12 @@ public abstract class AbstractElementPropertySectionController
         return (CommandStack) adapter;
     }
 
-    protected void executeCommand(Command c) {
+    @Override
+    public void handleWidgetEvent(IControllerContext context) {
+    }
+
+    @Override
+    public void executeCommand(Command c) {
         if (c == null) {
             return;
         }
@@ -2899,4 +2904,10 @@ public abstract class AbstractElementPropertySectionController
     protected List<? extends IElementParameter> getPromptParameters(IElement element) {
         return element.getElementParameters();
     }
+
+    @Override
+    public Command createCommand(IControllerContext context) {
+        return null;
+    }
+
 }
