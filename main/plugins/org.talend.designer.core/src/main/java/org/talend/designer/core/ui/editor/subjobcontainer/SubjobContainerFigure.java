@@ -14,16 +14,21 @@ package org.talend.designer.core.ui.editor.subjobcontainer;
 
 import org.eclipse.draw2d.ActionEvent;
 import org.eclipse.draw2d.ActionListener;
+import org.eclipse.draw2d.Border;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FreeformLayout;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+import org.talend.commons.ui.runtime.ITalendThemeService;
 import org.talend.commons.ui.utils.image.ColorUtils;
 import org.talend.commons.ui.utils.workbench.gef.SimpleHtmlFigure;
 import org.talend.core.model.process.IElementParameter;
@@ -34,6 +39,10 @@ import org.talend.designer.core.utils.DesignerColorUtils;
  * DOC nrousseau class global comment. Detailled comment
  */
 public class SubjobContainerFigure extends Figure {
+    
+    
+    protected  Color SUBJOB_BORDER_FG=ITalendThemeService.getColor("SUBJOB_BORDER_FG")
+            .orElse(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 
     protected SubjobContainer subjobContainer;
 
@@ -75,8 +84,8 @@ public class SubjobContainerFigure extends Figure {
      * DOC rdubois Comment method "initFigure".
      */
     protected void initFigure() {
-        outlineFigure = new RoundedRectangle();
-        rectFig = new RoundedRectangle();
+        outlineFigure = new RoundedRectangle();        
+        rectFig = new RoundedRectangle();      
         titleFigure = new SimpleHtmlFigure();
         //titleFigure.setOpaque(true);
         collapseFigure = new SubjobCollapseFigure();
@@ -102,7 +111,8 @@ public class SubjobContainerFigure extends Figure {
         }
         RGB defaultSubjobColor = DesignerColorUtils.getPreferenceSubjobRGB(DesignerColorUtils.SUBJOB_TITLE_COLOR_NAME,
                 DesignerColorUtils.SUBJOB_TITLE_COLOR);
-        if (colorParameter.getValue() == null) {
+        if (colorParameter.getValue() == null || DesignerColorUtils
+                .isForbiddenSubjobColor(EParameterName.SUBJOB_TITLE_COLOR.getName(), (String) colorParameter.getValue())) {
             subjobTitleColor = defaultSubjobColor;
             String colorValue = ColorUtils.getRGBValue(subjobTitleColor);
             colorParameter.setValue(colorValue);
@@ -124,7 +134,6 @@ public class SubjobContainerFigure extends Figure {
     }
 
     public void initializeSubjobContainer(Rectangle rectangle) {
-        disposeColors();
         Point location = this.getLocation();
         collapseFigure.setCollapsed(subjobContainer.isCollapsed());
 
@@ -144,27 +153,16 @@ public class SubjobContainerFigure extends Figure {
         // collapseFigure.setLocation(new Point(rectangle.width - preferedSize.height + location.x, location.y));
         collapseFigure.setLocation(new Point(location.x, location.y));
         collapseFigure.setSize(preferedSize.height, preferedSize.height);
-        // collapseFigure.setBackgroundColor(new Color(null, 50, 50, 250));
+        //collapseFigure.setBackgroundColor(new Color(null, 50, 50, 250));
 
         rectFig.setLocation(new Point(location.x, /* preferedSize.height + */location.y));
         rectFig.setSize(new Dimension(rectangle.width, rectangle.height /*- preferedSize.height*/));
         rectFig.setBackgroundColor(new Color(Display.getDefault(), mainColor));// //////////////////////////
         rectFig.setForegroundColor(new Color(Display.getDefault(), subjobTitleColor));
-    }
-
-    public void disposeColors() {
-        if (rectFig.getForegroundColor() != null && !rectFig.getForegroundColor().isDisposed()) {
-            rectFig.getForegroundColor().dispose();
-        }
-        if (rectFig.getBackgroundColor() != null && !rectFig.getBackgroundColor().isDisposed()) {
-            rectFig.getBackgroundColor().dispose();
-        }
-        if (outlineFigure.getForegroundColor() != null && !outlineFigure.getForegroundColor().isDisposed()) {
-            outlineFigure.getForegroundColor().dispose();
-        }
-        if (outlineFigure.getBackgroundColor() != null && !outlineFigure.getBackgroundColor().isDisposed()) {
-            outlineFigure.getBackgroundColor().dispose();
-        }
+//        if (isJobletContainer()) {
+//            rectFig.setLineAttributes(getLineAttr());
+//            rectFig.setForegroundColor(SUBJOB_BORDER_FG);
+//        }
     }
 
     /**
@@ -262,5 +260,30 @@ public class SubjobContainerFigure extends Figure {
     public void setSize(int w, int h) {
         // TODO Auto-generated method stub
         super.setSize(w, h);
+    }
+    
+    private LineAttributes getLineAttr() {
+        LineAttributes attr = new LineAttributes(2.0f);
+        attr.style = SWT.LINE_SOLID;
+        return attr;
+    }
+    
+    private boolean isJobletContainer() {
+        if (subjobContainer != null && subjobContainer.getSubjobStartNode() != null
+                && (!subjobContainer.getSubjobStartNode().isJoblet())) {
+            return true;
+        }
+        return false;
+    }
+
+    public Border getBorder() {
+        if (isJobletContainer()) {
+            LineBorder lb = new LineBorder();
+            lb.setStyle(SWT.LINE_SOLID);
+            lb.setWidth(2);
+            lb.setColor(SUBJOB_BORDER_FG);
+            return lb;
+        }
+        return super.getBorder();
     }
 }

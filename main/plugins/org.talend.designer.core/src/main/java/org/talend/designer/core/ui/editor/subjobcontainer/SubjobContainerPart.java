@@ -69,16 +69,6 @@ import org.talend.librariesmanager.ui.views.ModulesView;
  */
 public class SubjobContainerPart extends AbstractGraphicalEditPart implements PropertyChangeListener, IAdaptable, NodeEditPart {
 
-    @Override
-    protected void unregisterVisuals() {
-        super.unregisterVisuals();
-        IFigure figure = getFigure();
-        if (figure instanceof SubjobContainerFigure) {
-            ((SubjobContainerFigure) figure).disposeColors();
-        }
-
-    }
-
     /*
      * (non-Javadoc)
      *

@@ -174,22 +174,20 @@ public class DesignerColorsPreferencePage extends FieldEditorPreferencePage impl
                         AbstractTalendEditor talendEditor = pageEditor.getTalendEditor();
                         ProcessPart processPart = talendEditor.getProcessPart();
                         processPart.ajustReadOnly();
-                        changeMRGroupColor(processPart);
+                        changeJobletColor(processPart);
                     }
                 }
             }
         }
     }
 
-    private void changeMRGroupColor(ProcessPart processPart) {
+    private void changeJobletColor(ProcessPart processPart) {
         for (Object o : processPart.getChildren()) {
             if (o instanceof SubjobContainerPart) {
                 for (Object child : ((SubjobContainerPart) o).getChildren()) {
                     if (child instanceof JobletContainerPart) {
                         JobletContainer jCon = (JobletContainer) ((JobletContainerPart) child).getModel();
-                        jCon.setPropertyValue(JobletContainer.UPDATE_JOBLET_DISPLAY, DesignerColorUtils.getPreferenceMRGroupRGB(
-                                DesignerColorUtils.MRGROUP_COLOR_NAME, DesignerColorUtils.MR_COLOR));
-                        jCon.setPropertyValue(JobletContainer.UPDATE_JOBLET_DISPLAY, DesignerColorUtils.getPreferenceMRGroupRGB(
+                        jCon.setPropertyValue(JobletContainer.UPDATE_JOBLET_DISPLAY, DesignerColorUtils.getPreferenceJobletRGB(
                                 DesignerColorUtils.JOBLET_COLOR_NAME, DesignerColorUtils.JOBLET_COLOR));
                     }
                 }

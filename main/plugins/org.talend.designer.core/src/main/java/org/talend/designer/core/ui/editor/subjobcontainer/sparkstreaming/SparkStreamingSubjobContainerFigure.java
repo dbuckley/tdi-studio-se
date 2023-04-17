@@ -160,24 +160,6 @@ public class SparkStreamingSubjobContainerFigure extends SubjobContainerFigure {
 
     }
 
-    @Override
-    public void disposeColors() {
-        super.disposeColors();
-        if (timeoutFigureRect.getForegroundColor() != null && !timeoutFigureRect.getForegroundColor().isDisposed()) {
-            timeoutFigureRect.getForegroundColor().dispose();
-        }
-        if (timeoutFigureRect.getBackgroundColor() != null && !timeoutFigureRect.getBackgroundColor().isDisposed()) {
-            timeoutFigureRect.getBackgroundColor().dispose();
-        }
-
-        if (statsFigureRect.getForegroundColor() != null && !statsFigureRect.getForegroundColor().isDisposed()) {
-            statsFigureRect.getForegroundColor().dispose();
-        }
-        if (statsFigureRect.getBackgroundColor() != null && !statsFigureRect.getBackgroundColor().isDisposed()) {
-            statsFigureRect.getBackgroundColor().dispose();
-        }
-    }
-
     /**
      * yzhang Comment method "updateData".
      */

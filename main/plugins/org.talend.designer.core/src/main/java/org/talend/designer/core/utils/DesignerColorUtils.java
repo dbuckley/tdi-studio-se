@@ -14,7 +14,9 @@ package org.talend.designer.core.utils;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.StringConverter;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
+import org.talend.commons.ui.runtime.ITalendThemeService;
 import org.talend.commons.ui.utils.image.ColorUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.process.EConnectionType;
@@ -35,8 +37,6 @@ public final class DesignerColorUtils {
 
     public static final RGB JOBLET_COLOR = new RGB(130, 240, 100);
 
-    public static final RGB MR_COLOR = new RGB(186, 203, 219);
-
     public static final String SUBJOB_TITLE_COLOR_NAME = "subjobTitleColor"; //$NON-NLS-1$
 
     public static final String SUBJOB_COLOR_NAME = "subjobColor"; //$NON-NLS-1$
@@ -46,8 +46,6 @@ public final class DesignerColorUtils {
     public static final String FORBIDDEN_SUBJOB_COLOR = "forbiddenSubjobColor";
     
     public static final String FORBIDDEN_SUBJOB_TITLECOLOR = "forbiddenSubjobTitleColor";
-    
-    public static final String MRGROUP_COLOR_NAME = "mrgroupColor"; //$NON-NLS-1$
 
     public static final String JOBDESIGNER_EGITOR_BACKGROUND_COLOR_NAME = "jobDesignerBackgroundColor"; //$NON-NLS-1$
 
@@ -85,18 +83,21 @@ public final class DesignerColorUtils {
         }
 
         // background
+        Color jobDesignerBackgroundColor = ITalendThemeService.getColor(JOBDESIGNER_EGITOR_BACKGROUND_COLOR_NAME).orElse(new Color(DesignerColorUtils.DEFAULT_EDITOR_COLOR));
         store.setDefault(DesignerColorUtils.JOBDESIGNER_EGITOR_BACKGROUND_COLOR_NAME,
-                StringConverter.asString(DesignerColorUtils.DEFAULT_EDITOR_COLOR));
+                StringConverter.asString(jobDesignerBackgroundColor.getRGB()));
+        Color readOnlyBackgroundColor = ITalendThemeService.getColor(READONLY_BACKGROUND_COLOR_NAME).orElse(new Color(DesignerColorUtils.DEFAULT_READONLY_COLOR));
         store.setDefault(DesignerColorUtils.READONLY_BACKGROUND_COLOR_NAME,
-                StringConverter.asString(DesignerColorUtils.DEFAULT_READONLY_COLOR));
+                StringConverter.asString(readOnlyBackgroundColor.getRGB()));
         // subjob
-        store.setDefault(DesignerColorUtils.SUBJOB_COLOR_NAME, StringConverter.asString(DesignerColorUtils.SUBJOB_COLOR));
+        Color subjobColor = ITalendThemeService.getColor(SUBJOB_COLOR_NAME).orElse(new Color(DesignerColorUtils.SUBJOB_COLOR));
+        store.setDefault(DesignerColorUtils.SUBJOB_COLOR_NAME, StringConverter.asString(subjobColor.getRGB()));
+        Color subjobTitleColor = ITalendThemeService.getColor(SUBJOB_TITLE_COLOR_NAME).orElse(new Color(DesignerColorUtils.SUBJOB_TITLE_COLOR));
         store.setDefault(DesignerColorUtils.SUBJOB_TITLE_COLOR_NAME,
-                StringConverter.asString(DesignerColorUtils.SUBJOB_TITLE_COLOR));
-        // mr
-        store.setDefault(DesignerColorUtils.JOBLET_COLOR_NAME, StringConverter.asString(DesignerColorUtils.JOBLET_COLOR));
-        // mr
-        store.setDefault(DesignerColorUtils.MRGROUP_COLOR_NAME, StringConverter.asString(DesignerColorUtils.MR_COLOR));
+                StringConverter.asString(subjobTitleColor.getRGB()));
+        // Joblet
+        Color jobletColor = ITalendThemeService.getColor(JOBLET_COLOR_NAME).orElse(new Color(DesignerColorUtils.JOBLET_COLOR));
+        store.setDefault(DesignerColorUtils.JOBLET_COLOR_NAME, StringConverter.asString(jobletColor.getRGB()));
         // connection
         for (EConnectionType connType : EConnectionType.values()) {
             store.setDefault(getPreferenceConnectionName(connType), StringConverter.asString(connType.getRGB()));
@@ -138,10 +139,7 @@ public final class DesignerColorUtils {
         return false;
     }
 
-    public static RGB getPreferenceMRGroupRGB(String name, RGB defaultColor) {
-        if (name == null || defaultColor == null || !name.equals(MRGROUP_COLOR_NAME)) {
-            return MR_COLOR;
-        }
+    public static RGB getPreferenceJobletRGB(String name, RGB defaultColor) {
         String colorStr = DesignerPlugin.getDefault().getPreferenceStore().getString(name);
         return ColorUtils.parseStringToRGB(colorStr, defaultColor);
     }

@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.draw2d.ActionEvent;
 import org.eclipse.draw2d.ActionListener;
+import org.eclipse.draw2d.Border;
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FreeformLayout;
@@ -22,9 +23,13 @@ import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
+import org.talend.commons.ui.runtime.ITalendThemeService;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
@@ -46,6 +51,18 @@ public class JobletContainerFigure extends Figure {
     public static final String KEY_REDUCE = "reduce_"; //$NON-NLS-1$
 
     public static final String KEY_MAP = "map_"; //$NON-NLS-1$
+    
+    protected Color JOBLET_NORMAL_BG=ITalendThemeService.getColor("JOBLET_NORMAL_BG")
+            .orElse(Display.getDefault().getSystemColor(SWT.COLOR_GREEN));
+    
+    protected Color JOBLET_HIDDEN_BG=ITalendThemeService.getColor("JOBLET_HIDDEN_BG")
+            .orElse(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+    
+    protected Color JOBLET_PROBLEM_BG=ITalendThemeService.getColor("JOBLET_PROBLEM_BG")
+            .orElse(Display.getDefault().getSystemColor(SWT.COLOR_RED));
+    
+    protected Color JOBLET_BORDER_FG=ITalendThemeService.getColor("JOBLET_BORDER_FG")
+            .orElse(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
 
     private ImageFigure errorFigure, warningFigure;
 
@@ -69,13 +86,13 @@ public class JobletContainerFigure extends Figure {
 
     private String title;
 
-    private RGB red = new RGB(250, 72, 80);
+    private RGB problemBG = JOBLET_PROBLEM_BG.getRGB();
 
-    private RGB green = new RGB(130, 240, 100);
+    private RGB normalBG = JOBLET_NORMAL_BG.getRGB();
 
-    private RGB mrGroupColor = null;
+    private RGB jobletColor = null;
 
-    private RGB white = new RGB(255, 255, 255);
+    private RGB hiddenBG = JOBLET_HIDDEN_BG.getRGB();
 
     private Map<String, SimpleHtmlFigure> mrFigures = new HashMap<String, SimpleHtmlFigure>();
 
@@ -106,6 +123,7 @@ public class JobletContainerFigure extends Figure {
         outlineFigure = new RoundedRectangle();
         rectFig = new GreenRectangle();
         rectFig.setAlpha(ALPHA_VALUE);
+        
         titleFigure = new SimpleHtmlFigure();
         collapseFigure = new JobletCollapseFigure();
 
@@ -187,6 +205,12 @@ public class JobletContainerFigure extends Figure {
             }
         }
     }
+    
+    private LineAttributes getLineAttr() {
+        LineAttributes attr = new LineAttributes(2.0f);
+        attr.style = SWT.LINE_DASH;
+        return attr;
+    }
 
     /*
      * (non-Javadoc)
@@ -247,12 +271,12 @@ public class JobletContainerFigure extends Figure {
 
             if (rectFig != null) {
                 if (isSubjobDisplay) {
-                    Color color = ColorUtils.getCacheColor(mrGroupColor);
+                    Color color = ColorUtils.getCacheColor(jobletColor);
                     if (rectFig.getBackgroundColor() == null || !rectFig.getBackgroundColor().equals(color)) {
                         rectFig.setBackgroundColor(color);
                     }
                 } else {
-                    Color color = ColorUtils.getCacheColor(white);
+                    Color color = ColorUtils.getCacheColor(hiddenBG);
                     if (rectFig.getBackgroundColor() == null || !rectFig.getBackgroundColor().equals(color)) {
                         rectFig.setBackgroundColor(color);
                     }
@@ -353,20 +377,20 @@ public class JobletContainerFigure extends Figure {
         lastJobletRedState = isRed;
         if (isSubjobDisplay) {
             if (isRed && rectFig != null) {
-                rectFig.setBackgroundColor(ColorUtils.getCacheColor(red));
+                rectFig.setBackgroundColor(ColorUtils.getCacheColor(problemBG));
             } else if (rectFig != null) {
-                rectFig.setBackgroundColor(ColorUtils.getCacheColor(green));
+                rectFig.setBackgroundColor(ColorUtils.getCacheColor(normalBG));
             }
         } else {
             if (rectFig != null) {
-                rectFig.setBackgroundColor(ColorUtils.getCacheColor(white));
+                rectFig.setBackgroundColor(ColorUtils.getCacheColor(hiddenBG));
             }
         }
 
         if (isRed && outlineFigure != null) {
-            outlineFigure.setBackgroundColor(ColorUtils.getCacheColor(red));
+            outlineFigure.setBackgroundColor(ColorUtils.getCacheColor(problemBG));
         } else if (outlineFigure != null) {
-            outlineFigure.setBackgroundColor(ColorUtils.getCacheColor(green));
+            outlineFigure.setBackgroundColor(ColorUtils.getCacheColor(normalBG));
         }
 
         if (!jobletContainer.isCollapsed()) {
@@ -402,7 +426,8 @@ public class JobletContainerFigure extends Figure {
 
         outlineFigure.setLocation(new Point(location.x, location.y));
         outlineFigure.setVisible(showTitle);
-        outlineFigure.setForegroundColor(ColorUtils.getCacheColor(new RGB(220, 120, 120)));
+        outlineFigure.setLineAttributes(getLineAttr());
+        outlineFigure.setForegroundColor(JOBLET_BORDER_FG);
         outlineFigure.setSize(rectangle.width, preferedSize.height);
 
         refreshMRFigures();
@@ -472,26 +497,26 @@ public class JobletContainerFigure extends Figure {
         if (this.jobletContainer.getNode().isJoblet()) {
             if (new JobletUtil().isRed(this.jobletContainer)) {
                 if (isSubjobDisplay) {
-                    rectFig.setBackgroundColor(ColorUtils.getCacheColor(red));
+                    rectFig.setBackgroundColor(ColorUtils.getCacheColor(problemBG));
                 } else {
-                    rectFig.setBackgroundColor(ColorUtils.getCacheColor(white));
+                    rectFig.setBackgroundColor(ColorUtils.getCacheColor(hiddenBG));
                 }
-                outlineFigure.setBackgroundColor(ColorUtils.getCacheColor(red));
+                outlineFigure.setBackgroundColor(ColorUtils.getCacheColor(problemBG));
             } else {
                 if (isSubjobDisplay) {
-                    rectFig.setBackgroundColor(ColorUtils.getCacheColor(green));
+                    rectFig.setBackgroundColor(ColorUtils.getCacheColor(normalBG));
                 } else {
-                    rectFig.setBackgroundColor(ColorUtils.getCacheColor(white));
+                    rectFig.setBackgroundColor(ColorUtils.getCacheColor(hiddenBG));
                 }
-                outlineFigure.setBackgroundColor(ColorUtils.getCacheColor(green));
+                outlineFigure.setBackgroundColor(ColorUtils.getCacheColor(normalBG));
             }
         } else {
             if (isSubjobDisplay) {
-                rectFig.setBackgroundColor(ColorUtils.getCacheColor(mrGroupColor));
+                rectFig.setBackgroundColor(ColorUtils.getCacheColor(jobletColor));
             } else {
-                rectFig.setBackgroundColor(ColorUtils.getCacheColor(white));
+                rectFig.setBackgroundColor(ColorUtils.getCacheColor(hiddenBG));
             }
-            outlineFigure.setBackgroundColor(ColorUtils.getCacheColor(mrGroupColor));
+            outlineFigure.setBackgroundColor(ColorUtils.getCacheColor(jobletColor));
             // progressFigure.setBackgroundColor(new Color(Display.getDefault(), red));
             if (!this.jobletContainer.getNode().isMapReduceStart()) {
                 rectFig.setVisible(false);
@@ -506,7 +531,7 @@ public class JobletContainerFigure extends Figure {
                 rectFig.setForegroundColor(ColorUtils.getCacheColor(new RGB(220, 120, 120)));
             }
         } else {
-            rectFig.setForegroundColor(ColorUtils.getCacheColor(white));
+            rectFig.setForegroundColor(ColorUtils.getCacheColor(hiddenBG));
         }
         markFigure.setSize(errorMarkImage.getImageData().width, errorMarkImage.getImageData().height);
     }
@@ -787,22 +812,12 @@ public class JobletContainerFigure extends Figure {
     }
 
     private void initJobletContainerColor() {
-        if (this.jobletContainer.getNode().isMapReduce()) {
-            RGB defaultSubjobColor = DesignerColorUtils.getPreferenceMRGroupRGB(DesignerColorUtils.MRGROUP_COLOR_NAME,
-                    DesignerColorUtils.MR_COLOR);
-            if (defaultSubjobColor != null) {
-                mrGroupColor = defaultSubjobColor;
-            } else {
-                mrGroupColor = green;
-            }
+        RGB defaultSubjobColor = DesignerColorUtils.getPreferenceJobletRGB(DesignerColorUtils.JOBLET_COLOR_NAME,
+                DesignerColorUtils.JOBLET_COLOR);
+        if (defaultSubjobColor != null) {
+            jobletColor = defaultSubjobColor;
         } else {
-            RGB defaultSubjobColor = DesignerColorUtils.getPreferenceMRGroupRGB(DesignerColorUtils.JOBLET_COLOR_NAME,
-                    DesignerColorUtils.JOBLET_COLOR);
-            if (defaultSubjobColor != null) {
-                mrGroupColor = defaultSubjobColor;
-            } else {
-                mrGroupColor = green;
-            }
+            jobletColor = normalBG;
         }
     }
 
@@ -872,6 +887,14 @@ public class JobletContainerFigure extends Figure {
 
     public void setShowCompareMark(boolean showCompareMark) {
         this.showCompareMark = showCompareMark;
+    }
+    
+    public Border getBorder() {
+        LineBorder lb = new LineBorder();
+        lb.setStyle(SWT.LINE_DASH);
+        lb.setWidth(2);
+        lb.setColor(JOBLET_BORDER_FG);
+        return  lb;
     }
 
     public void setInfoHint(String hintText) {
