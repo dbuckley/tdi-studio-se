@@ -583,6 +583,7 @@ public class RunProcessContext {
             prs.checkDifferenceWithRepository();
             synContext(getSelectedContext(), process.getContextManager().getDefaultContext());
         }
+        
         checkTraces();
 
         if (ProcessContextComposite.promptConfirmLauch(shell, getSelectedContext(), process)) {
