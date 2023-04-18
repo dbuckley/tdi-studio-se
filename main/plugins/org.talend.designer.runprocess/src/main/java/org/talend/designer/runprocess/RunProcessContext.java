@@ -794,6 +794,10 @@ public class RunProcessContext {
     }
 
     private void synContext(IContext selectedContextToUpdate, IContext updatedContext) {
+        if(!selectedContextToUpdate.getName().equals(updatedContext.getName())) {
+            return;
+        }
+        
         List<IContextParameter> contextParameterList = updatedContext.getContextParameterList();
         for(IContextParameter contextParam: contextParameterList) {
             IContextParameter contextParameter = selectedContextToUpdate.getContextParameter(contextParam.getSource(), contextParam.getName());
