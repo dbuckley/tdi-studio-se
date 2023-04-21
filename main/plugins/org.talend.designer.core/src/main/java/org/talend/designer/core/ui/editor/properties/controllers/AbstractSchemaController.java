@@ -78,7 +78,9 @@ import org.talend.core.repository.model.repositoryObject.MetadataTableRepository
 import org.talend.core.repository.seeker.RepositorySeekerManager;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.ui.CoreUIPlugin;
+import org.talend.core.ui.metadata.dialog.IMetadataDialog;
 import org.talend.core.ui.metadata.dialog.MetadataDialog;
+import org.talend.core.ui.metadata.dialog.MetadataDialogCustomUI;
 import org.talend.core.ui.metadata.dialog.MetadataDialogForMerge;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.cwm.helper.ConnectionHelper;
@@ -790,7 +792,7 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                 outputReadOnly = true;
             }
             // create the MetadataDialog
-            MetadataDialog metaDialog = null;
+            IMetadataDialog metaDialog = null;
             if (inputMetadata != null) {
                 if (inputInfos != null && inputInfos.size() > 1 && connectionName == null) {
                     MetadataDialogForMerge metaDialogForMerge = new MetadataDialogForMerge(composite.getShell(), inputInfos,
@@ -867,9 +869,12 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                             getCommandStack());
                 }
             } else {
-                metaDialog = new MetadataDialog(composite.getShell(), outputMetaCopy, node, getCommandStack());
+//                metaDialog = new MetadataDialog(composite.getShell(), outputMetaCopy, node, getCommandStack());
             }
 
+            MetadataDialogCustomUI ui = new MetadataDialogCustomUI(outputMetaCopy);
+            ui.setText("Hello world");
+            TalendUI.get().runInStigma(ui);
             if (metaDialog != null) {
                 metaDialog.setText(Messages.getString("AbstractSchemaController.schema.title", node.getLabel())); //$NON-NLS-1$
                 metaDialog.setInputReadOnly(inputReadOnly);

@@ -83,6 +83,10 @@ public class DynamicPropertyGenerator {
         }
     }
 
+    public boolean isInitialized() {
+        return this.initialized;
+    }
+
     /**
      * DOC yzhang Comment method "getController".
      *
