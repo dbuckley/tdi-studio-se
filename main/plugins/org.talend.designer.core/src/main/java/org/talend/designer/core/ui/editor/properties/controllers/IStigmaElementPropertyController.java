@@ -25,4 +25,6 @@ public interface IStigmaElementPropertyController {
 
     void executeCommand(Command c);
 
+    String getControllerName();
+
 }

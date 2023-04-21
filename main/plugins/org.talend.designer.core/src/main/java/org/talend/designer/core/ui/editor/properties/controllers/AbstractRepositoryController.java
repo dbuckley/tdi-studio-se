@@ -263,6 +263,16 @@ public abstract class AbstractRepositoryController extends AbstractElementProper
         executeCommand(cmd);
     }
 
+    @Override
+    public void handleWidgetEvent(IControllerContext context) {
+        // TODO: judge Button or CCombo
+        Command cmd = createButtonCommand(context);
+        if (cmd instanceof ChangeMetadataCommand) {
+            ((ChangeMetadataCommand) cmd).setConnection(getConnection());
+        }
+        executeCommand(cmd);
+    }
+
     /**
      *
      * DOC wzhang Comment method "getConnection".

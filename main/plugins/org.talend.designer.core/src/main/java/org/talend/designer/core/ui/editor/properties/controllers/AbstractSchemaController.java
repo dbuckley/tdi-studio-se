@@ -129,6 +129,11 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
     }
 
     @Override
+    public String getControllerName() {
+        return SCHEMA;
+    }
+
+    @Override
     public Control createControl(Composite subComposite, IElementParameter param, int numInRow, int nbInRow, int top,
             Control lastControl) {
         this.curParameter = param;

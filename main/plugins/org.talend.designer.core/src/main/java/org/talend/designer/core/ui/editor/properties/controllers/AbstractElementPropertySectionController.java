@@ -199,12 +199,12 @@ public abstract class AbstractElementPropertySectionController
     protected static final String VARIABLE_TOOLTIP = Messages
             .getString("AbstractElementPropertySectionController.variableTooltip"); //$NON-NLS-1$
 
-    protected static final String NAME = "NAME"; //$NON-NLS-1$
+    public static final String NAME = "NAME"; //$NON-NLS-1$
 
     protected static final String COLUMN = "COLUMN"; //$NON-NLS-1$
 
     // PTODO qzhang use PARAMETER_NAME it for bug 853.
-    protected static final String PARAMETER_NAME = TypedTextCommandExecutor.PARAMETER_NAME;
+    public static final String PARAMETER_NAME = TypedTextCommandExecutor.PARAMETER_NAME;
 
     protected static final int MAX_PERCENT = 100;
 
@@ -1201,6 +1201,11 @@ public abstract class AbstractElementPropertySectionController
 
     @Override
     public void handleWidgetEvent(IControllerContext context) {
+    }
+
+    @Override
+    public String getControllerName() {
+        return null;
     }
 
     @Override
