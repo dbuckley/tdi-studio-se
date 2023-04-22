@@ -641,7 +641,7 @@ public class RunProcessContext {
                                             // job doesn't verify if code is
                                             // correct
                                             // before launching
-                                            if (!JobErrorsChecker.hasErrors(shell)) {
+                                            if (isRemoteRun || !JobErrorsChecker.hasErrors(shell)) {
                                                 ps = processor
                                                         .run(getStatisticsPort(), getTracesPort(), watchParam,
                                                                 log4jRuntimeLevel, progressMonitor,
