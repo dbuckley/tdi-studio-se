@@ -13,6 +13,7 @@
 package org.talend.repository.preference;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -78,6 +79,9 @@ public class TosTokenCollector extends AbstractTokenCollector {
     private static final String NODE_CAMEL_COMPONENTS = "camel.components";
 
     private static final String NODE_CUSTOM_CAMEL_COMPONENTS = "custom.camel.components";
+    
+    //data service components used in DI jobs
+    private static final List<String> dsComponentsInDIJobs = Arrays.asList("tESBProviderRequest","tRESTRequest");
 
     /**
      * ggu JobTokenCollector constructor comment.
@@ -117,6 +121,7 @@ public class TosTokenCollector extends AbstractTokenCollector {
 
         JSONObject repoStats = new JSONObject();
         // metadata
+        Integer nbdssoap = 0;
         for (DynaEnum type : ERepositoryObjectType.values()) {
             if (type instanceof ERepositoryObjectType && ((ERepositoryObjectType) type).isResourceItem()) {
                 try {
@@ -164,9 +169,19 @@ public class TosTokenCollector extends AbstractTokenCollector {
                         if (ERepositoryObjectType.getAllTypesOfProcess().contains(type)) {
                             JSONObject jobDetails = new JSONObject();
                             collectJobDetails(all, jobDetails, type);
+                            
+                            if (ERepositoryObjectType.PROCESS.equals(type)) {
+                                typeStats.put("nbwithoutds", jobDetails.get("nbwithoutds")); //$NON-NLS-1$
+                                jobDetails.remove("nbwithoutds"); //$NON-NLS-1$
+                                typeStats.put("nbds", jobDetails.get("nbds")); //$NON-NLS-1$                                
+                                jobDetails.remove("nbds"); //$NON-NLS-1$
+                                nbdssoap = (Integer)jobDetails.get("nbdssoap"); //$NON-NLS-1$
+                                jobDetails.remove("nbdssoap"); //$NON-NLS-1$
+                            }
+                           
                             typeStats.put("details", jobDetails); //$NON-NLS-1$
                         }
-
+                        
                         if (ERepositoryObjectType.ROUTINES.equals(type)
                                 || ((ERepositoryObjectType) type).getFolder().startsWith("metadata/") //$NON-NLS-1$
                                 || ERepositoryObjectType.CONTEXT.equals(type) || type.equals(ERepositoryObjectType.JOBLET)) {
@@ -203,6 +218,8 @@ public class TosTokenCollector extends AbstractTokenCollector {
                 }
             }
         }
+        JSONObject serviceJson = (JSONObject)repoStats.get("SERVICES");
+        serviceJson.put("nbdssoap", nbdssoap);
         jObject.put(PROJECTS.getKey(), repoStats); //$NON-NLS-1$
         jObject.put(TYPE.getKey(), ProjectManager.getInstance().getProjectType(currentProject));
         int nbRef = ProjectManager.getInstance().getAllReferencedProjects().size();
@@ -240,13 +257,18 @@ public class TosTokenCollector extends AbstractTokenCollector {
 
         int contextVarsNum = 0;
         int nbComponentsUsed = 0;
+        int pureDIJobs = 0; // nb of PROCESS without (tESBProviderRequest, tRESTRequest)
+        List<String> soapWsdlWithImpl = new ArrayList<String>();
+        int restJobInDIJob = 0;
         Map<String, JSONObject> camelComponentMap = new HashMap<>();
         Map<String, JSONObject> customCamelComponentMap = new HashMap<>();
         for (IRepositoryViewObject rvo : allRvo) {
+            boolean has_tRestRequest = false;
+            boolean has_tESBProviderRequest = false;
+            boolean has_tESBProviderRequest_Or_tRESTRequest = false;
             Item item = rvo.getProperty().getItem();
             if (item instanceof ProcessItem) {
                 ProcessType processType = ((ProcessItem) item).getProcess();
-
                 for (NodeType node : (List<NodeType>) processType.getNode()) {
                     JSONObject component_names = null;
                     String componentName = node.getComponentName();
@@ -266,6 +288,36 @@ public class TosTokenCollector extends AbstractTokenCollector {
                     component_names.put("component_name", componentName);
                     component_names.put("count", nbComp + 1);
 
+                    if (dsComponentsInDIJobs.contains(componentName)) {
+                        has_tESBProviderRequest_Or_tRESTRequest = true;
+                        if ("tRESTRequest".equals(componentName) && !has_tRestRequest) {
+                            // Only one tRESTRequest is allowed in one job because more than one tRESTRequest will cause compile error. but give a double check here.
+                            has_tRestRequest = true;
+                            
+                            restJobInDIJob++;
+                        } 
+                        if ("tESBProviderRequest".equals(componentName) && !has_tESBProviderRequest) {
+                            //  Only one tESBProviderRequest is allowed in one job more than one tESBProviderRequest will cause compile error. but give a double check here.
+                            has_tESBProviderRequest = true;
+                            
+                            EList elementParameter = node.getElementParameter();
+                            for (Object obj : elementParameter) {
+                                if (obj instanceof ElementParameterType) {
+                                    ElementParameterType ep = (ElementParameterType) obj;
+                                    if (ep.getName().equalsIgnoreCase("PROPERTY:REPOSITORY_PROPERTY_TYPE")) {
+                                        String value = ep.getValue();
+                                        // get serviceId from "serviceId - portId - operationId"
+                                        String serviceId = value.substring(0, value.indexOf(" - "));
+                                        if (!soapWsdlWithImpl.contains(serviceId)) {
+                                            soapWsdlWithImpl.add(serviceId);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
                     if (TARGET_COMPONENT.equals(componentName)
                             && (type == ERepositoryObjectType.PROCESS_ROUTE || type == ERepositoryObjectType.PROCESS_ROUTELET)) {
 
@@ -322,6 +374,10 @@ public class TosTokenCollector extends AbstractTokenCollector {
                 }
 
             }
+            
+            if (!has_tESBProviderRequest_Or_tRESTRequest) {
+                pureDIJobs++;
+            }
             if (factory.getStatus(item) != ERepositoryStatus.LOCK_BY_USER && !idsOpened.contains(item.getProperty().getId())) {
                 // job is not locked and not opened by editor, so we can unload.
                 if (item.getParent() instanceof FolderItem) {
@@ -337,6 +393,15 @@ public class TosTokenCollector extends AbstractTokenCollector {
         jobDetails.put("components", components);
         jobDetails.put("nb.contextVars", contextVarsNum);
         jobDetails.put("nb.components", nbComponentsUsed);
+        if (ERepositoryObjectType.PROCESS.equals(type)) {
+            // will be moved to upper hierarchy：/projects.repository/PROCESS/nbwithoutds
+            jobDetails.put("nbwithoutds", pureDIJobs);
+            // nb of Data Services: 
+            // (nb PROCESS with (tRESTRequest)) + (nb Services (SOAP WSDL) with at least one operation implemented as job with tESBProviderRequest)
+            jobDetails.put("nbds", restJobInDIJob + soapWsdlWithImpl.size());
+            // nb Services (SOAP WSDL) with at least one operation implemented as job with tESBProviderRequest
+            jobDetails.put("nbdssoap", soapWsdlWithImpl.size());
+        }
     }
 
     private void record(JSONArray componentsArray, Map<String, JSONObject> camelComponentMap, String component) {
