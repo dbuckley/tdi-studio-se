@@ -82,7 +82,15 @@ public class TosTokenCollector extends AbstractTokenCollector {
     
     //data service components used in DI jobs
     private static final List<String> dsComponentsInDIJobs = Arrays.asList("tESBProviderRequest","tRESTRequest");
+    
+    private static final List<String> tDBComponentNameList = Arrays.asList("tDB2Input", "tDB2Output", "tDB2Connection",
+            "tMSSqlInput", "tMSSqlOutput", "tMSSqlConnection", "tMysqlInput", "tMysqlOutput", "tMysqlConnection",
+            "tOracleInput", "tOracleOutput", "tOracleConnection", "tPostgresqlInput", "tPostgresqOutput",
+            "tPostgresqConnection", "tAmazonAuroraInput", "tAmazonAuroraOutput", "tAmazonAuroraConnection",
+            "cSQLConnection");
 
+    private static final List<String> JDBCComponentNameList = Arrays.asList("tDeltaLakeInput","tDeltaLakeConnection","tDeltaLakeOutput",
+            "tJDBCInput","tJDBCOutput","tJDBCConnection","tSingleStoreInput","tSingleStoreOutput","tSingleStoreConnection");
     /**
      * ggu JobTokenCollector constructor comment.
      */
@@ -230,6 +238,15 @@ public class TosTokenCollector extends AbstractTokenCollector {
         return jObject;
     }
 
+    private void addCountInComponent(String key, JSONObject component_names) throws JSONException {
+        if (component_names.has(key)) {
+            component_names.put(key,
+                    ((Integer) component_names.get(key)) + 1);
+        } else {
+            component_names.put(key, 1);
+        }
+    }
+    
     /**
      * DOC nrousseau Comment method "collectJobDetails".
      *
@@ -263,11 +280,11 @@ public class TosTokenCollector extends AbstractTokenCollector {
         Map<String, JSONObject> camelComponentMap = new HashMap<>();
         Map<String, JSONObject> customCamelComponentMap = new HashMap<>();
         for (IRepositoryViewObject rvo : allRvo) {
-            boolean has_tRestRequest = false;
-            boolean has_tESBProviderRequest = false;
-            boolean has_tESBProviderRequest_Or_tRESTRequest = false;
             Item item = rvo.getProperty().getItem();
             if (item instanceof ProcessItem) {
+                boolean has_tRestRequest = false;
+                boolean has_tESBProviderRequest = false;
+                boolean has_tESBProviderRequest_Or_tRESTRequest = false;
                 ProcessType processType = ((ProcessItem) item).getProcess();
                 for (NodeType node : (List<NodeType>) processType.getNode()) {
                     JSONObject component_names = null;
@@ -288,16 +305,18 @@ public class TosTokenCollector extends AbstractTokenCollector {
                     component_names.put("component_name", componentName);
                     component_names.put("count", nbComp + 1);
 
+                    extractRuntimeFeature(node, component_names, componentName);
+                    
                     if (dsComponentsInDIJobs.contains(componentName)) {
                         has_tESBProviderRequest_Or_tRESTRequest = true;
                         if ("tRESTRequest".equals(componentName) && !has_tRestRequest) {
-                            // Only one tRESTRequest is allowed in one job because more than one tRESTRequest will cause compile error. but give a double check here.
+                            // More than one tRESTRequest will cause compile error, but save operation is allowed. So give a double check here.
                             has_tRestRequest = true;
                             
                             restJobInDIJob++;
                         } 
                         if ("tESBProviderRequest".equals(componentName) && !has_tESBProviderRequest) {
-                            //  Only one tESBProviderRequest is allowed in one job more than one tESBProviderRequest will cause compile error. but give a double check here.
+                           // More than one tESBProviderRequest will cause compile error, but save operation is allowed. So give a double check here.
                             has_tESBProviderRequest = true;
                             
                             EList elementParameter = node.getElementParameter();
@@ -372,12 +391,12 @@ public class TosTokenCollector extends AbstractTokenCollector {
                     ContextType contextType = (ContextType) contexts.get(0);
                     contextVarsNum += contextType.getContextParameter().size();
                 }
-
+                if (!has_tESBProviderRequest_Or_tRESTRequest) {
+                    pureDIJobs++;
+                }
             }
             
-            if (!has_tESBProviderRequest_Or_tRESTRequest) {
-                pureDIJobs++;
-            }
+
             if (factory.getStatus(item) != ERepositoryStatus.LOCK_BY_USER && !idsOpened.contains(item.getProperty().getId())) {
                 // job is not locked and not opened by editor, so we can unload.
                 if (item.getParent() instanceof FolderItem) {
@@ -401,6 +420,89 @@ public class TosTokenCollector extends AbstractTokenCollector {
             jobDetails.put("nbds", restJobInDIJob + soapWsdlWithImpl.size());
             // nb Services (SOAP WSDL) with at least one operation implemented as job with tESBProviderRequest
             jobDetails.put("nbdssoap", soapWsdlWithImpl.size());
+        }
+    }
+
+    private void extractRuntimeFeature(NodeType node, JSONObject component_names, String componentName)
+            throws JSONException {
+        if (tDBComponentNameList.contains(componentName)) { 
+            EList elementParameter = node.getElementParameter();
+            for (Object obj : elementParameter) {
+                if (obj instanceof ElementParameterType) {
+                    ElementParameterType ep = (ElementParameterType) obj;
+                    if ((ep.getName().equals("SPECIFY_DATASOURCE_ALIAS")
+                            || (componentName.equals("cSQLConnection")
+                                    && ep.getName().equals("USE_DATA_SOURCE_ALIAS"))) && ep.getValue().equals("true")) {
+                        addCountInComponent("count_use_datasource_alias", component_names);
+                    }
+                }
+            }
+        }
+        
+        if (JDBCComponentNameList.contains(componentName)) {
+            EList elementParameter = node.getElementParameter();
+            for (Object obj : elementParameter) {
+                if (obj instanceof ElementParameterType) {
+                    ElementParameterType ep = (ElementParameterType) obj;
+                    if ((ep.getName().equals("PROPERTIES"))) {
+                        JSONObject properties = new JSONObject(ep.getValue());
+                        JSONObject useDs = (JSONObject) properties.get("useDataSource");
+                        JSONObject storedValue = (JSONObject) useDs.get("storedValue");
+                        Object value = storedValue.get("value");
+                        if(value.equals(true)) {
+                            addCountInComponent("count_use_datasource_alias", component_names);
+                        }
+                    }
+                }
+            }
+        }
+        // cREST, tRESTRequest, tRESTClient
+        if (Arrays.asList("cREST", "tRESTRequest", "tRESTClient").contains(componentName)) {
+            EList elementParameter = node.getElementParameter();
+            boolean useAuthentication = false;
+            for (Object obj : elementParameter) {
+                if (obj instanceof ElementParameterType) {
+                    ElementParameterType ep = (ElementParameterType) obj;
+                    // check if service locator is used
+                    if (ep.getName().equals("SERVICE_LOCATOR") && ep.getValue().equals("true")) {
+                        addCountInComponent("count_use_service_locator", component_names);
+                    }
+                    // check if service activity monitoring is used
+                    if (ep.getName().equals("SERVICE_ACTIVITY_MONITOR") && ep.getValue().equals("true")) {
+                        addCountInComponent("count_use_service_activity_monitoring", component_names);
+                    }
+                    // check if authentication is used.
+                    if (("cREST".equals(componentName) && ep.getName().equals("ENABLE_SECURITY") && ep.getValue().equals("true"))
+                            || ((Arrays.asList("tRESTRequest", "tRESTClient").contains(componentName) && ep.getName().equals("NEED_AUTH")
+                                    && ep.getValue().equals("true")))) {
+                        useAuthentication = true;
+                    }
+                    // get authentication type
+                    if (useAuthentication
+                            && ((("cREST".equals(componentName) && ep.getName().equals("SECURITY_TYPE"))
+                                    || ((Arrays.asList("tRESTRequest", "tRESTClient").contains(componentName) && ep.getName().equals("AUTH_TYPE")))))) {
+                        if (ep.getValue().equals("SAML")) {
+                            addCountInComponent("count_use_authent_SAML_token", component_names);
+                        }
+                        
+                        if (ep.getValue().equals("BASIC")) {
+                            addCountInComponent("count_use_authent_http_basic", component_names);
+                        }
+                        // check if use authent Open ID connect is used
+                        if (ep.getValue().equals("OIDC") || ep.getValue().equals("OIDC_PASSWORD_GRANT")) {
+                            addCountInComponent("count_use_authent_Open_ID_connect", component_names);
+                        }
+                        
+                        if(ep.getValue().equals("OAUTH2_BEARER")) {
+                            addCountInComponent("count_use_OAuther2_Bearer", component_names);
+                        }
+                        
+                        if(ep.getValue().equals("HTTP Digest")) {
+                            addCountInComponent("count_use_authent_http_digest", component_names);
+                        }
+                    }
+                }
+            }
         }
     }
 
