@@ -928,19 +928,7 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                                             node, getCommandStack());
                                 }
 
-                            }, new UnsupportedCustomUI<IMetadataDialog>(IMetadataDialog.class.getCanonicalName(),
-                                    new IMetadataDialog() {
-
-                                        @Override
-                                        public int open() {
-                                            return 0;
-                                        }
-
-                                        @Override
-                                        public int getOpenResult() {
-                                            throw new UnsupportedOperationException();
-                                        }
-                                    }));
+                            }, new MetadataDialogCustomUI(inputMetaCopyFinal, outputMetaCopyFinal));
                 }
             } else {
                 IMetadataTable outputMetaCopyFinal = outputMetaCopy;
