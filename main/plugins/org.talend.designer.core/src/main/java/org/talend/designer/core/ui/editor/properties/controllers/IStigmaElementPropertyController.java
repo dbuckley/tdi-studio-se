@@ -19,7 +19,7 @@ import org.eclipse.gef.commands.Command;
  */
 public interface IStigmaElementPropertyController {
 
-    void handleWidgetEvent(IControllerContext context);
+    boolean handleWidgetEvent(IControllerContext context);
 
     Command createCommand(IControllerContext context);
 

@@ -1200,7 +1200,8 @@ public abstract class AbstractElementPropertySectionController
     }
 
     @Override
-    public void handleWidgetEvent(IControllerContext context) {
+    public boolean handleWidgetEvent(IControllerContext context) {
+        return false;
     }
 
     @Override

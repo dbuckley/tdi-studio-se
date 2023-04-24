@@ -20,6 +20,11 @@ import java.util.Set;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
+import org.talend.commons.ui.runtime.TalendUI;
+import org.talend.commons.ui.runtime.TalendUI.AbsStudioRunnable;
+import org.talend.commons.ui.runtime.custom.IMessageDialogResult;
+import org.talend.commons.ui.runtime.custom.MessageDialogCustomUI;
+import org.talend.commons.ui.runtime.custom.MessageDialogResult;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IODataComponent;
@@ -262,9 +267,24 @@ public class ChangeMetadataCommand extends AbstractCommand {
     }
 
     public static boolean askPropagate() {
-        Boolean needPropagate = MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false),
-                Messages.getString("ChangeMetadataCommand.messageDialog.propagate"), //$NON-NLS-1$
-                Messages.getString("ChangeMetadataCommand.messageDialog.questionMessage")); //$NON-NLS-1$
+        String title = Messages.getString("ChangeMetadataCommand.messageDialog.propagate"); //$NON-NLS-1$
+        String msg = Messages.getString("ChangeMetadataCommand.messageDialog.questionMessage"); //$NON-NLS-1$
+        IMessageDialogResult result = TalendUI.get().run(new AbsStudioRunnable<IMessageDialogResult>() {
+
+            @Override
+            public IMessageDialogResult doRun() {
+                boolean needPropagate = MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false), title, msg);
+                MessageDialogResult result = new MessageDialogResult();
+                result.setOpenResult(needPropagate);
+                return result;
+            }
+
+            @Override
+            public IMessageDialogResult createModel() {
+                return null;
+            }
+        }, new MessageDialogCustomUI(MessageDialog.QUESTION, title, msg));
+        Boolean needPropagate = Boolean.valueOf(result.getOpenResult().toString());
         return needPropagate;
     }
 

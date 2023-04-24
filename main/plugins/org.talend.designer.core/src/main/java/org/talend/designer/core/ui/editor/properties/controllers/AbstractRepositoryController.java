@@ -264,13 +264,14 @@ public abstract class AbstractRepositoryController extends AbstractElementProper
     }
 
     @Override
-    public void handleWidgetEvent(IControllerContext context) {
+    public boolean handleWidgetEvent(IControllerContext context) {
         // TODO: judge Button or CCombo
         Command cmd = createButtonCommand(context);
         if (cmd instanceof ChangeMetadataCommand) {
             ((ChangeMetadataCommand) cmd).setConnection(getConnection());
         }
         executeCommand(cmd);
+        return cmd != null;
     }
 
     /**
