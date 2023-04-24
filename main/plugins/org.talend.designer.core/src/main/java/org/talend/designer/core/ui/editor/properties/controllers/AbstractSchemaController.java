@@ -39,7 +39,12 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.TalendUI;
+import org.talend.commons.ui.runtime.TalendUI.AbsStudioRunnable;
+import org.talend.commons.ui.runtime.TalendUI.UIHandler;
+import org.talend.commons.ui.runtime.custom.IMessageDialogResult;
 import org.talend.commons.ui.runtime.custom.MessageDialogCustomUI;
+import org.talend.commons.ui.runtime.custom.MessageDialogResult;
+import org.talend.commons.ui.runtime.custom.UnsupportedCustomUI;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog;
@@ -79,6 +84,7 @@ import org.talend.core.repository.seeker.RepositorySeekerManager;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.metadata.dialog.IMetadataDialog;
+import org.talend.core.ui.metadata.dialog.IMetadataDialogForMerge;
 import org.talend.core.ui.metadata.dialog.MetadataDialog;
 import org.talend.core.ui.metadata.dialog.MetadataDialogCustomUI;
 import org.talend.core.ui.metadata.dialog.MetadataDialogForMerge;
@@ -521,12 +527,18 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
         if (connection == null || names == null || names.length != 2) {
             String title = Messages.getString("NoRepositoryDialog.Title"); //$NON-NLS-1$
             String message = Messages.getString("NoRepositoryDialog.Text"); //$NON-NLS-1$
-            TalendUI.get().run(new Runnable() {
+            TalendUI.get().run(new AbsStudioRunnable<IMessageDialogResult>() {
 
                 @Override
-                public void run() {
-                    // When no repository avaiable on "Repository" mode, open a MessageDialog.
+                public IMessageDialogResult doRun() {
                     MessageDialog.openError(composite.getShell(), title, message); // $NON-NLS-1$
+                    MessageDialogResult result = (MessageDialogResult) getModel();
+                    return result;
+                }
+
+                @Override
+                public MessageDialogResult createModel() {
+                    return new MessageDialogResult();
                 }
             }, new MessageDialogCustomUI(MessageDialog.ERROR, title, message));
             return;
@@ -792,15 +804,46 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                 outputReadOnly = true;
             }
             // create the MetadataDialog
-            IMetadataDialog metaDialog = null;
+            UIHandler<IMetadataDialog> metadataDialog = null;
             if (inputMetadata != null) {
                 if (inputInfos != null && inputInfos.size() > 1 && connectionName == null) {
-                    MetadataDialogForMerge metaDialogForMerge = new MetadataDialogForMerge(composite.getShell(), inputInfos,
-                            outputMetaCopy, node, getCommandStack());
+                    IMetadataTable outputMetaCopyFinal = outputMetaCopy;
+                    UIHandler<IMetadataDialogForMerge> handler = TalendUI.get().createHandler(
+
+                            new AbsStudioRunnable<IMetadataDialogForMerge>() {
+
+                                @Override
+                                public IMetadataDialogForMerge doRun() {
+                                    IMetadataDialogForMerge model = getModel();
+                                    model.open();
+                                    return model;
+                                }
+
+                                @Override
+                                public MetadataDialogForMerge createModel() {
+                                    return new MetadataDialogForMerge(composite.getShell(), inputInfos, outputMetaCopyFinal, node,
+                                            getCommandStack());
+                                }
+
+                            }, new UnsupportedCustomUI<IMetadataDialogForMerge>(IMetadataDialogForMerge.class.getCanonicalName(),
+                                    new IMetadataDialogForMerge() {
+
+                                        @Override
+                                        public int open() {
+                                            return 0;
+                                        }
+
+                                        @Override
+                                        public int getOpenResult() {
+                                            throw new UnsupportedOperationException();
+                                        }
+                                    }));
+                    IMetadataDialogForMerge metaDialogForMerge = handler.get();
                     metaDialogForMerge.setText(Messages.getString("AbstractSchemaController.schemaOf") + node.getLabel()); //$NON-NLS-1$
                     metaDialogForMerge.setInputReadOnly(inputReadOnly);
                     metaDialogForMerge.setOutputReadOnly(outputReadOnly);
-                    if (metaDialogForMerge.open() == MetadataDialogForMerge.OK) {
+                    IMetadataDialogForMerge run = handler.run();
+                    if (run.getOpenResult() == MetadataDialogForMerge.OK) {
                         // inputMetaCopy = metaDialog.getInputMetaData();
                         outputMetaCopy = metaDialogForMerge.getOutputMetaData();
 
@@ -865,24 +908,71 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                         }
                         inputMetaCopy.setAttachedConnector(mainConnector.getName());
                     }
-                    metaDialog = new MetadataDialog(composite.getShell(), inputMetaCopy, inputNode, outputMetaCopy, node,
-                            getCommandStack());
+                    IMetadataTable inputMetaCopyFinal = inputMetaCopy;
+                    IMetadataTable outputMetaCopyFinal = outputMetaCopy;
+                    metadataDialog = TalendUI.get().createHandler(
+
+                            new AbsStudioRunnable<IMetadataDialog>() {
+
+                                @Override
+                                public IMetadataDialog doRun() {
+                                    IMetadataDialog model = getModel();
+                                    model.open();
+                                    return model;
+                                }
+
+                                @Override
+                                public IMetadataDialog createModel() {
+                                    return new MetadataDialog(composite.getShell(), inputMetaCopyFinal, inputNode,
+                                            outputMetaCopyFinal,
+                                            node, getCommandStack());
+                                }
+
+                            }, new UnsupportedCustomUI<IMetadataDialog>(IMetadataDialog.class.getCanonicalName(),
+                                    new IMetadataDialog() {
+
+                                        @Override
+                                        public int open() {
+                                            return 0;
+                                        }
+
+                                        @Override
+                                        public int getOpenResult() {
+                                            throw new UnsupportedOperationException();
+                                        }
+                                    }));
                 }
             } else {
-//                metaDialog = new MetadataDialog(composite.getShell(), outputMetaCopy, node, getCommandStack());
+                IMetadataTable outputMetaCopyFinal = outputMetaCopy;
+                metadataDialog = TalendUI.get().createHandler(
+
+                        new AbsStudioRunnable<IMetadataDialog>() {
+
+                            @Override
+                            public IMetadataDialog doRun() {
+                                IMetadataDialog model = getModel();
+                                model.open();
+                                return model;
+                            }
+
+                            @Override
+                            public IMetadataDialog createModel() {
+                                return new MetadataDialog(composite.getShell(), outputMetaCopyFinal, node, getCommandStack());
+                            }
+
+                        }, new MetadataDialogCustomUI(outputMetaCopyFinal));
             }
 
-            MetadataDialogCustomUI ui = new MetadataDialogCustomUI(outputMetaCopy);
-            ui.setText("Hello world");
-            TalendUI.get().runInStigma(ui);
-            if (metaDialog != null) {
+            if (metadataDialog != null) {
+                IMetadataDialog metaDialog = metadataDialog.get();
                 metaDialog.setText(Messages.getString("AbstractSchemaController.schema.title", node.getLabel())); //$NON-NLS-1$
                 metaDialog.setInputReadOnly(inputReadOnly);
                 metaDialog.setOutputReadOnly(outputReadOnly);
 
                 setMetadataTableOriginalNameList(inputMetadata, inputMetaCopy);
                 setMetadataTableOriginalNameList(originaleOutputTable, outputMetaCopy);
-                if (metaDialog.open() == MetadataDialog.OK) {
+                metadataDialog.run();
+                if (metaDialog.getOpenResult() == MetadataDialog.OK) {
 
                     inputMetaCopy = metaDialog.getInputMetaData();
                     outputMetaCopy = metaDialog.getOutputMetaData();
