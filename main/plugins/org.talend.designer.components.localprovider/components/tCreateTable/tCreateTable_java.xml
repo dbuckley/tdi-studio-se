@@ -881,6 +881,8 @@
 		<IMPORT NAME="Driver-POSTGRESQL" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND ((((DBTYPE=='POSTGRE') or (DBTYPE=='POSTGREPLUS')) AND (DB_POSTGRE_VERSION =='PRIOR_TO_V9')) or (DBTYPE=='GREENPLUM'))" />
 		<IMPORT NAME="Driver-Postgres9" MODULE="postgresql-42.2.26.jar" MVN="mvn:org.postgresql/postgresql/42.2.26" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (((DBTYPE=='POSTGRE') or (DBTYPE=='POSTGREPLUS')) AND (DB_POSTGRE_VERSION =='V9_X'))" />
 		<IMPORT NAME="Driver-FIREBIRD" MODULE="jaybird-full-2.1.1.jar" MVN="mvn:org.talend.libraries/jaybird-full-2.1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.firebird/lib/jaybird-full-2.1.1.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='FIREBIRD')" />
+		<IMPORT NAME="Driver-FireBird" MODULE="jaybird-4.0.9.java8.jar" MVN="mvn:org.firebirdsql.jdbc/jaybird/4.0.9.java8" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='FIREBIRD')" />
+       	<IMPORT NAME="connector-api-1.5.jar" MODULE="connector-api-1.5.jar" MVN="mvn:javax.resource/connector-api/1.5" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='FIREBIRD')" />
 		<IMPORT NAME="Driver-HSQLDb" MODULE="hsqldb-2.7.1.jar" MVN="mvn:org.hsqldb/hsqldb/2.7.1" REQUIRED_IF="DBTYPE=='HSQLDB'"/>
 		<IMPORT NAME="Driver-INFORMIX-JDBC" MODULE="ifxjdbc.jar" MVN="mvn:org.talend.libraries/ifxjdbc/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='INFORMIX')" />
 		<IMPORT NAME="Driver-INFORMIX-JDBCX" MODULE="ifxjdbcx.jar" MVN="mvn:org.talend.libraries/ifxjdbcx/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='INFORMIX')" />

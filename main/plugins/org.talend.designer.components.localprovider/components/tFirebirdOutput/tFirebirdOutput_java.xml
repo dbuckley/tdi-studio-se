@@ -318,7 +318,8 @@
 
   <CODEGENERATION>
     <IMPORTS>
-       <IMPORT NAME="Driver-FireBird" MODULE="jaybird-full-2.1.1.jar" MVN="mvn:org.talend.libraries/jaybird-full-2.1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.firebird/lib/jaybird-full-2.1.1.jar" REQUIRED="true" />
+       <IMPORT NAME="Driver-FireBird" MODULE="jaybird-4.0.9.java8.jar" MVN="mvn:org.firebirdsql.jdbc/jaybird/4.0.9.java8" REQUIRED="true" />
+       <IMPORT NAME="connector-api-1.5.jar" MODULE="connector-api-1.5.jar" MVN="mvn:javax.resource/connector-api/1.5" REQUIRED="true" />
     </IMPORTS>
   </CODEGENERATION>
 
