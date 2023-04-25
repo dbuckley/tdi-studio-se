@@ -40,11 +40,8 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.TalendUI;
 import org.talend.commons.ui.runtime.TalendUI.AbsStudioRunnable;
-import org.talend.commons.ui.runtime.TalendUI.UIHandler;
-import org.talend.commons.ui.runtime.custom.IMessageDialogResult;
+import org.talend.commons.ui.runtime.custom.MessageDialogBusinessHandler;
 import org.talend.commons.ui.runtime.custom.MessageDialogCustomUI;
-import org.talend.commons.ui.runtime.custom.MessageDialogResult;
-import org.talend.commons.ui.runtime.custom.UnsupportedCustomUI;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog;
@@ -83,9 +80,8 @@ import org.talend.core.repository.model.repositoryObject.MetadataTableRepository
 import org.talend.core.repository.seeker.RepositorySeekerManager;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.ui.CoreUIPlugin;
-import org.talend.core.ui.metadata.dialog.IMetadataDialog;
-import org.talend.core.ui.metadata.dialog.IMetadataDialogForMerge;
 import org.talend.core.ui.metadata.dialog.MetadataDialog;
+import org.talend.core.ui.metadata.dialog.MetadataDialogBusinessHandler;
 import org.talend.core.ui.metadata.dialog.MetadataDialogCustomUI;
 import org.talend.core.ui.metadata.dialog.MetadataDialogForMerge;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
@@ -525,22 +521,19 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
         String[] names = schemaId.split(" - "); //$NON-NLS-1$
 
         if (connection == null || names == null || names.length != 2) {
-            String title = Messages.getString("NoRepositoryDialog.Title"); //$NON-NLS-1$
-            String message = Messages.getString("NoRepositoryDialog.Text"); //$NON-NLS-1$
-            TalendUI.get().run(new AbsStudioRunnable<IMessageDialogResult>() {
+            MessageDialogBusinessHandler handler = new MessageDialogBusinessHandler();
+            handler.setTitle(Messages.getString("NoRepositoryDialog.Title")); //$NON-NLS-1$
+            handler.setMessage(Messages.getString("NoRepositoryDialog.Text")); //$NON-NLS-1$
+            handler.setDialogType(MessageDialog.ERROR);
+            TalendUI.get().run(new AbsStudioRunnable<MessageDialogBusinessHandler>() {
 
                 @Override
-                public IMessageDialogResult doRun() {
-                    MessageDialog.openError(composite.getShell(), title, message); // $NON-NLS-1$
-                    MessageDialogResult result = (MessageDialogResult) getModel();
-                    return result;
+                public MessageDialogBusinessHandler doRun() {
+                    MessageDialog.openError(composite.getShell(), handler.getTitle(), handler.getMessage());
+                    return handler;
                 }
 
-                @Override
-                public MessageDialogResult createModel() {
-                    return new MessageDialogResult();
-                }
-            }, new MessageDialogCustomUI(MessageDialog.ERROR, title, message));
+            }, new MessageDialogCustomUI(handler));
             return;
         }
         // find IRepositoryObject from repository that contains current connection
@@ -804,46 +797,15 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                 outputReadOnly = true;
             }
             // create the MetadataDialog
-            UIHandler<IMetadataDialog> metadataDialog = null;
+            MetadataDialogBusinessHandler metadataDialog = null;
             if (inputMetadata != null) {
                 if (inputInfos != null && inputInfos.size() > 1 && connectionName == null) {
-                    IMetadataTable outputMetaCopyFinal = outputMetaCopy;
-                    UIHandler<IMetadataDialogForMerge> handler = TalendUI.get().createHandler(
-
-                            new AbsStudioRunnable<IMetadataDialogForMerge>() {
-
-                                @Override
-                                public IMetadataDialogForMerge doRun() {
-                                    IMetadataDialogForMerge model = getModel();
-                                    model.open();
-                                    return model;
-                                }
-
-                                @Override
-                                public MetadataDialogForMerge createModel() {
-                                    return new MetadataDialogForMerge(composite.getShell(), inputInfos, outputMetaCopyFinal, node,
-                                            getCommandStack());
-                                }
-
-                            }, new UnsupportedCustomUI<IMetadataDialogForMerge>(IMetadataDialogForMerge.class.getCanonicalName(),
-                                    new IMetadataDialogForMerge() {
-
-                                        @Override
-                                        public int open() {
-                                            return 0;
-                                        }
-
-                                        @Override
-                                        public int getOpenResult() {
-                                            throw new UnsupportedOperationException();
-                                        }
-                                    }));
-                    IMetadataDialogForMerge metaDialogForMerge = handler.get();
+                    MetadataDialogForMerge metaDialogForMerge = new MetadataDialogForMerge(composite.getShell(), inputInfos,
+                            outputMetaCopy, node, getCommandStack());
                     metaDialogForMerge.setText(Messages.getString("AbstractSchemaController.schemaOf") + node.getLabel()); //$NON-NLS-1$
                     metaDialogForMerge.setInputReadOnly(inputReadOnly);
                     metaDialogForMerge.setOutputReadOnly(outputReadOnly);
-                    IMetadataDialogForMerge run = handler.run();
-                    if (run.getOpenResult() == MetadataDialogForMerge.OK) {
+                    if (metaDialogForMerge.open() == MetadataDialogForMerge.OK) {
                         // inputMetaCopy = metaDialog.getInputMetaData();
                         outputMetaCopy = metaDialogForMerge.getOutputMetaData();
 
@@ -908,62 +870,36 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                         }
                         inputMetaCopy.setAttachedConnector(mainConnector.getName());
                     }
-                    IMetadataTable inputMetaCopyFinal = inputMetaCopy;
-                    IMetadataTable outputMetaCopyFinal = outputMetaCopy;
-                    metadataDialog = TalendUI.get().createHandler(
-
-                            new AbsStudioRunnable<IMetadataDialog>() {
-
-                                @Override
-                                public IMetadataDialog doRun() {
-                                    IMetadataDialog model = getModel();
-                                    model.open();
-                                    return model;
-                                }
-
-                                @Override
-                                public IMetadataDialog createModel() {
-                                    return new MetadataDialog(composite.getShell(), inputMetaCopyFinal, inputNode,
-                                            outputMetaCopyFinal,
-                                            node, getCommandStack());
-                                }
-
-                            }, new MetadataDialogCustomUI(inputMetaCopyFinal, outputMetaCopyFinal));
+                    metadataDialog = new MetadataDialogBusinessHandler(composite, inputMetaCopy, inputNode, outputMetaCopy,
+                            inputNode, getCommandStack());
                 }
             } else {
-                IMetadataTable outputMetaCopyFinal = outputMetaCopy;
-                metadataDialog = TalendUI.get().createHandler(
-
-                        new AbsStudioRunnable<IMetadataDialog>() {
-
-                            @Override
-                            public IMetadataDialog doRun() {
-                                IMetadataDialog model = getModel();
-                                model.open();
-                                return model;
-                            }
-
-                            @Override
-                            public IMetadataDialog createModel() {
-                                return new MetadataDialog(composite.getShell(), outputMetaCopyFinal, node, getCommandStack());
-                            }
-
-                        }, new MetadataDialogCustomUI(outputMetaCopyFinal));
+                metadataDialog = new MetadataDialogBusinessHandler(composite, null, null, outputMetaCopy, node,
+                        getCommandStack());
             }
 
             if (metadataDialog != null) {
-                IMetadataDialog metaDialog = metadataDialog.get();
-                metaDialog.setText(Messages.getString("AbstractSchemaController.schema.title", node.getLabel())); //$NON-NLS-1$
-                metaDialog.setInputReadOnly(inputReadOnly);
-                metaDialog.setOutputReadOnly(outputReadOnly);
+                metadataDialog.setTitle(Messages.getString("AbstractSchemaController.schema.title", node.getLabel())); //$NON-NLS-1$
+                metadataDialog.setInputReadOnly(inputReadOnly);
+                metadataDialog.setOutputReadOnly(outputReadOnly);
 
                 setMetadataTableOriginalNameList(inputMetadata, inputMetaCopy);
                 setMetadataTableOriginalNameList(originaleOutputTable, outputMetaCopy);
-                metadataDialog.run();
-                if (metaDialog.getOpenResult() == MetadataDialog.OK) {
+                MetadataDialogBusinessHandler metadata = metadataDialog;
+                MetadataDialogBusinessHandler result = TalendUI.get().run(new AbsStudioRunnable<MetadataDialogBusinessHandler>() {
 
-                    inputMetaCopy = metaDialog.getInputMetaData();
-                    outputMetaCopy = metaDialog.getOutputMetaData();
+                    @Override
+                    public MetadataDialogBusinessHandler doRun() {
+                        MetadataDialog dialog = new MetadataDialog(metadata);
+                        int open = dialog.open();
+                        metadata.setOpenResult(open);
+                        return metadata;
+                    }
+                }, new MetadataDialogCustomUI(metadataDialog));
+                if (result.getOpenResult().equals(MetadataDialog.OK)) {
+
+                    inputMetaCopy = result.getInputMetaTable();
+                    outputMetaCopy = result.getOutputMetaTable();
                     boolean modified = false;
                     if (!outputMetaCopy.sameMetadataAs(originaleOutputTable, IMetadataColumn.OPTIONS_NONE)) {
                         modified = true;

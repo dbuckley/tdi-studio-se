@@ -22,9 +22,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.TalendUI;
 import org.talend.commons.ui.runtime.TalendUI.AbsStudioRunnable;
-import org.talend.commons.ui.runtime.custom.IMessageDialogResult;
+import org.talend.commons.ui.runtime.custom.MessageDialogBusinessHandler;
 import org.talend.commons.ui.runtime.custom.MessageDialogCustomUI;
-import org.talend.commons.ui.runtime.custom.MessageDialogResult;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IODataComponent;
@@ -267,23 +266,21 @@ public class ChangeMetadataCommand extends AbstractCommand {
     }
 
     public static boolean askPropagate() {
-        String title = Messages.getString("ChangeMetadataCommand.messageDialog.propagate"); //$NON-NLS-1$
-        String msg = Messages.getString("ChangeMetadataCommand.messageDialog.questionMessage"); //$NON-NLS-1$
-        IMessageDialogResult result = TalendUI.get().run(new AbsStudioRunnable<IMessageDialogResult>() {
+        MessageDialogBusinessHandler handler = new MessageDialogBusinessHandler();
+        handler.setDialogType(MessageDialog.QUESTION);
+        handler.setTitle(Messages.getString("ChangeMetadataCommand.messageDialog.propagate")); //$NON-NLS-1$
+        handler.setMessage(Messages.getString("ChangeMetadataCommand.messageDialog.questionMessage")); //$NON-NLS-1$
+        MessageDialogBusinessHandler result = TalendUI.get().run(new AbsStudioRunnable<MessageDialogBusinessHandler>() {
 
             @Override
-            public IMessageDialogResult doRun() {
-                boolean needPropagate = MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false), title, msg);
-                MessageDialogResult result = new MessageDialogResult();
-                result.setOpenResult(needPropagate);
-                return result;
+            public MessageDialogBusinessHandler doRun() {
+                boolean needPropagate = MessageDialog.openQuestion(DisplayUtils.getDefaultShell(false), handler.getTitle(),
+                        handler.getMessage());
+                handler.setOpenResult(needPropagate);
+                return handler;
             }
 
-            @Override
-            public IMessageDialogResult createModel() {
-                return null;
-            }
-        }, new MessageDialogCustomUI(MessageDialog.QUESTION, title, msg));
+        }, new MessageDialogCustomUI(handler));
         Boolean needPropagate = Boolean.valueOf(result.getOpenResult().toString());
         return needPropagate;
     }
