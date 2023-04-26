@@ -38,10 +38,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.commons.ui.runtime.TalendUI;
 import org.talend.commons.ui.runtime.TalendUI.AbsStudioRunnable;
 import org.talend.commons.ui.runtime.custom.MessageDialogBusinessHandler;
-import org.talend.commons.ui.runtime.custom.MessageDialogCustomUI;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog;
@@ -82,8 +80,8 @@ import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.metadata.dialog.MetadataDialog;
 import org.talend.core.ui.metadata.dialog.MetadataDialogBusinessHandler;
-import org.talend.core.ui.metadata.dialog.MetadataDialogCustomUI;
 import org.talend.core.ui.metadata.dialog.MetadataDialogForMerge;
+import org.talend.core.ui.metadata.dialog.MetadataDialogForMergeBusinessHandler;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.designer.core.IDesignerCoreService;
@@ -525,7 +523,7 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
             handler.setTitle(Messages.getString("NoRepositoryDialog.Title")); //$NON-NLS-1$
             handler.setMessage(Messages.getString("NoRepositoryDialog.Text")); //$NON-NLS-1$
             handler.setDialogType(MessageDialog.ERROR);
-            TalendUI.get().run(new AbsStudioRunnable<MessageDialogBusinessHandler>() {
+            handler.run(new AbsStudioRunnable<MessageDialogBusinessHandler>() {
 
                 @Override
                 public MessageDialogBusinessHandler doRun() {
@@ -533,7 +531,7 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                     return handler;
                 }
 
-            }, new MessageDialogCustomUI(handler));
+            });
             return;
         }
         // find IRepositoryObject from repository that contains current connection
@@ -734,9 +732,20 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
             }
 
             if (connectionParam != null && inputMetadata == null) {
-                MessageDialog.openError(((StudioControllerContext) button).getShell(),
-                        Messages.getString("AbstractSchemaController.inputNotSet"), //$NON-NLS-1$
-                        Messages.getString("AbstractSchemaController.connectionNotAvaliable")); //$NON-NLS-1$
+                MessageDialogBusinessHandler handler = new MessageDialogBusinessHandler();
+                handler.setDialogType(MessageDialog.ERROR);
+                handler.setTitle(Messages.getString("AbstractSchemaController.inputNotSet")); //$NON-NLS-1$
+                handler.setMessage(Messages.getString("AbstractSchemaController.connectionNotAvaliable")); //$NON-NLS-1$
+                handler.run(new AbsStudioRunnable<MessageDialogBusinessHandler>() {
+
+                    @Override
+                    public MessageDialogBusinessHandler doRun() {
+                        MessageDialog.openError(((StudioControllerContext) button).getShell(), handler.getTitle(),
+                                handler.getMessage());
+                        return handler;
+                    }
+
+                });
                 return null;
             }
 
@@ -800,14 +809,25 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
             MetadataDialogBusinessHandler metadataDialog = null;
             if (inputMetadata != null) {
                 if (inputInfos != null && inputInfos.size() > 1 && connectionName == null) {
-                    MetadataDialogForMerge metaDialogForMerge = new MetadataDialogForMerge(composite.getShell(), inputInfos,
-                            outputMetaCopy, node, getCommandStack());
-                    metaDialogForMerge.setText(Messages.getString("AbstractSchemaController.schemaOf") + node.getLabel()); //$NON-NLS-1$
+                    MetadataDialogForMergeBusinessHandler metaDialogForMerge = new MetadataDialogForMergeBusinessHandler(
+                            composite, inputInfos, outputMetaCopy, node, getCommandStack());
+                    metaDialogForMerge.setTitle(Messages.getString("AbstractSchemaController.schemaOf") + node.getLabel()); //$NON-NLS-1$
                     metaDialogForMerge.setInputReadOnly(inputReadOnly);
                     metaDialogForMerge.setOutputReadOnly(outputReadOnly);
-                    if (metaDialogForMerge.open() == MetadataDialogForMerge.OK) {
+                    MetadataDialogForMergeBusinessHandler result = metaDialogForMerge
+                            .run(new AbsStudioRunnable<MetadataDialogForMergeBusinessHandler>() {
+
+                                @Override
+                                public MetadataDialogForMergeBusinessHandler doRun() {
+                                    MetadataDialogForMerge dialog = new MetadataDialogForMerge(metaDialogForMerge);
+                                    int open = dialog.open();
+                                    metaDialogForMerge.setOpenResult(open);
+                                    return metaDialogForMerge;
+                                }
+                            });
+                    if (result.getOpenResult().equals(MetadataDialogForMerge.OK)) {
                         // inputMetaCopy = metaDialog.getInputMetaData();
-                        outputMetaCopy = metaDialogForMerge.getOutputMetaData();
+                        outputMetaCopy = result.getOutputMetaTable();
 
                         // check if the metadata is modified
                         boolean modified = false;
@@ -885,8 +905,9 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
 
                 setMetadataTableOriginalNameList(inputMetadata, inputMetaCopy);
                 setMetadataTableOriginalNameList(originaleOutputTable, outputMetaCopy);
+
                 MetadataDialogBusinessHandler metadata = metadataDialog;
-                MetadataDialogBusinessHandler result = TalendUI.get().run(new AbsStudioRunnable<MetadataDialogBusinessHandler>() {
+                MetadataDialogBusinessHandler result = metadataDialog.run(new AbsStudioRunnable<MetadataDialogBusinessHandler>() {
 
                     @Override
                     public MetadataDialogBusinessHandler doRun() {
@@ -895,7 +916,8 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                         metadata.setOpenResult(open);
                         return metadata;
                     }
-                }, new MetadataDialogCustomUI(metadataDialog));
+
+                });
                 if (result.getOpenResult().equals(MetadataDialog.OK)) {
 
                     inputMetaCopy = result.getInputMetaTable();

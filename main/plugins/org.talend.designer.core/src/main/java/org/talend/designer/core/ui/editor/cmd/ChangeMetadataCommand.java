@@ -20,10 +20,8 @@ import java.util.Set;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
-import org.talend.commons.ui.runtime.TalendUI;
 import org.talend.commons.ui.runtime.TalendUI.AbsStudioRunnable;
 import org.talend.commons.ui.runtime.custom.MessageDialogBusinessHandler;
-import org.talend.commons.ui.runtime.custom.MessageDialogCustomUI;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IODataComponent;
@@ -270,7 +268,7 @@ public class ChangeMetadataCommand extends AbstractCommand {
         handler.setDialogType(MessageDialog.QUESTION);
         handler.setTitle(Messages.getString("ChangeMetadataCommand.messageDialog.propagate")); //$NON-NLS-1$
         handler.setMessage(Messages.getString("ChangeMetadataCommand.messageDialog.questionMessage")); //$NON-NLS-1$
-        MessageDialogBusinessHandler result = TalendUI.get().run(new AbsStudioRunnable<MessageDialogBusinessHandler>() {
+        MessageDialogBusinessHandler result = handler.run(new AbsStudioRunnable<MessageDialogBusinessHandler>() {
 
             @Override
             public MessageDialogBusinessHandler doRun() {
@@ -280,7 +278,7 @@ public class ChangeMetadataCommand extends AbstractCommand {
                 return handler;
             }
 
-        }, new MessageDialogCustomUI(handler));
+        });
         Boolean needPropagate = Boolean.valueOf(result.getOpenResult().toString());
         return needPropagate;
     }
