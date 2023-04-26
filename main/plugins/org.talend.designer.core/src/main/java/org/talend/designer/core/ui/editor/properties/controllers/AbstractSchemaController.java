@@ -42,6 +42,7 @@ import org.talend.commons.ui.runtime.TalendUI.AbsStudioRunnable;
 import org.talend.commons.ui.runtime.custom.MessageDialogBusinessHandler;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.commons.ui.swt.dialogs.ModelSelectionBusinessHandler;
 import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog;
 import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog.EEditSelection;
 import org.talend.commons.ui.swt.dialogs.ModelSelectionDialog.ESelectionType;
@@ -102,6 +103,7 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
+import org.talend.repository.ui.dialog.RepositoryReviewBusinessHandler;
 import org.talend.repository.ui.dialog.RepositoryReviewDialog;
 
 /**
@@ -519,6 +521,7 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
         String[] names = schemaId.split(" - "); //$NON-NLS-1$
 
         if (connection == null || names == null || names.length != 2) {
+            // When no repository avaiable on "Repository" mode, open a MessageDialog.
             MessageDialogBusinessHandler handler = new MessageDialogBusinessHandler();
             handler.setTitle(Messages.getString("NoRepositoryDialog.Title")); //$NON-NLS-1$
             handler.setMessage(Messages.getString("NoRepositoryDialog.Text")); //$NON-NLS-1$
@@ -594,20 +597,31 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                 if (node.getJobletNode() != null) {
                     isReadOnly = node.isReadOnly();
                 }
-                ModelSelectionDialog modelSelect = new ModelSelectionDialog(((StudioControllerContext) button).getShell(),
+                ModelSelectionBusinessHandler modelSelect = new ModelSelectionBusinessHandler(
+                        ((StudioControllerContext) button).getShell(),
                         ESelectionType.SCHEMA, isReadOnly);
                 stop = true;
-                if (modelSelect.open() == ModelSelectionDialog.OK) {
-                    if (modelSelect.getOptionValue() == EEditSelection.REPOSITORY) {
+                ModelSelectionBusinessHandler result = modelSelect.run(new AbsStudioRunnable<ModelSelectionBusinessHandler>() {
+
+                    @Override
+                    public ModelSelectionBusinessHandler doRun() {
+                        ModelSelectionDialog dialog = new ModelSelectionDialog(modelSelect);
+                        int open = dialog.open();
+                        modelSelect.setOpenResult(open);
+                        return modelSelect;
+                    }
+                });
+                if (result.getOpenResult().equals(ModelSelectionDialog.OK)) {
+                    if (result.getOptionValue() == EEditSelection.REPOSITORY) {
                         // update repository schema
                         button.setData(FORCE_READ_ONLY, false);
                         updateRepositorySchema(button);
-                    } else if (modelSelect.getOptionValue() == EEditSelection.BUILDIN) {
+                    } else if (result.getOptionValue() == EEditSelection.BUILDIN) {
                         // change the schema type to built in, then continue the original process
                         executeCommand(new RepositoryChangeSchemaBuiltinCommand(elem, paramName));
                         button.setData(FORCE_READ_ONLY, false);
                         stop = false;
-                    } else if (modelSelect.getOptionValue() == EEditSelection.SHOW_SCHEMA) {
+                    } else if (result.getOptionValue() == EEditSelection.SHOW_SCHEMA) {
                         button.setData(FORCE_READ_ONLY, true);
                         stop = false;
                     }
@@ -979,16 +993,27 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                 }
             }
 
-            RepositoryReviewDialog dialog = new RepositoryReviewDialog(((StudioControllerContext) button).getShell(), type,
+            RepositoryReviewBusinessHandler dialog = new RepositoryReviewBusinessHandler(
+                    ((StudioControllerContext) button).getShell(), type,
                     filter);
-            if (dialog.open() == RepositoryReviewDialog.OK) {
-                RepositoryNode node = dialog.getResult();
+            RepositoryReviewBusinessHandler result = dialog.run(new AbsStudioRunnable<RepositoryReviewBusinessHandler>() {
+
+                @Override
+                public RepositoryReviewBusinessHandler doRun() {
+                    RepositoryReviewDialog repoReviewDialog = new RepositoryReviewDialog(dialog);
+                    int open = repoReviewDialog.open();
+                    dialog.setOpenResult(open);
+                    return dialog;
+                }
+            });
+            if (result.getOpenResult().equals(RepositoryReviewDialog.OK)) {
+                RepositoryNode node = result.getResult();
                 while (node.getObject().getProperty().getItem() == null
                         || (!(node.getObject().getProperty().getItem() instanceof ConnectionItem))) {
                     node = node.getParent();
                 }
 
-                IRepositoryViewObject object = dialog.getResult().getObject();
+                IRepositoryViewObject object = result.getResult().getObject();
                 Property property = object.getProperty();
                 String id = property.getId();
                 String name = object.getLabel();// The name is Table Name.
