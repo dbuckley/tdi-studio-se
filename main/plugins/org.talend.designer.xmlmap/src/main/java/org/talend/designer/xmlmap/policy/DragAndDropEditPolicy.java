@@ -28,8 +28,7 @@ import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.designer.gefabstractmap.dnd.TransferedObject;
 import org.talend.designer.gefabstractmap.part.MapperTablePart;
 import org.talend.designer.gefabstractmap.part.TableEntityPart;
-import org.talend.designer.gefabstractmap.resource.ColorInfo;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 import org.talend.designer.xmlmap.commands.CreateDocChildrenCommand;
 import org.talend.designer.xmlmap.commands.InsertNewColumnCommand;
 import org.talend.designer.xmlmap.commands.UpdateExpressionCommand;
@@ -176,7 +175,7 @@ public class DragAndDropEditPolicy extends GraphicalEditPolicy {
 
         @Override
         protected void outlineShape(Graphics graphics) {
-            Color color = ColorProviderMapper.getColor(ColorInfo.COLOR_DRAGGING_INSERTION_INDICATOR);
+            Color color = ColorInfo.COLOR_DRAGGING_INSERTION_INDICATOR();
             // Color color = ColorConstants.red;
 
             Point start = new Point(getBounds().x + 5, getBounds().y + 5);

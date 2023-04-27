@@ -19,6 +19,7 @@ import org.talend.designer.gefabstractmap.figures.manager.RootModelManager;
 import org.talend.designer.gefabstractmap.figures.treetools.ToolBarButtonImageFigure;
 import org.talend.designer.gefabstractmap.resource.ImageInfo;
 import org.talend.designer.gefabstractmap.resource.ImageProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * created by Administrator on 2013-1-15 Detailled comment
@@ -48,7 +49,7 @@ public abstract class InputZoneToolBar extends ZoneToolBar {
         this.add(move_down);
         Label figure = new Label("");
         figure.setOpaque(true);
-        figure.setBackgroundColor(ColorConstants.lightGray);
+        figure.setBackgroundColor(ColorInfo.COLOR_UNSELECTED_TABLEHERDER_BG());
         add(figure);
 
         // disable for 5.0.0

@@ -3644,11 +3644,11 @@
 	   	   <projecttask
                beforeLogon="false"
                breaks="7.3.0"
-               class="org.talend.repository.model.migration.UncheckBson2JsonTask"
+               class="org.talend.repository.model.migration.NewUncheckBson2JsonTask"
                description="uncheck the convert Bson document to json string option in tMongoDBInput"
-               id="org.talend.repository.model.migration.UncheckBson2JsonTask"
+               id="org.talend.repository.model.migration.NewUncheckBson2JsonTask"
                name="UncheckBson2JsonTask"
-               version="7.3.1">
+               version="8.0.1">
        </projecttask>
         <projecttask
               beforeLogon="false"
@@ -3834,6 +3834,15 @@
               description="Chanage default value of Return generated keys for tAS400Outpu"
               id="org.talend.repository.model.migration.ChangeReturnKeysDefault4tAS400Output"
               name="ChangeReturnKeysDefault4tAS400Output"
+              version="8.0.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="8.0.0"
+              class="org.talend.repository.model.migration.RemoveDuplicateContextReferencesMigrationTask"
+              description="Remove duplicate context references from item"
+              id="org.talend.repository.model.migration.RemoveDuplicateContextReferencesMigrationTask"
+              name="RemoveDuplicateContextReferencesMigrationTask"
               version="8.0.1">
         </projecttask>
    </extension>

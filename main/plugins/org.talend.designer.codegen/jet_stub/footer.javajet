@@ -325,6 +325,8 @@
     
     private final static java.util.Properties jobInfo = new java.util.Properties();
     private final static java.util.Map<String,String> mdcInfo = new java.util.HashMap<>();
+    private final static java.util.concurrent.atomic.AtomicLong subJobPidCounter = new java.util.concurrent.atomic.AtomicLong();
+
 
     public static void main(String[] args){
         final <%=className %> <%=className %>Class = new <%=className %>();

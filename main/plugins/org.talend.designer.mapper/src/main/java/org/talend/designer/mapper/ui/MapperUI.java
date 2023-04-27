@@ -59,6 +59,7 @@ import org.talend.commons.utils.threading.ExecutionLimiterImproved;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.process.IConnection;
+import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.images.CoreImageProvider;
 import org.talend.designer.abstractmap.model.table.IDataMapTable;
@@ -78,7 +79,6 @@ import org.talend.designer.mapper.model.table.InputTable;
 import org.talend.designer.mapper.model.table.OutputTable;
 import org.talend.designer.mapper.model.table.VarsTable;
 import org.talend.designer.mapper.ui.color.ColorInfo;
-import org.talend.designer.mapper.ui.color.ColorProviderMapper;
 import org.talend.designer.mapper.ui.dnd.DragNDrop;
 import org.talend.designer.mapper.ui.event.MouseMoveScrollZoneHelper;
 import org.talend.designer.mapper.ui.font.FontProviderMapper;
@@ -402,7 +402,7 @@ public class MapperUI {
 
         addParentListeners(uiManager, uiProperties);
 
-        bgColorLinksZone = ColorProviderMapper.getColor(ColorInfo.COLOR_BACKGROUND_LINKS_ZONE);
+        bgColorLinksZone = ColorInfo.COLOR_BACKGROUND_LINKS_ZONE();
 
         GridLayout parentLayout = new GridLayout(1, true);
         mapperUIParent.setLayout(parentLayout);
@@ -450,7 +450,7 @@ public class MapperUI {
         createOutputZoneWithTables(mapperModel, uiManager, display);
 
         if (WindowSystem.isBigSurOrLater()) {
-            Color bgColorTransparent = ColorProviderMapper.getRGBAColor(ColorInfo.COLOR_BACKGROUND_TRANSPRENT);
+            Color bgColorTransparent = ColorInfo.COLOR_BACKGROUND_TRANSPRENT.getColor();
             datasFlowViewSashForm.setBackgroundMode(SWT.INHERIT_NONE);
             sc1.setBackground(bgColorTransparent);
             inputTablesZoneView.setBackground(bgColorTransparent);
@@ -459,7 +459,8 @@ public class MapperUI {
             sc3.setBackground(bgColorTransparent);
             outputTablesZoneView.setBackground(bgColorTransparent);
         } else {
-            datasFlowViewSashForm.setBackgroundMode(SWT.INHERIT_FORCE);
+            datasFlowViewSashForm.setBackgroundMode(SWT.INHERIT_FORCE); 
+
         }
 
         uiManager.parseAllExpressionsForAllTables();
@@ -480,6 +481,7 @@ public class MapperUI {
         mainSashForm.setWeights(weightsMainSashForm);
 
         footerComposite = new FooterComposite(this.mapperUIParent, SWT.NONE, mapperManager);
+        CoreUIPlugin.setCSSClass(footerComposite, FooterComposite.class.getSimpleName());
 
         selectFirstInOutTablesView();
         updateBackgroundEnabled = true;
@@ -494,6 +496,7 @@ public class MapperUI {
         // // table.updateGridDataHeightForTableGlobalMap();
         // // table.resizeAtExpandedSize();
         // }
+
 
     }
 
@@ -716,7 +719,7 @@ public class MapperUI {
         inputsZone = new InputsZone(datasFlowViewSashForm, getZoneStyle(), mapperManager);
         inputsZone.createHeaderZoneComponents();
 
-        sc1 = new ScrolledComposite(inputsZone, getBorder() | SWT.H_SCROLL | SWT.V_SCROLL);
+        sc1 = new MapperScrolledComposite(inputsZone, getBorder() | SWT.H_SCROLL | SWT.V_SCROLL);
         // this.dropTargetOperationListener.addControl(sc1);
 
         GridData sc1GridData = new GridData(GridData.FILL_BOTH);
@@ -810,7 +813,7 @@ public class MapperUI {
         SearchZone searchZone = new SearchZone(datasFlowViewSashForm, getZoneStyle(), mapperManager);
         searchZone.createSearchZone();
 
-        sc2 = new ScrolledComposite(searchZone, getBorder() | SWT.H_SCROLL | SWT.V_SCROLL);
+        sc2 = new MapperScrolledComposite(searchZone, getBorder() | SWT.H_SCROLL | SWT.V_SCROLL);
 
         GridData sc2GridData = new GridData(GridData.FILL_BOTH);
         sc2.setLayoutData(sc2GridData);
@@ -864,7 +867,8 @@ public class MapperUI {
         outputsZone.createHeaderZoneComponents();
         // this.dropTargetOperationListener.addControl(outputsZone);
 
-        sc3 = new ScrolledComposite(outputsZone, getBorder() | SWT.H_SCROLL | SWT.V_SCROLL);
+        sc3 = new MapperScrolledComposite(outputsZone, getBorder() | SWT.H_SCROLL | SWT.V_SCROLL);
+        
         // this.dropTargetOperationListener.addControl(sc3);
 
         GridData sc3GridData = new GridData(GridData.FILL_BOTH);
@@ -929,7 +933,6 @@ public class MapperUI {
             threadToEvaluatePerformance.interrupt();
         }
         ImageProviderMapper.releaseImages();
-        ColorProviderMapper.releaseColors();
         FontProviderMapper.releaseFonts();
         if (backgroundRefreshLimiter != null) {
             backgroundRefreshLimiter.shutdown();

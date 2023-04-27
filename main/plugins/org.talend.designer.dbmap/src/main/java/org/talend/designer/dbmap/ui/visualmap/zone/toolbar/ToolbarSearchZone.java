@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.designer.abstractmap.model.tableentry.ITableEntry;
 import org.talend.designer.dbmap.managers.MapperManager;
-import org.talend.designer.dbmap.ui.visualmap.table.EntryState;
+import org.talend.designer.mapper.ui.visualmap.table.EntryState;
 
 /**
  * DOC hcyi class global comment. Detailled comment
@@ -67,8 +67,8 @@ public class ToolbarSearchZone {
         searchText = new Text(composite, SWT.BORDER);
         GridData gridData = new GridData();
         gridData.widthHint = 150;
-        searchText.setBackground(EntryState.NONE.getColor());
         searchText.setLayoutData(gridData);
+        searchText.setBackground(EntryState.NONE.getColor());
         searchText.setToolTipText("Enter search text prefix or pattern(*,?,or camel case).");
 
         ToolBar toolBarActions = new ToolBar(composite, SWT.FLAT | SWT.RIGHT);

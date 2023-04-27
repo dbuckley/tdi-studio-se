@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
@@ -76,10 +77,34 @@ public class UpdatesitePreferencePage extends PreferencePage {
 
     private Text updatePasswordText;
     
-    private Button enableBaseAuth;
+    private Button testLocalAuth;
     
-    private Button enableUpdateAuth;
+    private Label localBaseAuthLabel;
+    
+    private Label localUpdateAuthLabel;
+    
+    private Text remoteBaseUserText;
 
+    private Text remoteBasePasswordText;
+
+    private Text remoteUpdateUserText;
+
+    private Text remoteUpdatePasswordText;
+    
+    private Button remoteTestAuth;
+    
+    private boolean localBaseChanged = false;
+    
+    private boolean localUpdateChanged = false;
+    
+    private boolean remoteBaseChanged = false;
+
+    private boolean remoteUpdateChanged = false;
+
+    private Label remoteBaseAuthLabel;
+
+    private Label remoteUpdateAuthLabel;
+    
     private Text remoteReleaseUriText;
 
     private Text remoteUpdateUriText;
@@ -170,6 +195,28 @@ public class UpdatesitePreferencePage extends PreferencePage {
             gd = new GridData(GridData.FILL_HORIZONTAL);
             remoteReleaseUriText.setLayoutData(gd);
 
+            // add basic authentication settings for base uri
+            remoteBaseAuthLabel = new Label(RemoteSettingsPanel, SWT.NONE);
+            remoteBaseAuthLabel.setText(Messages.getString("UpdatesitePreferencePage.basicAuth.credential"));
+            
+            Composite baseAuthPanel = new Composite(RemoteSettingsPanel, SWT.None);
+            baseAuthPanel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+            panelLayout = new GridLayout(4, false);
+            baseAuthPanel.setLayout(panelLayout);
+
+            Label unameLabel = new Label(baseAuthPanel, SWT.NONE);
+            unameLabel.setText(Messages.getString("UpdatesitePreferencePage.basicAuth.user"));
+            remoteBaseUserText = new Text(baseAuthPanel, SWT.BORDER);
+            gd = new GridData(GridData.FILL_HORIZONTAL);
+            remoteBaseUserText.setLayoutData(gd);
+
+            Label pwdLabel = new Label(baseAuthPanel, SWT.NONE);
+            pwdLabel.setText(Messages.getString("UpdatesitePreferencePage.basicAuth.password"));
+            remoteBasePasswordText = new Text(baseAuthPanel, SWT.PASSWORD | SWT.BORDER);
+            gd = new GridData(GridData.FILL_HORIZONTAL);
+            remoteBasePasswordText.setLayoutData(gd);
+            
+            
             Label remoteUpdateLabel = new Label(RemoteSettingsPanel, SWT.NONE);
             remoteUpdateLabel.setText(Messages.getString("UpdatesitePreferencePage.update"));
             gd = new GridData();
@@ -179,6 +226,38 @@ public class UpdatesitePreferencePage extends PreferencePage {
             remoteUpdateUriText.setEditable(false);
             gd = new GridData(GridData.FILL_HORIZONTAL);
             remoteUpdateUriText.setLayoutData(gd);
+            
+            // add basic authentication settings for base uri
+            remoteUpdateAuthLabel = new Label(RemoteSettingsPanel, SWT.NONE);
+            remoteUpdateAuthLabel.setText(Messages.getString("UpdatesitePreferencePage.basicAuth.credential"));
+
+            baseAuthPanel = new Composite(RemoteSettingsPanel, SWT.None);
+            baseAuthPanel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+            panelLayout = new GridLayout(4, false);
+            baseAuthPanel.setLayout(panelLayout);
+
+            unameLabel = new Label(baseAuthPanel, SWT.NONE);
+            unameLabel.setText(Messages.getString("UpdatesitePreferencePage.basicAuth.user"));
+            remoteUpdateUserText = new Text(baseAuthPanel, SWT.BORDER);
+            gd = new GridData(GridData.FILL_HORIZONTAL);
+            remoteUpdateUserText.setLayoutData(gd);
+
+            pwdLabel = new Label(baseAuthPanel, SWT.NONE);
+            pwdLabel.setText(Messages.getString("UpdatesitePreferencePage.basicAuth.password"));
+            remoteUpdatePasswordText = new Text(baseAuthPanel, SWT.PASSWORD | SWT.BORDER);
+            gd = new GridData(GridData.FILL_HORIZONTAL);
+            remoteUpdatePasswordText.setLayoutData(gd);
+            
+            gd = new GridData(GridData.FILL_HORIZONTAL);
+            gd.horizontalSpan = 2;
+            gd.horizontalAlignment = SWT.RIGHT;
+            panelLayout = new GridLayout(1, false);
+            Composite authButtonPanel = new Composite(RemoteSettingsPanel, SWT.None);
+            authButtonPanel.setLayoutData(gd);
+            authButtonPanel.setLayout(panelLayout);
+            
+            remoteTestAuth = new Button(authButtonPanel, SWT.NONE | SWT.CENTER);
+            remoteTestAuth.setText(Messages.getString("UpdatesitePreferencePage.basicAuth.test"));
         }
 
         boolean isCloudLicense = IBrandingService.get().isCloudLicense();
@@ -266,8 +345,8 @@ public class UpdatesitePreferencePage extends PreferencePage {
         releaseUriText.setLayoutData(gd);
         
         // add basic authentication settings for base uri
-        enableBaseAuth = new Button(localSettingsPanel,SWT.CHECK);
-        enableBaseAuth.setText(Messages.getString("UpdatesitePreferencePage.basicAuth.enable"));
+        localBaseAuthLabel = new Label(localSettingsPanel, SWT.NONE);
+        localBaseAuthLabel.setText(Messages.getString("UpdatesitePreferencePage.basicAuth.credential"));
         
         Composite baseAuthPanel =  new Composite(localSettingsPanel, SWT.None);
         baseAuthPanel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -296,8 +375,8 @@ public class UpdatesitePreferencePage extends PreferencePage {
         updateUriText.setLayoutData(gd);
         
         // add basic authentication settings for update uri
-        enableUpdateAuth = new Button(localSettingsPanel,SWT.CHECK);
-        enableUpdateAuth.setText(Messages.getString("UpdatesitePreferencePage.basicAuth.enable"));
+        localUpdateAuthLabel = new Label(localSettingsPanel, SWT.NONE);
+        localUpdateAuthLabel.setText(Messages.getString("UpdatesitePreferencePage.basicAuth.credential"));
         
         baseAuthPanel =  new Composite(localSettingsPanel, SWT.None);
         baseAuthPanel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -315,6 +394,18 @@ public class UpdatesitePreferencePage extends PreferencePage {
         updatePasswordText = new Text(baseAuthPanel, SWT.PASSWORD | SWT.BORDER);
         gd = new GridData(GridData.FILL_HORIZONTAL);
         updatePasswordText.setLayoutData(gd);
+        
+        
+        gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalSpan = 2;
+        panelLayout = new GridLayout(1, false);
+        gd.horizontalAlignment = SWT.RIGHT;
+        Composite authButtonPanel = new Composite(localSettingsPanel, SWT.None);
+        authButtonPanel.setLayoutData(gd);
+        authButtonPanel.setLayout(panelLayout);
+
+        testLocalAuth = new Button(authButtonPanel, SWT.NONE | SWT.CENTER);
+        testLocalAuth.setText(Messages.getString("UpdatesitePreferencePage.basicAuth.test"));
         
         Label placeHolder = new Label(localSettingsPanel, SWT.None);
         gd = new GridData();
@@ -382,13 +473,16 @@ public class UpdatesitePreferencePage extends PreferencePage {
 
     // need to be executed after loading uris of base and update
     private void initBasicAuth(UpdateSiteConfig config) throws Exception {
-        this.enableBaseAuth.setSelection(false);
-        this.enableUpdateAuth.setSelection(false);
-        URI baseURI = config.getLocalRelease(new NullProgressMonitor());
-        if (isHTTP(baseURI)) {
-            if (config.isEnabledBasicAuth(baseURI.getHost())) {
-                this.enableBaseAuth.setSelection(true);
-
+        localBaseChanged = false;
+        localUpdateChanged = false;
+        remoteBaseChanged = false;
+        remoteUpdateChanged = false;
+        if (!enableTmcUpdateSettings || (enableTmcUpdateSettings && overwriteRemoteUpdateSettingsBtn.getSelection())) {
+            // init local settings
+            this.testLocalAuth.setEnabled(false);
+            URI baseURI = config.getLocalRelease(new NullProgressMonitor());
+            if (isHTTP(baseURI)) {
+                this.testLocalAuth.setEnabled(true);
                 // load user and pwd
                 String[] namePwd = UpdateSiteConfig.loadCredentialsFromSecureStore(baseURI);
                 if (namePwd != null) {
@@ -399,45 +493,73 @@ public class UpdatesitePreferencePage extends PreferencePage {
                 this.baseUserText.setEnabled(false);
                 this.basePasswordText.setEnabled(false);
             }
-        }
-        
-        URI updateUri = null;
-        Collection<URI> updateURIs = config.getLocalUpdates(new NullProgressMonitor());
-        for (URI uri : updateURIs) {
-            if (isHTTP(uri)) {
-                updateUri = uri;
-                // only support one http update site
-                break;
-            }
-        }
-        if (updateUri != null) {
-            if (StringUtils.equals(baseURI.getHost(), updateUri.getHost())) {
-                this.enableUpdateAuth.setSelection(enableBaseAuth.getSelection());
-                this.enableUpdateAuth.setEnabled(false);
-                this.updateUserText.setEnabled(false);
-                this.updatePasswordText.setEnabled(false);
-            } else {
-                this.enableUpdateAuth.setEnabled(true);
-                if (config.isEnabledBasicAuth(updateUri.getHost())) {
-                    this.enableUpdateAuth.setSelection(true);
 
-                    // load user and pwd
-                    String[] namePwd = UpdateSiteConfig.loadCredentialsFromSecureStore(updateUri);
-                    if (namePwd != null) {
-                        this.updateUserText.setText(namePwd[0]);
-                        this.updatePasswordText.setText(namePwd[1]);
-                    }
-                } else {
-                    this.updateUserText.setEnabled(false);
-                    this.updatePasswordText.setEnabled(false);
+            URI updateUri = null;
+            Collection<URI> updateURIs = config.getLocalUpdates(new NullProgressMonitor());
+            for (URI uri : updateURIs) {
+                if (isHTTP(uri)) {
+                    updateUri = uri;
+                    // only support one http update site
+                    break;
                 }
             }
-        } else {
-            // no http update site
-            this.enableUpdateAuth.setEnabled(false);
-            this.updateUserText.setEnabled(false);
-            this.updatePasswordText.setEnabled(false);
+            if (updateUri != null) {
+                this.testLocalAuth.setEnabled(true);
+                // load user and pwd
+                String[] namePwd = UpdateSiteConfig.loadCredentialsFromSecureStore(updateUri);
+                if (namePwd != null) {
+                    this.updateUserText.setText(namePwd[0]);
+                    this.updatePasswordText.setText(namePwd[1]);
+                }
+            } else {
+                // no http update site
+                this.updateUserText.setEnabled(false);
+                this.updatePasswordText.setEnabled(false);
+            }
         }
+        if (enableTmcUpdateSettings) {
+            // init remote settings
+            this.remoteTestAuth.setEnabled(false);
+            String remoteBaseUriStr = config.getTmcRelease(new NullProgressMonitor());
+            if (!StringUtils.isEmpty(remoteBaseUriStr) && isHTTP(URI.create(remoteBaseUriStr))) {
+                this.remoteTestAuth.setEnabled(true);
+                // load user and pwd
+                String[] namePwd = UpdateSiteConfig.loadCredentialsFromSecureStore(URI.create(remoteBaseUriStr));
+                if (namePwd != null) {
+                    this.remoteBaseUserText.setText(namePwd[0]);
+                    this.remoteBasePasswordText.setText(namePwd[1]);
+                }
+            } else {
+                this.remoteBaseUserText.setEnabled(false);
+                this.remoteBasePasswordText.setEnabled(false);
+            }
+
+            URI updateUri = null;
+            String remoteUpdateUriStr = config.getTmcUpdate(new NullProgressMonitor());
+            if (!StringUtils.isEmpty(remoteUpdateUriStr) && isHTTP(URI.create(remoteUpdateUriStr))) {
+                updateUri = URI.create(remoteUpdateUriStr);
+            }
+
+            if (updateUri != null) {
+                this.remoteTestAuth.setEnabled(true);
+                // load user and pwd
+                String[] namePwd = UpdateSiteConfig.loadCredentialsFromSecureStore(updateUri);
+                if (namePwd != null) {
+                    this.remoteUpdateUserText.setText(namePwd[0]);
+                    this.remoteUpdatePasswordText.setText(namePwd[1]);
+                }
+            } else {
+                // no http update site
+                this.remoteUpdateUserText.setEnabled(false);
+                this.remoteUpdatePasswordText.setEnabled(false);
+            }
+        }
+        
+        updateLocalBasicAuthUI();
+        updateRemoteBasicAuthUI();
+        // init basic auth
+        setValid(validateBasicAuth());
+        refresh();
     }
     
     private void init() {
@@ -519,7 +641,8 @@ public class UpdatesitePreferencePage extends PreferencePage {
 
             @Override
             public void modifyText(ModifyEvent e) {
-                updateBasicAuthUI();
+                updateLocalBasicAuthUI();
+                setValid(validateBasicAuth());
                 refresh();
             }
         });
@@ -527,7 +650,8 @@ public class UpdatesitePreferencePage extends PreferencePage {
 
             @Override
             public void modifyText(ModifyEvent e) {
-                updateBasicAuthUI();
+                updateLocalBasicAuthUI();
+                setValid(validateBasicAuth());
                 refresh();
             }
         });
@@ -542,7 +666,7 @@ public class UpdatesitePreferencePage extends PreferencePage {
             });
         }
         
-        enableBaseAuth.addSelectionListener(new SelectionListener() {
+        testLocalAuth.addSelectionListener(new SelectionListener() {
 
             @Override
             public void widgetDefaultSelected(SelectionEvent arg0) {
@@ -552,34 +676,90 @@ public class UpdatesitePreferencePage extends PreferencePage {
 
             @Override
             public void widgetSelected(SelectionEvent arg0) {
-                baseUserText.setEnabled(enableBaseAuth.getSelection());
-                basePasswordText.setEnabled(enableBaseAuth.getSelection());
-                
-                URI baseURI = getBaseURI();
-                URI updateURI = getUpdateURI();
-                if (updateURI != null && baseURI != null && StringUtils.equals(baseURI.getHost(), updateURI.getHost())) {
-                    enableUpdateAuth.setSelection(enableBaseAuth.getSelection());
+                boolean isValid = true;
+                try {
+                    URI baseUri = null;
+                    URI updateUri = null;
+                    try {
+                        baseUri = getBaseURI();
+                    } catch (Exception e) {
+                        ExceptionHandler.process(e);
+                    }
+                    try {
+                        updateUri = getUpdateURI();
+                    } catch (Exception e) {
+                        ExceptionHandler.process(e);
+                    }
+                    if (sameHost(baseUri, updateUri)) {
+                        boolean isValidBase = false;
+                        boolean isValidUpdate = false;
+                        boolean isBaseError = false;
+                        boolean isUpdateError = false;
+                        try {
+                            isValidBase = validateBasicAuth(releaseUriText, baseUserText, basePasswordText);
+                        } catch (Exception e) {
+                            isBaseError = true;
+                            popupWindow(releaseUriText, true, "UpdatesitePreferencePage.basicAuth.error");
+                        }
+                        try {
+                            isValidUpdate = validateBasicAuth(updateUriText, updateUserText, updatePasswordText);
+                        } catch (Exception e) {
+                            isUpdateError = true;
+                            popupWindow(updateUriText, true, "UpdatesitePreferencePage.basicAuth.error");
+                        }
+                        isValid = isValid && isValidBase && isValidUpdate;
+                        if (isValidBase == isValidUpdate) {
+                            if (!isBaseError) {
+                                popupWindow(releaseUriText, !isValidBase);
+                            }
+                        } else {
+                            if (!isBaseError) {
+                                popupWindow(releaseUriText, !isValidBase);
+                            }
+                            if (!isUpdateError) {
+                                popupWindow(updateUriText, !isValidUpdate);
+                            }
+                        }
+                    } else {
+                        boolean isBaseError = false;
+                        boolean isUpdateError = false;
+                        if (baseUri != null) {
+                            boolean isValidBase = false;
+                            try {
+                                isValidBase = validateBasicAuth(releaseUriText, baseUserText, basePasswordText);
+                            } catch (Exception e) {
+                                isBaseError = true;
+                                popupWindow(releaseUriText, true, "UpdatesitePreferencePage.basicAuth.error");
+                            }
+                            isValid = isValid && isValidBase;
+                            if (!isBaseError) {
+                                popupWindow(releaseUriText, !isValidBase);
+                            }
+                        }
+                        if (updateUri != null) {
+                            boolean isValidUpdate = false;
+                            try {
+                                isValidUpdate = validateBasicAuth(updateUriText, updateUserText, updatePasswordText);
+                            } catch (Exception e) {
+                                isUpdateError = true;
+                                popupWindow(updateUriText, true, "UpdatesitePreferencePage.basicAuth.error");
+                            }
+                            isValid = isValid && isValidUpdate;
+                            if (!isUpdateError) {
+                                popupWindow(updateUriText, !isValidUpdate);
+                            }
+                        }
+                    }
+                    
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
                 }
+                
+                setValid(isValid);
                 
                 refresh();
             }
             
-        });
-        
-        enableUpdateAuth.addSelectionListener(new SelectionListener() {
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent arg0) {
-                // TODO Auto-generated method stub
-                
-            }
-
-            @Override
-            public void widgetSelected(SelectionEvent arg0) {
-                updateUserText.setEnabled(enableUpdateAuth.getSelection());
-                updatePasswordText.setEnabled(enableUpdateAuth.getSelection());
-                refresh();
-            }
         });
         
         baseUserText.addModifyListener(new ModifyListener() {
@@ -587,6 +767,7 @@ public class UpdatesitePreferencePage extends PreferencePage {
             @Override
             public void modifyText(ModifyEvent e) {
                 refresh();
+                localBaseChanged = true;
             }
         });
         
@@ -595,6 +776,7 @@ public class UpdatesitePreferencePage extends PreferencePage {
             @Override
             public void modifyText(ModifyEvent e) {
                 refresh();
+                localBaseChanged = true;
             }
         });
         
@@ -603,6 +785,7 @@ public class UpdatesitePreferencePage extends PreferencePage {
             @Override
             public void modifyText(ModifyEvent e) {
                 refresh();
+                localUpdateChanged = true;
             }
         });
         
@@ -611,108 +794,305 @@ public class UpdatesitePreferencePage extends PreferencePage {
             @Override
             public void modifyText(ModifyEvent e) {
                 refresh();
+                localUpdateChanged = true;
             }
         });
+        
+        if (isWorkbenchRunning && isCloudConnection) {
+            remoteBaseUserText.addModifyListener(new ModifyListener() {
+
+                @Override
+                public void modifyText(ModifyEvent e) {
+                    refresh();
+                    remoteBaseChanged = true;
+                }
+            });
+            remoteBasePasswordText.addModifyListener(new ModifyListener() {
+
+                @Override
+                public void modifyText(ModifyEvent e) {
+                    refresh();
+                    remoteBaseChanged = true;
+                }
+            });
+            remoteUpdateUserText.addModifyListener(new ModifyListener() {
+
+                @Override
+                public void modifyText(ModifyEvent e) {
+                    refresh();
+                    remoteUpdateChanged = true;
+                }
+            });
+            remoteUpdateUserText.addModifyListener(new ModifyListener() {
+
+                @Override
+                public void modifyText(ModifyEvent e) {
+                    refresh();
+                    remoteUpdateChanged = true;
+                }
+            });
+            
+            remoteTestAuth.addSelectionListener(new SelectionListener() {
+
+                @Override
+                public void widgetDefaultSelected(SelectionEvent arg0) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void widgetSelected(SelectionEvent arg0) {
+                    boolean isValid = true;
+                    try {
+                        boolean isBaseError = false;
+                        boolean isUpdateError = false;
+                        URI baseUri = null;
+                        URI updateUri = null;
+                        try {
+                            baseUri = getRemoteBaseURI();
+                        } catch (Exception e) {
+                            ExceptionHandler.process(e);
+                        }
+                        try {
+                            updateUri = getRemoteUpdateURI();
+                        } catch (Exception e) {
+                            ExceptionHandler.process(e);
+                        }
+                        if (sameHost(baseUri, updateUri)) {
+                            String user = StringUtils.isEmpty(remoteBaseUserText.getText().trim()) ? remoteUpdateUserText.getText().trim() : remoteBaseUserText.getText().trim();
+                            String pwd = StringUtils.isEmpty(remoteBasePasswordText.getText().trim()) ? remoteUpdatePasswordText.getText().trim() : remoteBasePasswordText.getText().trim();
+                            boolean valid = false;
+                            try {
+                                valid = validateBasicAuth(baseUri, user, pwd);
+                            } catch (Exception e) {
+                                isBaseError = true;
+                                popupWindow(remoteReleaseUriText, true, "UpdatesitePreferencePage.basicAuth.error");
+                            }
+                            isValid = valid;
+                            if (!isBaseError) {
+                                popupWindow(remoteReleaseUriText, !isValid);
+                            }
+                        } else {
+                            if (baseUri != null) {
+                                boolean isValidBase = false;
+                                try {
+                                    isValidBase = validateBasicAuth(remoteReleaseUriText, remoteBaseUserText, remoteBasePasswordText);
+                                } catch (Exception e) {
+                                    isBaseError = true;
+                                    popupWindow(remoteReleaseUriText, true, "UpdatesitePreferencePage.basicAuth.error");
+                                }
+                                isValid = isValid && isValidBase;
+                                if (!isBaseError) {
+                                    popupWindow(remoteReleaseUriText, !isValidBase);
+                                }
+                            }
+                            if (updateUri != null) {
+                                boolean isValidUpdate = false;
+                                try {
+                                    isValidUpdate = validateBasicAuth(remoteUpdateUriText, remoteUpdateUserText, remoteUpdatePasswordText);
+                                } catch (Exception e) {
+                                    isUpdateError = true;
+                                    popupWindow(remoteUpdateUriText, true, "UpdatesitePreferencePage.basicAuth.error");
+                                }
+                                isValid = isValid && isValidUpdate;
+                                if (!isUpdateError) {
+                                    popupWindow(remoteUpdateUriText, !isValidUpdate);
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        ExceptionHandler.process(e);
+                    }
+                    setValid(isValid);
+                    refresh();
+                }
+
+            });
+        }
     }
 
     private void onOverwriteRemoteUpdateSettingsBtn(SelectionEvent e) {
         updateLocalPanelVisible(overwriteRemoteUpdateSettingsBtn.getSelection());
+        updateLocalBasicAuthUI();
+        updateRemoteBasicAuthUI();
+        try {
+            setValid(validateBasicAuth());
+        } catch (Exception ex) {
+            ExceptionHandler.process(ex);
+        }
     }
     
-    private void updateBasicAuthUI() {
-        URI baseURI = getBaseURI();
-        URI updateURI = getUpdateURI();
-        if (baseURI == null) {
-            enableBaseAuth.setEnabled(false);
-            enableBaseAuth.setSelection(false);
-        } else {
-            enableBaseAuth.setEnabled(true);
-        }
-        
-        if (updateURI == null) {
-            enableUpdateAuth.setEnabled(true);
-            enableUpdateAuth.setSelection(false);
-        } else {
-            if (baseURI != null && StringUtils.equals(baseURI.getHost(), updateURI.getHost())) {
-                enableUpdateAuth.setSelection(enableBaseAuth.getSelection());
-                enableUpdateAuth.setEnabled(false);
-            } else {
-                enableUpdateAuth.setEnabled(true);
-                enableUpdateAuth.setSelection(false);
+    private static boolean sameHost(URI baseUri, URI updateUri) {
+        return baseUri != null && updateUri != null && StringUtils.equals(baseUri.getHost(), updateUri.getHost());
+    }
+
+    private void updateRemoteBasicAuthUI() {
+        if (isCloudConnection && enableTmcUpdateSettings) {
+            this.remoteTestAuth.setEnabled(false);
+            this.remoteBaseUserText.setEnabled(false);
+            this.remoteBasePasswordText.setEnabled(false);
+            this.remoteUpdateUserText.setEnabled(false);
+            this.remoteUpdatePasswordText.setEnabled(false);
+            if (!overwriteRemoteUpdateSettingsBtn.getSelection()) {
+                try {
+                    URI baseURI = getRemoteBaseURI();
+                    if (baseURI != null) {
+                        remoteTestAuth.setEnabled(true);
+                        this.remoteBasePasswordText.setEnabled(true);
+                        this.remoteBaseUserText.setEnabled(true);
+                    }
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+                
+                try {
+                    URI updateURI = getRemoteUpdateURI();
+                    if (updateURI != null) {
+                        remoteTestAuth.setEnabled(true);
+                        this.remoteUpdateUserText.setEnabled(true);
+                        this.remoteUpdatePasswordText.setEnabled(true);
+                    }
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
             }
         }
     }
     
-    private URI getBaseURI() {
-        if (StringUtils.isBlank(this.releaseUriText.getText().trim())) {
+    private void updateLocalBasicAuthUI() {
+        if (!enableTmcUpdateSettings || (enableTmcUpdateSettings && overwriteRemoteUpdateSettingsBtn.getSelection()) || localPanel.isVisible()) {
+            URI baseURI = null;
+            try {
+                baseURI = getBaseURI();
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            testLocalAuth.setEnabled(false);
+            this.basePasswordText.setEnabled(false);
+            this.baseUserText.setEnabled(false);
+            if (baseURI != null) {
+                testLocalAuth.setEnabled(true);
+                this.basePasswordText.setEnabled(true);
+                this.baseUserText.setEnabled(true);
+            }
+            
+            URI updateURI = null;
+            try {
+                updateURI = getUpdateURI();
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            this.updateUserText.setEnabled(false);
+            this.updatePasswordText.setEnabled(false);
+            if (updateURI != null) {
+                testLocalAuth.setEnabled(true);
+                this.updateUserText.setEnabled(true);
+                this.updatePasswordText.setEnabled(true);
+            }
+            
+        } else {
+            testLocalAuth.setEnabled(false);
+            this.basePasswordText.setEnabled(false);
+            this.baseUserText.setEnabled(false);
+            this.updateUserText.setEnabled(false);
+            this.updatePasswordText.setEnabled(false);
+        }
+    }
+    
+    private URI getBaseURI() throws Exception {
+        return getURI(this.releaseUriText.getText());
+    }
+    
+    private URI getURI(String uriText) throws Exception {
+        if (uriText == null || StringUtils.isBlank(uriText.trim())) {
             return null;
         }
-        try {
-            URI uri = p2Service.toURI(this.releaseUriText.getText().trim());
+        String[] uriStrs = uriText.trim().split(",");
+        for (String uriStr : uriStrs) {
+            URI uri = p2Service.toURI(uriStr);
             if (isHTTP(uri)) {
                 return uri;
             }
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
         }
         return null;
     }
     
-    private URI getUpdateURI() {
-        if (StringUtils.isBlank(this.updateUriText.getText().trim())) {
-            return null;
-        }
-        try {
-            String[] uriStrs = this.updateUriText.getText().trim().split(",");
-            for (String uriStr : uriStrs) {
-                URI uri = p2Service.toURI(uriStr);
-                if (isHTTP(uri)) {
-                    return uri;
-                }
-            }
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
-        return null;
+    private URI getUpdateURI() throws Exception {
+        return getURI(this.updateUriText.getText());
+    }
+    
+    private URI getRemoteBaseURI() throws Exception {
+        return getURI(this.remoteReleaseUriText.getText());
+    }
+
+    private URI getRemoteUpdateURI() throws Exception {
+        return getURI(this.remoteUpdateUriText.getText());
     }
     
     private static boolean isHTTP(URI uri) {
-        if (StringUtils.equals(uri.getScheme(), UpdateSiteConfig.PROTOCOL_HTTP) || StringUtils.equals(uri.getScheme(), UpdateSiteConfig.PROTOCOL_HTTPS)) {
+        if (uri != null && (StringUtils.equals(uri.getScheme(), UpdateSiteConfig.PROTOCOL_HTTP) || StringUtils.equals(uri.getScheme(), UpdateSiteConfig.PROTOCOL_HTTPS))) {
             return true;
         }
         return false;
     }
     
     private void saveBasicAuth(UpdateSiteConfig config) throws Exception {
-        URI baseUri = p2Service.toURI(this.releaseUriText.getText().trim());
-        if (isHTTP(baseUri)) {
-            if (this.enableBaseAuth.getSelection()) {
-                UpdateSiteConfig.saveCredentialsIntoSecureStore(baseUri, this.baseUserText.getText().trim(), this.basePasswordText.getText().trim());
-                config.enableBasicAuth(baseUri.getHost(), true);
-            } else {
-                UpdateSiteConfig.deleteCredentialsFromSecureStore(baseUri);
-                config.enableBasicAuth(baseUri.getHost(), false);
+        if (!enableTmcUpdateSettings || (enableTmcUpdateSettings && overwriteRemoteUpdateSettingsBtn.getSelection())) {
+            URI baseUri = null;
+            try {
+                baseUri = this.getBaseURI();
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
             }
-        }
-        if (this.enableUpdateAuth.isEnabled()) {
-            URI updateUri = null;
-            String[] uriStrs = this.updateUriText.getText().trim().split(",");
-            for (String uriStr : uriStrs) {
-                URI uri = p2Service.toURI(uriStr);
-                if (isHTTP(uri)) {
-                    updateUri = uri;
-                    // support one http update site
-                    break;
+            if (baseUri != null) {
+                if (localBaseChanged) {
+                    UpdateSiteConfig.saveCredentialsIntoSecureStore(baseUri, this.baseUserText.getText().trim(), this.basePasswordText.getText().trim());
+                    config.enableBasicAuth(baseUri.getHost(), true);
+                    localBaseChanged = false;
                 }
             }
-
+            URI updateUri = null;
+            try {
+                updateUri = this.getUpdateURI();
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
             if (updateUri != null) {
-                if (this.enableUpdateAuth.getSelection()) {
+                if (localUpdateChanged) {
                     UpdateSiteConfig.saveCredentialsIntoSecureStore(updateUri, this.updateUserText.getText().trim(), this.updatePasswordText.getText().trim());
                     config.enableBasicAuth(updateUri.getHost(), true);
-                } else {
-                    UpdateSiteConfig.deleteCredentialsFromSecureStore(updateUri);
-                    config.enableBasicAuth(updateUri.getHost(), false);
+                    localUpdateChanged = false;
+                }
+            }
+        } else {
+            if (enableTmcUpdateSettings) {
+                // save remote basic auth
+                URI baseUri = null;
+                try {
+                    baseUri = this.getRemoteBaseURI();
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+                if (baseUri != null) {
+                    if (remoteBaseChanged) {
+                        UpdateSiteConfig.saveCredentialsIntoSecureStore(baseUri, this.remoteBaseUserText.getText().trim(), this.remoteBasePasswordText.getText().trim());
+                        config.enableBasicAuth(baseUri.getHost(), true);
+                        remoteBaseChanged = false;
+                    }
+                }
+
+                URI updateUri = null;
+                try {
+                    updateUri = this.getRemoteUpdateURI();
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+                if (updateUri != null) {
+                    if (remoteUpdateChanged) {
+                        UpdateSiteConfig.saveCredentialsIntoSecureStore(updateUri, this.remoteUpdateUserText.getText().trim(), this.remoteUpdatePasswordText.getText().trim());
+                        config.enableBasicAuth(updateUri.getHost(), true);
+                        remoteUpdateChanged = false;
+                    }
                 }
             }
         }
@@ -753,11 +1133,6 @@ public class UpdatesitePreferencePage extends PreferencePage {
                     config.overwriteTmcUpdateSettings(monitor, overwriteRemoteUpdateSettingsBtn.getSelection());
                 }
                 // save basic authentication credentials
-                // validate basic auth
-                boolean isValid = this.validateBasicAuth();
-                if (!isValid) {
-                    return false;
-                }
                 saveBasicAuth(config);
             } catch (Exception e) {
                 ExceptionMessageDialog.openError(null, Messages.getString("UpdatesitePreferencePage.err.title"),
@@ -768,37 +1143,114 @@ public class UpdatesitePreferencePage extends PreferencePage {
     }
     
     private void resetBasicAuth() {
-        URI baseUri = getBaseURI();
-        URI updateUri = getUpdateURI();
-        if (baseUri == null) {
-            enableBaseAuth.setEnabled(false);
-            this.enableBaseAuth.setSelection(false);
-        } else {
-            enableBaseAuth.setEnabled(true);
-            this.enableBaseAuth.setSelection(false);
-        }
-
-        this.baseUserText.setText("");
-        this.basePasswordText.setText("");
-        this.baseUserText.setEnabled(this.enableBaseAuth.getSelection());
-        this.basePasswordText.setEnabled(this.enableBaseAuth.getSelection());
-
-        if (updateUri == null) {
-            enableUpdateAuth.setEnabled(false);
-            this.enableUpdateAuth.setSelection(false);
-        } else {
-            if (baseUri != null && StringUtils.equals(baseUri.getHost(), updateUri.getHost())) {
-                enableUpdateAuth.setEnabled(false);
-                this.enableUpdateAuth.setSelection(false);
-            } else {
-                enableUpdateAuth.setEnabled(true);
-                this.enableUpdateAuth.setSelection(false);
+        if (!enableTmcUpdateSettings || (enableTmcUpdateSettings && overwriteRemoteUpdateSettingsBtn.getSelection()) || localPanel.isVisible()) {
+            // local
+            URI baseUri = null;
+            URI updateUri = null;
+            try {
+                baseUri = getBaseURI();
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
             }
+            try {
+                updateUri = getUpdateURI();
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            testLocalAuth.setEnabled(false);
+            this.baseUserText.setEnabled(false);
+            this.basePasswordText.setEnabled(false);
+            if (baseUri != null) {
+                testLocalAuth.setEnabled(true);
+                this.baseUserText.setEnabled(true);
+                this.basePasswordText.setEnabled(true);
+                try {
+                    UpdateSiteConfig.deleteCredentialsFromSecureStore(baseUri);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+
+            this.baseUserText.setText("");
+            this.basePasswordText.setText("");
+
+            this.updateUserText.setEnabled(false);
+            this.updatePasswordText.setEnabled(false);
+            if (updateUri != null) {
+                testLocalAuth.setEnabled(true);
+                this.updateUserText.setEnabled(true);
+                this.updatePasswordText.setEnabled(true);
+                try {
+                    UpdateSiteConfig.deleteCredentialsFromSecureStore(updateUri);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+            this.updateUserText.setText("");
+            this.updatePasswordText.setText("");
         }
-        this.updateUserText.setText("");
-        this.updatePasswordText.setText("");
-        this.updateUserText.setEnabled(enableUpdateAuth.getSelection());
-        this.updatePasswordText.setEnabled(enableUpdateAuth.getSelection());
+        // remote
+        if (this.enableTmcUpdateSettings && isWorkbenchRunning && isCloudConnection) {
+            URI remeoteBaseUri = null;
+            URI remoteUpdateUri = null;
+            try {
+                remeoteBaseUri = this.getRemoteBaseURI();
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            try {
+                remoteUpdateUri = this.getRemoteUpdateURI();
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            remoteTestAuth.setEnabled(false);
+            this.remoteBaseUserText.setEnabled(false);
+            this.remoteBasePasswordText.setEnabled(false);
+            if (remeoteBaseUri != null) {
+                remoteTestAuth.setEnabled(true);
+                this.remoteBaseUserText.setEnabled(true);
+                this.remoteBasePasswordText.setEnabled(true);
+                try {
+                    UpdateSiteConfig.deleteCredentialsFromSecureStore(remeoteBaseUri);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+
+            this.remoteBaseUserText.setText("");
+            this.remoteBasePasswordText.setText("");
+
+            this.remoteUpdateUserText.setEnabled(false);
+            this.remoteUpdatePasswordText.setEnabled(false);
+            if (remoteUpdateUri != null) {
+                remoteTestAuth.setEnabled(true);
+                this.remoteUpdateUserText.setEnabled(true);
+                this.remoteUpdatePasswordText.setEnabled(true);
+                try {
+                    UpdateSiteConfig.deleteCredentialsFromSecureStore(remoteUpdateUri);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+            this.remoteUpdateUserText.setText("");
+            this.remoteUpdatePasswordText.setText("");
+        }
+        
+        // init basic auth
+        try {
+            setValid(validateBasicAuth());
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        
+        updateLocalBasicAuthUI();
+        updateRemoteBasicAuthUI();
+        
+        refresh();
+        localBaseChanged = false;
+        localUpdateChanged = false;
+        remoteBaseChanged = false;
+        remoteUpdateChanged = false;
     }
 
     @Override
@@ -858,83 +1310,128 @@ public class UpdatesitePreferencePage extends PreferencePage {
             this.setErrorMessage(Messages.getString("UpdatesitePreferencePage.err.baseAndUpdateShouldBeDiff"));
             return false;
         }
-        
-        return this.validateBasicAuthInput();
-    }
-    
-    private boolean validateBasicAuthInput() {
-        if (enableBaseAuth.getSelection()) {
-            try {
-                URI baseUri = p2Service.toURI(this.releaseUriText.getText().trim());
-                if (isHTTP(baseUri)) {
-                    if (StringUtils.isBlank(baseUserText.getText())) {
-                        this.setErrorMessage(Messages.getString("UpdatesitePreferencePage.basicAuth.user.empty", baseUri.getHost()));
-                        return false;
-                    }
-                    if (StringUtils.isBlank(basePasswordText.getText())) {
-                        this.setErrorMessage(Messages.getString("UpdatesitePreferencePage.basicAuth.password.empty", baseUri.getHost()));
-                        return false;
-                    }
-                }
-            } catch (Exception e) {
-
-            }
-        }
-
-        if (enableUpdateAuth.isEnabled() && enableUpdateAuth.getSelection()) {
-            String[] uriStrs = updateUriText.getText().trim().split(",");
-            URI updateUri = null;
-            for (int i = 0; i < uriStrs.length; i++) {
-                try {
-                    URI uri = p2Service.toURI(uriStrs[i]);
-                    if (isHTTP(uri)) {
-                        updateUri = uri;
-                    }
-                } catch (Exception e) {
-
-                }
-            }
-
-            if (updateUri != null) {
-                if (StringUtils.isBlank(updateUserText.getText())) {
-                    this.setErrorMessage(Messages.getString("UpdatesitePreferencePage.basicAuth.user.empty", updateUri.getHost()));
-                    return false;
-                }
-                if (StringUtils.isBlank(updatePasswordText.getText())) {
-                    this.setErrorMessage(Messages.getString("UpdatesitePreferencePage.basicAuth.password.empty", updateUri.getHost()));
-                    return false;
-                }
-            }
-        }
         return true;
     }
     
-    private boolean validateBasicAuth() throws Exception {
-        if (enableBaseAuth.getSelection()) {
-            URI uri = p2Service.toURI(releaseUriText.getText().trim());
-            String nameAndPwd = baseUserText.getText().trim() + ":" + basePasswordText.getText().trim();
-            boolean requireAuth = UpdateSiteConfig.requireCredentials(uri, nameAndPwd);
-            if (requireAuth) {
-                warningDesc.setText(Messages.getString("UpdatesitePreferencePage.basicAuth.wrongUserOrPassword", uri.getHost()));
-                showWarning(true);
+    private boolean validateBasicAuth(Text uriInput, Text userInput, Text passwordInput) throws Exception {
+        URI uri = getURI(uriInput.getText());
+        if (uri != null) {
+            if (validateBasicAuth(uri, userInput.getText(), passwordInput.getText())) {
+                return true;
+            } else {
                 return false;
             }
         }
+        return true;
+    }
+    
+    private void popupWindow(Text uriInput, boolean isError) throws Exception {
+        popupWindow(uriInput, isError, isError ? "UpdatesitePreferencePage.basicAuth.wrongUserOrPassword" : "UpdatesitePreferencePage.basicAuth.ok");
+    }
+    
+    private void popupWindow(Text uriInput, boolean isError, String messageKey) {
+        String popupTitle = "";
+        if (uriInput.equals(releaseUriText) || uriInput.equals(remoteReleaseUriText)) {
+            popupTitle = Messages.getString("UpdatesitePreferencePage.base");
+        } else if (uriInput.equals(updateUriText) || uriInput.equals(remoteUpdateUriText)) {
+            popupTitle = Messages.getString("UpdatesitePreferencePage.update");
+        }
 
-        if (enableUpdateAuth.isEnabled() && enableUpdateAuth.getSelection()) {
-            String[] uriStrs = updateUriText.getText().trim().split(",");
-            for (int i = 0; i < uriStrs.length; i++) {
-                URI uri = p2Service.toURI(uriStrs[i]);
-                String nameAndPwd = updateUserText.getText().trim() + ":" + updatePasswordText.getText().trim();
-                boolean requireAuth = UpdateSiteConfig.requireCredentials(uri, nameAndPwd);
-                if (requireAuth) {
-                    warningDesc.setText(Messages.getString("UpdatesitePreferencePage.basicAuth.wrongUserOrPassword", uri.getHost()));
-                    showWarning(true);
+        URI uri = null;
+        try {
+            uri = this.getURI(uriInput.getText().trim());
+        } catch (Exception e) {
+            MessageDialog.openError(getShell(), popupTitle, Messages.getString(messageKey));
+            return;
+        }
+        if (isHTTP(uri)) {
+            popupTitle = popupTitle + ": " + uri.getHost();
+            if (!isError) {
+                MessageDialog.openInformation(getShell(), popupTitle, Messages.getString(messageKey));
+            } else {
+                MessageDialog.openError(getShell(), popupTitle, Messages.getString(messageKey));
+            }
+        }
+    }
+    
+    private boolean validateBasicAuth(URI uri, String user, String password) throws Exception {
+        String nameAndPwd = user.trim() + ":" + password.trim();
+        boolean requireAuth = UpdateSiteConfig.requireCredentials(uri, nameAndPwd);
+        if (requireAuth) {
+            return false;
+        }
+        return true;
+    }
+    
+    private boolean validateBasicAuth() {
+        boolean retVal = true;
+        if (!enableTmcUpdateSettings || (enableTmcUpdateSettings && overwriteRemoteUpdateSettingsBtn.getSelection()) || localPanel.isVisible()) {
+            URI baseUri = null;
+            try {
+                baseUri = this.getBaseURI();
+                if (baseUri != null) {
+                    retVal = validateBasicAuth(baseUri, this.baseUserText.getText(), basePasswordText.getText());
+                }
+            } catch (Exception e) {
+                popupWindow(this.releaseUriText, true, "UpdatesitePreferencePage.basicAuth.error");
+                return false;
+            }
+            try {
+                URI updateUri = this.getUpdateURI();
+                if (updateUri != null) {
+                    String userStr = this.updateUserText.getText().trim();
+                    String pwdStr = updatePasswordText.getText().trim();
+                    if (baseUri != null && StringUtils.equals(baseUri.getHost(), updateUri.getHost())) {
+                        if (StringUtils.isEmpty(userStr)) {
+                            userStr = this.baseUserText.getText().trim();
+                        }
+                        if (StringUtils.isEmpty(pwdStr)) {
+                            pwdStr = this.basePasswordText.getText().trim();
+                        }
+                    }
+
+                    retVal = retVal && validateBasicAuth(updateUri, userStr, pwdStr);
+
+                }
+            } catch (Exception e) {
+                popupWindow(this.updateUriText, true, "UpdatesitePreferencePage.basicAuth.error");
+                return false;
+            }
+        } else {
+            if (enableTmcUpdateSettings) {
+                // remote basic auth
+                URI baseUri = null;
+                try {
+                    baseUri = this.getRemoteBaseURI();
+                    if (baseUri != null) {
+                        retVal = validateBasicAuth(baseUri, this.remoteBaseUserText.getText(), remoteBasePasswordText.getText());
+                    }
+                } catch (Exception e) {
+                    popupWindow(this.remoteReleaseUriText, true, "UpdatesitePreferencePage.basicAuth.error");
+                    return false;
+                }
+                try {
+                    URI updateUri = this.getRemoteUpdateURI();
+                    if (updateUri != null) {
+                        String userStr = this.remoteUpdateUserText.getText().trim();
+                        String pwdStr = remoteUpdatePasswordText.getText().trim();
+                        if (baseUri != null && StringUtils.equals(baseUri.getHost(), updateUri.getHost())) {
+                            if (StringUtils.isEmpty(userStr)) {
+                                userStr = this.remoteBaseUserText.getText().trim();
+                            }
+                            if (StringUtils.isEmpty(pwdStr)) {
+                                pwdStr = this.remoteBasePasswordText.getText().trim();
+                            }
+                        }
+                        retVal = retVal && validateBasicAuth(updateUri, userStr, pwdStr);
+                    }
+                } catch (Exception e) {
+                    popupWindow(this.remoteUpdateUriText, true, "UpdatesitePreferencePage.basicAuth.error");
                     return false;
                 }
             }
         }
-        return true;
+        return retVal;
     }
 
     private void checkUpdateUriSettings() {

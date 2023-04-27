@@ -27,7 +27,7 @@ import org.eclipse.ui.dialogs.SearchPattern;
 import org.talend.designer.gefabstractmap.figures.table.entity.TableEntityFigure;
 import org.talend.designer.gefabstractmap.figures.var.VarEntityFigure;
 import org.talend.designer.gefabstractmap.part.TableEntityPart;
-import org.talend.designer.gefabstractmap.resource.EntryState;
+import org.talend.designer.mapper.ui.visualmap.table.EntryState;
 import org.talend.designer.xmlmap.figures.InputXmlTreeFigure;
 import org.talend.designer.xmlmap.figures.OutputXmlTreeFigure;
 import org.talend.designer.xmlmap.figures.treeNode.XmlmapTreeNodeFigure;

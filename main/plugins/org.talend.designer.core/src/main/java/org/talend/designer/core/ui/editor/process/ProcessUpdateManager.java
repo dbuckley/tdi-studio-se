@@ -469,6 +469,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                 }
             }
         }
+        // re-check deleteParams from repositoryRenamedMap
+        repositoryRenamedMap.forEach((item, renameMap) -> renameMap.forEach((_new, _old) -> deleteParams.remove(item, _old)));
+
         // built-in
         if (contextManager instanceof JobContextManager) { // add the lost source for init process
             Set<String> lostParameters = ((JobContextManager) contextManager).getLostParameters();
@@ -503,7 +506,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                 }
             }
         }
-        checkNewAddParameterForRef(existedParams, contextManager, ContextUtils.isPropagateContextVariable());
+        checkNewAddParameterForRef(existedParams, repositoryRenamedMap, contextManager,
+                ContextUtils.isPropagateContextVariable());
         // see 0004661: Add an option to propagate when add or remove a variable in a repository context to
         // jobs/joblets.
         checkPropagateContextVariable(contextResults, contextManager, deleteParams, allContextItem, refContextIds);
@@ -555,7 +559,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         return contextResults;
     }
 
-    private void checkNewAddParameterForRef(Map<Item, Set<String>> existedParams, final IContextManager contextManager,
+    private void checkNewAddParameterForRef(Map<Item, Set<String>> existedParams,
+            Map<Item, Map<String, String>> repositoryRenamedMap, final IContextManager contextManager,
             boolean isPropagateContextVariable) {
         if (!isPropagateContextVariable) {
             return;
@@ -566,14 +571,15 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             ContextType contextType = ContextUtils.getContextTypeByName(contextItem, null);
             List<ContextParameterType> contextParameter = contextType.getContextParameter();
             Set<String> existedParName = existedParams.get(contextItem);
+            Map<String, String> renameMap = repositoryRenamedMap.get(contextItem);
             for (ContextParameterType parameterType : contextParameter) {
-                if (!existedParName.contains(parameterType.getName())) {
+                if (!existedParName.contains(parameterType.getName())
+                        && (renameMap == null || !renameMap.containsKey(parameterType.getName()))) {
                     if (newParametersMap.get(contextItem) == null) {
                         newParametersMap.put(contextItem, new HashSet<String>());
                     }
-                    // To avoid the case: serval contexts contain more than one same name parameters, but we only can
-                    // add
-                    // one of them
+                    // To avoid the case: several contexts contain more than one same name parameters
+                    // but we only can add one of them
                     IContext processContext = ((JobContextManager) contextManager).getDefaultContext();
                     if (processContext.getContextParameter(parameterType.getName()) == null) {
                         newParametersMap.get(contextItem).add(parameterType.getName());

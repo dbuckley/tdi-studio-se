@@ -24,6 +24,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * DOC talend class global comment. Detailled comment
@@ -40,7 +41,7 @@ public class Table extends Figure implements ITable {
         setLayoutManager(new TableLayout());
         tableItemContainer = new Figure();
         tableItemContainer.setLayoutManager(new ToolbarLayout());
-        tableItemContainer.setBackgroundColor(ColorConstants.white);
+        tableItemContainer.setBackgroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
         tableItemContainer.setOpaque(true);
         this.add(tableItemContainer);
 

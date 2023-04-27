@@ -160,24 +160,6 @@ public class SparkStreamingSubjobContainerFigure extends SubjobContainerFigure {
 
     }
 
-    @Override
-    public void disposeColors() {
-        super.disposeColors();
-        if (timeoutFigureRect.getForegroundColor() != null && !timeoutFigureRect.getForegroundColor().isDisposed()) {
-            timeoutFigureRect.getForegroundColor().dispose();
-        }
-        if (timeoutFigureRect.getBackgroundColor() != null && !timeoutFigureRect.getBackgroundColor().isDisposed()) {
-            timeoutFigureRect.getBackgroundColor().dispose();
-        }
-
-        if (statsFigureRect.getForegroundColor() != null && !statsFigureRect.getForegroundColor().isDisposed()) {
-            statsFigureRect.getForegroundColor().dispose();
-        }
-        if (statsFigureRect.getBackgroundColor() != null && !statsFigureRect.getBackgroundColor().isDisposed()) {
-            statsFigureRect.getBackgroundColor().dispose();
-        }
-    }
-
     /**
      * yzhang Comment method "updateData".
      */
@@ -208,14 +190,14 @@ public class SparkStreamingSubjobContainerFigure extends SubjobContainerFigure {
             subjobContainer.getElementParameter(EParameterName.SHOW_SUBJOB_TITLE.getName()).setShow(true);
         }
         String propertyValue = (String) subjobContainer.getPropertyValue(EParameterName.SUBJOB_TITLE_COLOR.getName());
-        if (propertyValue == null || "".equals(propertyValue)) { //$NON-NLS-1$
+        if (propertyValue == null || "".equals(propertyValue) || DesignerColorUtils.isForbiddenSubjobColor(EParameterName.SUBJOB_TITLE_COLOR.getName(), propertyValue)) { //$NON-NLS-1$
             RGB colorValue = DesignerColorUtils.getPreferenceSubjobRGB(DesignerColorUtils.SUBJOB_TITLE_COLOR_NAME,
                     DesignerColorUtils.SUBJOB_TITLE_COLOR);
             subjobContainer.setPropertyValue(EParameterName.SUBJOB_TITLE_COLOR.getName(), ColorUtils.getRGBValue(colorValue));
         }
         //
         propertyValue = (String) subjobContainer.getPropertyValue(EParameterName.SUBJOB_COLOR.getName());
-        if (propertyValue == null || "".equals(propertyValue)) { //$NON-NLS-1$
+        if (propertyValue == null || "".equals(propertyValue) || DesignerColorUtils.isForbiddenSubjobColor(EParameterName.SUBJOB_COLOR.getName(), propertyValue)) { //$NON-NLS-1$
             RGB colorValue = DesignerColorUtils.getPreferenceSubjobRGB(DesignerColorUtils.SUBJOB_COLOR_NAME,
                     DesignerColorUtils.SUBJOB_COLOR);
             subjobContainer.setPropertyValue(EParameterName.SUBJOB_COLOR.getName(), ColorUtils.getRGBValue(colorValue));

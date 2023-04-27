@@ -178,26 +178,24 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
                 display = Display.getCurrent();
             }
             if (display != null) {
-                display.asyncExec(new Runnable() {
+                display.syncExec(new Runnable() {
 
                     @Override
                     public void run() {
-                        IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
+                        IPreferenceStore corePluginStore = CorePlugin.getDefault().getPreferenceStore();
                         Font font = new Font(null, "courier", 10, SWT.NONE); //$NON-NLS-1$
-                        PreferenceConverter.setDefault(store, TalendDesignerPrefConstants.MEMO_TEXT_FONT, font.getFontData());
-                        PreferenceConverter.setDefault(store, TalendDesignerPrefConstants.CONSOLT_TEXT_FONT, font.getFontData());
+                        PreferenceConverter.setDefault(corePluginStore, TalendDesignerPrefConstants.MEMO_TEXT_FONT, font.getFontData());
+                        PreferenceConverter.setDefault(corePluginStore, TalendDesignerPrefConstants.CONSOLT_TEXT_FONT, font.getFontData());
+                        // designer color
+                        DesignerColorUtils.initPreferenceDefault(store);
+                        // default colors for the ColorStyledText.
+                        ColorManager.initDefaultColors(store);
                     }
                 });
             }
             store.setDefault(TalendDesignerPrefConstants.EDITOR_ANTIALIASING, true);
             store.setDefault(TalendDesignerPrefConstants.EDITOR_LINESTYLE, true);
             // store.setDefault(TalendDesignerPrefConstants.EDITOR_INTERPOLATION, false);
-
-            // designer color
-            DesignerColorUtils.initPreferenceDefault(store);
-
-            // default colors for the ColorStyledText.
-            ColorManager.initDefaultColors(store);
 
             store.setDefault(MetadataTypeLengthConstants.FIELD_DEFAULT_TYPE, JavaTypesManager.STRING.getId());
             store.setDefault(MetadataTypeLengthConstants.VALUE_DEFAULT_TYPE, JavaTypesManager.STRING.getId());

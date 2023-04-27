@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.designer.dbmap.ui.tabs;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ExtendedModifyEvent;
 import org.eclipse.swt.custom.ExtendedModifyListener;
 import org.eclipse.swt.custom.StyledText;
@@ -31,7 +30,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.talend.commons.ui.swt.colorstyledtext.UnnotifiableColorStyledText;
@@ -39,8 +37,7 @@ import org.talend.commons.ui.swt.proposal.ContentProposalAdapterExtended;
 import org.talend.commons.ui.swt.proposal.ProposalUtils;
 import org.talend.designer.abstractmap.model.tableentry.ITableEntry;
 import org.talend.designer.dbmap.managers.MapperManager;
-import org.talend.designer.dbmap.ui.color.ColorInfo;
-import org.talend.designer.dbmap.ui.color.ColorProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
@@ -222,11 +219,8 @@ public class StyledTextHandler {
         // System.out.println("\n"+countCR);
         int lineCount = this.styledText.getLineCount();
         // System.out.println(lineCount);
-        Color whiteColor = this.styledText.getDisplay().getSystemColor(SWT.COLOR_WHITE);
-        this.styledText.setLineBackground(0, lineCount, whiteColor);
-        this.styledText.redraw();
-        this.styledText.setLineBackground(countCR, 1, ColorProviderMapper
-                .getColor(ColorInfo.COLOR_HIGHLIGHTED_TEXT_ROW));
+        this.styledText.setLineBackground(0, lineCount, null);
+        this.styledText.setLineBackground(countCR, 1, ColorInfo.COLOR_HIGHLIGHTED_TEXT_ROW());
         return countCR;
     }
 

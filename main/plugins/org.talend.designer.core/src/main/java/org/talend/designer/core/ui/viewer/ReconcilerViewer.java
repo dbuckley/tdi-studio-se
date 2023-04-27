@@ -51,6 +51,8 @@ import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
@@ -421,7 +423,7 @@ public abstract class ReconcilerViewer extends ProjectionViewer {
         return fSourceViewerDecorationSupport;
     }
 
-    protected void configureSourceViewerDecorationSupport(SourceViewerDecorationSupport support) {
+    protected void configureSourceViewerDecorationSupport(final SourceViewerDecorationSupport support) {
 
         Iterator e = fAnnotationPreferences.getAnnotationPreferences().iterator();
         while (e.hasNext()) {
@@ -431,6 +433,18 @@ public abstract class ReconcilerViewer extends ProjectionViewer {
         support.setCursorLinePainterPreferenceKeys(CURRENT_LINE, CURRENT_LINE_COLOR);
         support.setMarginPainterPreferenceKeys(PRINT_MARGIN, PRINT_MARGIN_COLOR, PRINT_MARGIN_COLUMN);
         support.setSymbolicFontName(JFaceResources.TEXT_FONT);
+        if (this.getTextWidget() != null &&  !this.getTextWidget().isDisposed()) {
+            this.getTextWidget().addDisposeListener(new DisposeListener() {
+
+                @Override
+                public void widgetDisposed(DisposeEvent e) {
+                    if (fSourceViewerDecorationSupport != null) {
+                        fSourceViewerDecorationSupport.dispose();
+                        fSourceViewerDecorationSupport = null;
+                    }                
+                }             
+            });
+        }
     }
 
     public abstract void updateContents();

@@ -93,7 +93,25 @@ public class CLASS
         }
         return toReturn;
     }
-		 
+
+    // copy from routine TalendString
+    private static String getAsciiRandomString(int length) {
+        java.security.SecureRandom random = new java.security.SecureRandom();
+        int cnt = 0;
+        StringBuilder builder = new StringBuilder();
+        char ch;
+        int end = 'z' + 1;
+        int start = ' ';
+        while (cnt < length) {
+            ch = (char) (random.nextInt(end - start) + start);
+            if (Character.isLetterOrDigit(ch)) {
+                builder.append(ch);
+                cnt++;
+            }
+        }
+        return builder.toString();
+    }
+
     public String generate(Object argument) {
         return "";
     }

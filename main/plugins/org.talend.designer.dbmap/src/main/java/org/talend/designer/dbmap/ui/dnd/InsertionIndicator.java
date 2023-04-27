@@ -34,10 +34,9 @@ import org.eclipse.swt.widgets.Table;
 import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.designer.dbmap.managers.MapperManager;
 import org.talend.designer.dbmap.managers.UIManager;
-import org.talend.designer.dbmap.ui.color.ColorInfo;
-import org.talend.designer.dbmap.ui.color.ColorProviderMapper;
 import org.talend.designer.dbmap.ui.visualmap.table.DataMapTableView;
 import org.talend.designer.dbmap.ui.visualmap.zone.scrollable.TablesZoneView;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * Only one instance by ZoneView should be necessary. This class create 2 arrows which follow cursor when dragging on a
@@ -76,7 +75,7 @@ public class InsertionIndicator {
 
     private boolean visible;
 
-    private final Color colorIndicator = ColorProviderMapper.getColor(ColorInfo.COLOR_DRAGGING_INSERTION_INDICATOR);
+    private final Color colorIndicator = ColorInfo.COLOR_DRAGGING_INSERTION_INDICATOR();
 
     private int lastNPixelsCovered;
 

@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.designer.gefabstractmap.figures.table;
 
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
@@ -28,10 +27,9 @@ import org.talend.designer.gefabstractmap.figures.manager.TableManager;
 import org.talend.designer.gefabstractmap.figures.treesettings.AbstractTreeSettingContainer;
 import org.talend.designer.gefabstractmap.figures.treesettings.FilterContainer;
 import org.talend.designer.gefabstractmap.figures.treetools.ToolBarContainer;
-import org.talend.designer.gefabstractmap.resource.ColorInfo;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
 import org.talend.designer.gefabstractmap.resource.FontInfo;
 import org.talend.designer.gefabstractmap.resource.FontProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * created by wchen on 2013-1-14 Detailled comment
@@ -75,11 +73,11 @@ public abstract class AbstractTableContainer extends GenericFigure {
             return;
         }
         if (highight) {
-            header.setBackgroundColor(ColorConstants.yellow);
-            toolBarContainer.updateButtonsColor(ColorConstants.yellow);
+            header.setBackgroundColor(ColorInfo.COLOR_SELECTED_TABLEHERDER_BG());
+            toolBarContainer.updateButtonsColor(ColorInfo.COLOR_SELECTED_TABLEHERDER_BG());
         } else {
-            header.setBackgroundColor(ColorProviderMapper.getColor(ColorInfo.ZONE_BACKGROUND_COLOR));
-            toolBarContainer.updateButtonsColor(ColorProviderMapper.getColor(ColorInfo.ZONE_BACKGROUND_COLOR));
+            header.setBackgroundColor(ColorInfo.COLOR_UNSELECTED_TABLEHERDER_BG());
+            toolBarContainer.updateButtonsColor(ColorInfo.COLOR_UNSELECTED_TABLEHERDER_BG());
             if (settingContainer != null) {
                 settingContainer.deselectTreeSettingRows();
             }
@@ -92,11 +90,11 @@ public abstract class AbstractTableContainer extends GenericFigure {
 
     protected void createContents() {
         setLayoutManager(new TableContainerLayout(tableModelManager));
-        this.setBorder(new LineBorder(ColorProviderMapper.getColor(ColorInfo.COLOR_TREE_BORDER)));
+        this.setBorder(new LineBorder(ColorInfo.COLOR_TREE_BORDER()));
 
         header = new Figure();
         header.setOpaque(true);
-        header.setBackgroundColor(ColorConstants.tooltipBackground);
+        header.setBackgroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
         header.setBorder(new RowBorder());
         header.setLayoutManager(new EqualWidthLayout());
         Label tableName = new Label();
@@ -110,7 +108,7 @@ public abstract class AbstractTableContainer extends GenericFigure {
         toolBarContainer = createToolBarContainer();
 
         header.setOpaque(true);
-        header.setBackgroundColor(ColorProviderMapper.getColor(ColorInfo.ZONE_BACKGROUND_COLOR));
+        header.setBackgroundColor(ColorInfo.ZONE_BACKGROUND_COLOR());
         this.add(header);
 
         if (toolBarContainer != null) {
@@ -126,7 +124,7 @@ public abstract class AbstractTableContainer extends GenericFigure {
             scroll.getViewport().setContentsTracksWidth(true);
 
             // ///
-            scroll.setBackgroundColor(ColorConstants.white);
+            scroll.setBackgroundColor(ColorInfo.ZONE_BACKGROUND_COLOR());
             scroll.setOpaque(true);
             this.add(scroll);
         } else {

@@ -12,8 +12,12 @@
 // ============================================================================
 package org.talend.designer.core.utils;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.eclipse.jface.action.IAction;
 import org.junit.Test;
@@ -82,5 +86,25 @@ public class DesignerUtilitiesTest {
             Class<?> classObj = ((AbstractProcessAction) iAction).getClassForDoubleClick();
             assertEquals(new EditProcess().getClassForDoubleClick(), classObj);
         }
+    }
+
+    @Test
+    public void testValidateJobletShortName() {
+        String shortName = "tDBConnection_1";
+        boolean result = DesignerUtilities.validateJobletShortName(shortName);
+        assertFalse(result);
+        shortName = "testJoblet_1_tDBConnection_1";
+        result = DesignerUtilities.validateJobletShortName(shortName);
+        assertFalse(result);
+        shortName = "jc2023_2023";
+        result = DesignerUtilities.validateJobletShortName(shortName);
+        assertTrue(result);
+        shortName = "jc1_1_tDBConnection_1";
+        result = DesignerUtilities.validateJobletShortName(shortName);
+        assertTrue(result);
+        shortName = "context.new1+jc1_1+context.new1";
+        result = DesignerUtilities.validateJobletShortName(shortName);
+        shortName = "jc1_1+globalMap.get(\"shared\")+jc1_1";
+        assertTrue(result);
     }
 }

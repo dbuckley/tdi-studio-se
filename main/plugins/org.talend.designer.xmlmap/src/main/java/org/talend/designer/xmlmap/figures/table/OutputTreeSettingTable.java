@@ -28,8 +28,7 @@ import org.talend.designer.gefabstractmap.figures.table.ColumnKeyConstant;
 import org.talend.designer.gefabstractmap.figures.table.ColumnSash;
 import org.talend.designer.gefabstractmap.figures.table.TableColumn;
 import org.talend.designer.gefabstractmap.part.directedit.DirectEditType;
-import org.talend.designer.gefabstractmap.resource.ColorInfo;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 import org.talend.designer.xmlmap.model.emf.xmlmap.OutputXmlTree;
 import org.talend.designer.xmlmap.model.emf.xmlmap.XmlmapPackage;
 import org.talend.designer.xmlmap.util.XmlMapUtil;
@@ -172,7 +171,7 @@ public class OutputTreeSettingTable extends AbstractTable {
                 boolean joinModel = rejectRow.containsPoint(me.x, me.y);
                 if (joinModel) {
                     if (selectedFigure != rejectRow) {
-                        rejectRow.setBackgroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_COLUMN_TREE_SETTING));
+                        rejectRow.setBackgroundColor(ColorInfo.COLOR_COLUMN_TREE_SETTING());
                         rejectRow.setOpaque(true);
                         innerJoinRejectRow.setOpaque(false);
                         allInOneRow.setOpaque(false);
@@ -183,7 +182,7 @@ public class OutputTreeSettingTable extends AbstractTable {
                 boolean persistentModel = innerJoinRejectRow.containsPoint(me.x, me.y);
                 if (persistentModel) {
                     if (selectedFigure != innerJoinRejectRow) {
-                        innerJoinRejectRow.setBackgroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_COLUMN_TREE_SETTING));
+                        innerJoinRejectRow.setBackgroundColor(ColorInfo.COLOR_COLUMN_TREE_SETTING());
                         innerJoinRejectRow.setOpaque(true);
                         rejectRow.setOpaque(false);
                         allInOneRow.setOpaque(false);
@@ -195,7 +194,7 @@ public class OutputTreeSettingTable extends AbstractTable {
                 boolean allInOne = allInOneRow.containsPoint(me.x, me.y);
                 if (allInOne) {
                     if (selectedFigure != allInOneRow) {
-                        allInOneRow.setBackgroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_COLUMN_TREE_SETTING));
+                        allInOneRow.setBackgroundColor(ColorInfo.COLOR_COLUMN_TREE_SETTING());
                         allInOneRow.setOpaque(true);
                         rejectRow.setOpaque(false);
                         innerJoinRejectRow.setOpaque(false);
@@ -207,8 +206,7 @@ public class OutputTreeSettingTable extends AbstractTable {
                 boolean emptyElement = enableEmptyElementRow.containsPoint(me.x, me.y);
                 if (emptyElement) {
                     if (selectedFigure != enableEmptyElementRow) {
-                        enableEmptyElementRow.setBackgroundColor(ColorProviderMapper
-                                .getColor(ColorInfo.COLOR_COLUMN_TREE_SETTING));
+                        enableEmptyElementRow.setBackgroundColor(ColorInfo.COLOR_COLUMN_TREE_SETTING());
                         enableEmptyElementRow.setOpaque(true);
                         rejectRow.setOpaque(false);
                         innerJoinRejectRow.setOpaque(false);

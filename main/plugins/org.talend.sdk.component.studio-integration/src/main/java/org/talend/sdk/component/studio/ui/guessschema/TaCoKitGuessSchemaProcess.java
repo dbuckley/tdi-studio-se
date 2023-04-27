@@ -37,9 +37,11 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.properties.Property;
+import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.process.DataProcess;
 import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.designer.core.ui.editor.properties.controllers.AbstractGuessSchemaProcess;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.sdk.component.server.front.model.ActionReference;
@@ -204,6 +206,11 @@ public class TaCoKitGuessSchemaProcess {
                 DataProcess dataProcess = new DataProcess(originalProcess);
                 dataProcess.buildFromGraphicalProcess(nodes);
                 process = dataProcess.getDuplicatedProcess();
+                IElementParameter log4jElemParam = process.getElementParameter(EParameterName.LOG4J_ACTIVATE.getName());
+                if (log4jElemParam != null) {
+                    Boolean isEnableLog4j = AbstractGuessSchemaProcess.isEnableLog4jForGuessSchema();
+                    log4jElemParam.setValue(isEnableLog4j);
+                }
                 process.getContextManager()
                         .getListContext()
                         .addAll(originalProcess.getContextManager().getListContext());

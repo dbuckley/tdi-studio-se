@@ -43,5 +43,8 @@ Export-Package: org.talend.designer.mapper,
  org.talend.designer.mapper.model.emf.mapper.util,
  org.talend.designer.mapper.model.table,
  org.talend.designer.mapper.model.tableentry,
+ org.talend.designer.mapper.ui,
+ org.talend.designer.mapper.ui.color,
+ org.talend.designer.mapper.ui.visualmap.table,
  org.talend.designer.mapper.utils,
  org.talend.designer.mapper.utils.problems

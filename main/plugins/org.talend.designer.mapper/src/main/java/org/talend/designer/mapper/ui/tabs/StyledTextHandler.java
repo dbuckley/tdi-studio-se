@@ -40,7 +40,6 @@ import org.talend.commons.ui.swt.proposal.ProposalUtils;
 import org.talend.designer.abstractmap.model.tableentry.ITableEntry;
 import org.talend.designer.mapper.managers.MapperManager;
 import org.talend.designer.mapper.ui.color.ColorInfo;
-import org.talend.designer.mapper.ui.color.ColorProviderMapper;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
@@ -222,11 +221,8 @@ public class StyledTextHandler {
         // System.out.println("\n"+countCR);
         int lineCount = this.styledText.getLineCount();
         // System.out.println(lineCount);
-        Color whiteColor = this.styledText.getDisplay().getSystemColor(SWT.COLOR_WHITE);
-        this.styledText.setLineBackground(0, lineCount, whiteColor);
-        this.styledText.redraw();
-        this.styledText.setLineBackground(countCR, 1, ColorProviderMapper
-                .getColor(ColorInfo.COLOR_HIGHLIGHTED_TEXT_ROW));
+        this.styledText.setLineBackground(0, lineCount, null);
+        this.styledText.setLineBackground(countCR, 1, ColorInfo.COLOR_HIGHLIGHTED_TEXT_ROW());
         return countCR;
     }
 

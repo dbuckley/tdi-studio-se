@@ -1595,6 +1595,7 @@ public static class <%=conn.getName() %>Struct<%=templateOrigin %> implements ro
 				}
 	}
 %>
+
 <% if (subTree.isMethodSizeNeeded()){ %>
 /**
  * Start of Function: <%=subTree.getName() %>Process.
@@ -1608,7 +1609,7 @@ public void <%=subTree.getName() %>Process(final java.util.Map<String, Object> g
 	<%if(isLog4jEnabled && isLog4j2Enabled) {%>
 		mdcInfo.forEach(<%=MDC_CLASS%>::put);
 		<%=MDC_CLASS%>.put("_subJobName", "<%=subTree.getName() %>");
-		<%=MDC_CLASS%>.put("_subJobPid", TalendString.getAsciiRandomString(6));
+		<%=MDC_CLASS%>.put("_subJobPid", "<%=getAsciiRandomString(6)%>_" + subJobPidCounter.getAndIncrement());
 	<%}%>
 
 <%

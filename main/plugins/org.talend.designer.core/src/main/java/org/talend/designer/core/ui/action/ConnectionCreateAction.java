@@ -727,7 +727,7 @@ public class ConnectionCreateAction extends SelectionAction {
                 listArgs.add(meta.getTableName());
             }
         } else {
-            listArgs.add(node.getUniqueName());
+            listArgs.add(node.getUniqueName(false));
         }
 
         String baseName = node.getConnectionName();

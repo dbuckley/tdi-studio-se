@@ -31,6 +31,7 @@ import org.talend.core.ui.metadata.dialog.CustomTableManager;
 import org.talend.core.ui.metadata.dialog.MetadataDialog;
 import org.talend.core.ui.metadata.editor.MetadataTableEditor;
 import org.talend.core.ui.metadata.editor.MetadataTableEditorView;
+import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
 import org.talend.designer.core.ui.views.properties.MultipleThreadDynamicComposite;
@@ -78,8 +79,10 @@ public class MainConnectionComposite extends MultipleThreadDynamicComposite {
                     // Composite compositeEditorView = new Composite(composite, SWT.BORDER);
                     // compositeEditorView.setLayoutData(data);
 
+                    String elementName = (String) ((Connection) elem).getSource()
+                            .getElementParameter(EParameterName.UNIQUE_NAME.getName()).getValue();
                     metadataTableEditor = new MetadataTableEditor(outputMetaTable, "Schema from " //$NON-NLS-1$
-                            + ((Connection) elem).getSource().getElementName() + " output "); //$NON-NLS-1$
+                            + elementName + " output "); //$NON-NLS-1$
                     metadataTableEditorView = new MetadataTableEditorView(composite, SWT.NONE, metadataTableEditor, true, false,
                             true, false);
                     MetadataDialog.initializeMetadataTableView(metadataTableEditorView, ((Connection) elem).getSource(),

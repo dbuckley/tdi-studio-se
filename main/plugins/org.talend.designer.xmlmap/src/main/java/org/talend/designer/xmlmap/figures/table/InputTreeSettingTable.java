@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.designer.xmlmap.figures.table;
 
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.CompoundBorder;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Label;
@@ -28,8 +27,7 @@ import org.talend.designer.gefabstractmap.figures.table.ColumnKeyConstant;
 import org.talend.designer.gefabstractmap.figures.table.ColumnSash;
 import org.talend.designer.gefabstractmap.figures.table.TableColumn;
 import org.talend.designer.gefabstractmap.part.directedit.DirectEditType;
-import org.talend.designer.gefabstractmap.resource.ColorInfo;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 import org.talend.designer.xmlmap.figures.treesettings.TreeSettingsConstant;
 import org.talend.designer.xmlmap.model.emf.xmlmap.InputXmlTree;
 import org.talend.designer.xmlmap.model.emf.xmlmap.XmlmapPackage;
@@ -98,6 +96,7 @@ public class InputTreeSettingTable extends AbstractTable {
 
         lookupModelRow = new Figure();
         lookupModelRow.setLayoutManager(new RowLayout());
+        //lookupModelRow.setBackgroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
         Label label = new Label();
         label.setText("Lookup Model");
         label.setLabelAlignment(PositionConstants.LEFT);
@@ -114,6 +113,7 @@ public class InputTreeSettingTable extends AbstractTable {
 
         matchModelRow = new Figure();
         matchModelRow.setLayoutManager(new RowLayout());
+        //matchModelRow.setBackgroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
         label = new Label();
         label.setText("Match Model");
         label.setLabelAlignment(PositionConstants.LEFT);
@@ -169,7 +169,7 @@ public class InputTreeSettingTable extends AbstractTable {
         // persistentModelRow.add(persistentModel);
         // container.add(persistentModelRow);
         container.setOpaque(true);
-        container.setBackgroundColor(ColorConstants.white);
+        container.setBackgroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
 
         container.addMouseListener(new MouseListener() {
 
@@ -181,7 +181,7 @@ public class InputTreeSettingTable extends AbstractTable {
                 if (lookup) {
                     if (selectedFigure != lookupModelRow) {
                         lookupModelRow.setOpaque(true);
-                        lookupModelRow.setBackgroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_COLUMN_TREE_SETTING));
+                        lookupModelRow.setBackgroundColor(ColorInfo.COLOR_COLUMN_TREE_SETTING());
                         matchModelRow.setOpaque(false);
                         joinModelRow.setOpaque(false);
                         // persistentModelRow.setOpaque(false);
@@ -192,7 +192,7 @@ public class InputTreeSettingTable extends AbstractTable {
                 if (matchModel) {
                     if (selectedFigure != matchModelRow) {
                         matchModelRow.setOpaque(true);
-                        matchModelRow.setBackgroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_COLUMN_TREE_SETTING));
+                        matchModelRow.setBackgroundColor(ColorInfo.COLOR_COLUMN_TREE_SETTING());
                         lookupModelRow.setOpaque(false);
                         joinModelRow.setOpaque(false);
                         // persistentModelRow.setOpaque(false);
@@ -203,7 +203,7 @@ public class InputTreeSettingTable extends AbstractTable {
                 if (joinModel) {
                     if (selectedFigure != joinModelRow) {
                         joinModelRow.setOpaque(true);
-                        joinModelRow.setBackgroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_COLUMN_TREE_SETTING));
+                        joinModelRow.setBackgroundColor(ColorInfo.COLOR_COLUMN_TREE_SETTING());
                         lookupModelRow.setOpaque(false);
                         matchModelRow.setOpaque(false);
                         // persistentModelRow.setOpaque(false);

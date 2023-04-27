@@ -16,6 +16,7 @@ import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.PositionConstants;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * wchen class global comment. Detailled comment
@@ -28,7 +29,7 @@ public class TableColumn extends Label {
         column_key = key;
         setBorder(new MarginBorder(3, 10, 3, -1));
         setLabelAlignment(PositionConstants.LEFT);
-        setBackgroundColor(ColorConstants.menuBackground);
+        setBackgroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
         setOpaque(true);
     }
 

@@ -42,6 +42,7 @@ import org.talend.commons.ui.swt.tableviewer.celleditor.DialogErrorForCellEditor
 import org.talend.commons.utils.data.bean.IBeanPropertyAccessors;
 import org.talend.commons.utils.data.list.ListenableListEvent;
 import org.talend.commons.utils.data.list.UniqueStringGenerator;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 import org.talend.repository.json.i18n.Messages;
 import org.talend.repository.model.json.SchemaTarget;
 
@@ -345,7 +346,7 @@ public class ExtractionFieldsWithJSONXPathEditorView extends AbstractDataTableEd
             if (conflictNames.contains(name)) {
                 getTable().getItem(i).setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
             } else {
-                getTable().getItem(i).setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+                getTable().getItem(i).setBackground(ColorInfo.EDITABLE_WIDGET_BACKGROUND());
             }
         }
 

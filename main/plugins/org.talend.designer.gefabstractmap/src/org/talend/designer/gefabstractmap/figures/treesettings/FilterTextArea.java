@@ -18,8 +18,7 @@ import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.PositionConstants;
 import org.talend.designer.gefabstractmap.figures.cells.ITextAreaCell;
 import org.talend.designer.gefabstractmap.part.directedit.DirectEditType;
-import org.talend.designer.gefabstractmap.resource.ColorInfo;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * DOC talend class global comment. Detailled comment
@@ -29,8 +28,8 @@ public class FilterTextArea extends Label implements ITextAreaCell {
     private DirectEditType type;
 
     public FilterTextArea() {
-        setBackgroundColor(ColorConstants.white);
-        setBorder(new LineBorder(ColorProviderMapper.getColor(ColorInfo.COLOR_TREE_BORDER)));
+        setBackgroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
+        setBorder(new LineBorder(ColorInfo.COLOR_TREE_BORDER()));
         setLabelAlignment(PositionConstants.LEFT);
     }
 

@@ -23,6 +23,7 @@ import org.eclipse.draw2d.PositionConstants;
 import org.talend.designer.gefabstractmap.figures.VarNodeTextLabel;
 import org.talend.designer.gefabstractmap.figures.treetools.zone.SearchZoneToolBar;
 import org.talend.designer.gefabstractmap.part.directedit.DirectEditType;
+import org.talend.designer.mapper.ui.visualmap.table.EntryState;
 import org.talend.designer.xmlmap.parts.XmlMapDataManager;
 import org.talend.designer.xmlmap.ui.tabs.MapperManager;
 
@@ -59,9 +60,9 @@ public class XmlMapSearchZoneToolBar extends SearchZoneToolBar {
         searchText.setDirectEditType(DirectEditType.SERACH);
         // searchText.setText("Enter search text prefix or pattern(*,?)");
         searchText.setLabelAlignment(PositionConstants.LEFT);
+        searchText.setBackgroundColor(EntryState.NONE.getColor());
         searchText.setBorder(new LineBorder(ColorConstants.gray));
         searchText.setOpaque(true);
-        searchText.setBackgroundColor(ColorConstants.white);
         add(searchText);
 
         this.add(move_down);
