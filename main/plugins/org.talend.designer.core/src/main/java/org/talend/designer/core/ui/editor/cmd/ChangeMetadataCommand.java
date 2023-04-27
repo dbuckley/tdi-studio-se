@@ -264,8 +264,7 @@ public class ChangeMetadataCommand extends AbstractCommand {
     }
 
     public static boolean askPropagate() {
-        MessageDialogBusinessHandler handler = new MessageDialogBusinessHandler();
-        handler.setDialogType(MessageDialog.QUESTION);
+        MessageDialogBusinessHandler handler = new MessageDialogBusinessHandler(MessageDialog.QUESTION);
         handler.setTitle(Messages.getString("ChangeMetadataCommand.messageDialog.propagate")); //$NON-NLS-1$
         handler.setMessage(Messages.getString("ChangeMetadataCommand.messageDialog.questionMessage")); //$NON-NLS-1$
         MessageDialogBusinessHandler result = handler.run(new AbsStudioRunnable<MessageDialogBusinessHandler>() {
