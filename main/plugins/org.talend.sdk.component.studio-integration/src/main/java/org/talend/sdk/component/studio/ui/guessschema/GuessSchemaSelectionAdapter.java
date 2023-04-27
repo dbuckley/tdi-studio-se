@@ -166,7 +166,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
             ExceptionHandler.process(ex);
             ExceptionMessageDialog.openError(composite.getShell(),
                                              Messages.getString("guessSchema.dialog.error.title"), //$NON-NLS-1$
-                                             errMessage.isBlank() ? Messages.getString("guessSchema.dialog.error.msg.default") : errMessage, //$NON-NLS-1$
+                                             errMessage.isEmpty() ? Messages.getString("guessSchema.dialog.error.msg.default") : errMessage, //$NON-NLS-1$
                                              ex);
             return;
         }
