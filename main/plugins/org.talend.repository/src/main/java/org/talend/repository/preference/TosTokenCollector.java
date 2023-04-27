@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2019 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2021 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,6 +30,7 @@ import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.process.IProcess2;
@@ -39,6 +40,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.properties.SQLPatternItem;
+import org.talend.core.model.properties.impl.AdditionalInfoMapImpl;
 import org.talend.core.model.relationship.Relation;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.DynaEnum;
@@ -67,6 +69,46 @@ import us.monoid.json.JSONObject;
  * ggu class global comment. Detailled comment
  */
 public class TosTokenCollector extends AbstractTokenCollector {
+
+    private static final String NB_ROUTE_MS = "nb.route.ms";
+
+	private static final String NB_ROUTE_OSGI = "nb.route.osgi";
+
+	private static final String NB_ROUTERESTDS_APIFILE_MS = "nb.routerestds.apifile.ms";
+
+	private static final String NB_ROUTERESTDS_APIDESIGNER_MS = "nb.routerestds.apidesigner.ms";
+
+	private static final String NB_ROUTERESTDS_APIFILE_OSGI = "nb.routerestds.apifile.osgi";
+
+	private static final String NB_ROUTERESTDS_APIDESIGNER_OSGI = "nb.routerestds.apidesigner.osgi";
+
+	private static final String NB_ROUTERESTDS_BUILTIN_MS = "nb.routerestds.builtin.ms";
+
+	private static final String NB_ROUTERESTDS_BUILTIN_OSGI = "nb.routerestds.builtin.osgi";
+
+	private static final String NB_ROUTESOAPDS_MS = "nb.routesoapds.ms";
+
+	private static final String NB_ROUTESOAPDS_OSGI = "nb.routesoapds.osgi";
+
+	private static final String ROUTE_MICROSERVICE = "ROUTE_MICROSERVICE";
+
+	private static final String ROUTE = "ROUTE";
+
+	private static final String REST_MS = "REST_MS";
+
+	private static final String OSGI = "OSGI";
+
+	private static final String NB_DSREST_APIFILE_MS = "nb.dsrest.apifile.ms";
+
+	private static final String NB_DSREST_APIDESIGNER_MS = "nb.dsrest.apidesigner.ms";
+
+	private static final String NB_DSREST_APIFILE_OSGI = "nb.dsrest.apifile.osgi";
+
+	private static final String NB_DSREST_APIDESIGNER_OSGI = "nb.dsrest.apidesigner.osgi";
+
+	private static final String NB_DSREST_BUILTIN_MS = "nb.dsrest.builtin.ms";
+
+	private static final String NB_DSREST_BUILTIN_OSGI = "nb.dsrest.builtin.osgi";
 
     private static final String PREF_TOS_JOBS_RECORDS = "TOS_Jobs_Records"; //$NON-NLS-1$
 
@@ -185,6 +227,24 @@ public class TosTokenCollector extends AbstractTokenCollector {
                                 jobDetails.remove("nbds"); //$NON-NLS-1$
                                 nbdssoap = (Integer)jobDetails.get("nbdssoap"); //$NON-NLS-1$
                                 jobDetails.remove("nbdssoap"); //$NON-NLS-1$
+                                
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_DSREST_BUILTIN_MS);
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_DSREST_BUILTIN_OSGI);
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_DSREST_APIDESIGNER_OSGI);
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_DSREST_APIFILE_OSGI);
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_DSREST_APIDESIGNER_MS);
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_DSREST_APIFILE_MS);
+                            }else if (ERepositoryObjectType.PROCESS_ROUTE.equals(type)) {
+                            	removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_ROUTESOAPDS_OSGI);
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_ROUTESOAPDS_MS);
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_ROUTERESTDS_BUILTIN_OSGI);
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_ROUTERESTDS_BUILTIN_MS);
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_ROUTERESTDS_APIDESIGNER_OSGI);
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_ROUTERESTDS_APIFILE_OSGI);
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_ROUTERESTDS_APIDESIGNER_MS);
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_ROUTERESTDS_APIFILE_MS);
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_ROUTE_OSGI);
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_ROUTE_MS);
                             }
                            
                             typeStats.put("details", jobDetails); //$NON-NLS-1$
@@ -226,8 +286,10 @@ public class TosTokenCollector extends AbstractTokenCollector {
                 }
             }
         }
-        JSONObject serviceJson = (JSONObject)repoStats.get("SERVICES");
-        serviceJson.put("nbdssoap", nbdssoap);
+        if(repoStats.has("SERVICES")) {
+        	JSONObject serviceJson = (JSONObject)repoStats.get("SERVICES");
+        	serviceJson.put("nbdssoap", nbdssoap);
+        }
         jObject.put(PROJECTS.getKey(), repoStats); //$NON-NLS-1$
         jObject.put(TYPE.getKey(), ProjectManager.getInstance().getProjectType(currentProject));
         int nbRef = ProjectManager.getInstance().getAllReferencedProjects().size();
@@ -247,6 +309,151 @@ public class TosTokenCollector extends AbstractTokenCollector {
         }
     }
     
+    private void removeUnwantedNodeFromjobDetails(JSONObject typeStats, JSONObject jobDetails, String key) throws JSONException {
+		if(jobDetails.has(key)) {
+			typeStats.put(key, jobDetails.get(key)); //$NON-NLS-1$
+			jobDetails.remove(key); //$NON-NLS-1$
+		}
+	}
+    
+    @SuppressWarnings("unchecked")
+    private void extractBuildTypeData(List<IRepositoryViewObject> allRvo, Map<String, Integer> buildTypeDetails) {
+    	Set<String> checkedItemSet = new HashSet<String>();
+    	for (IRepositoryViewObject rvo : allRvo) {
+    		Item item = rvo.getProperty().getItem();
+    		if (item instanceof ProcessItem) {
+    			ProcessType processType = ((ProcessItem) item).getProcess();
+    			String itemID = ((ProcessItem) item).getProperty().getId();
+    			List<NodeType> nodeList = (List<NodeType>) processType.getNode();
+
+    			for (NodeType node : nodeList) {
+    				String componentName = node.getComponentName();
+    				List<AdditionalInfoMapImpl> properties = item.getProperty().getAdditionalProperties();
+    				for (AdditionalInfoMapImpl property : properties) {
+
+    					String buildType = property.getValue().toString();
+    					String nodeType = ComponentUtilities.getNodePropertyValue(node, "PROPERTY:PROPERTY_TYPE"); //$NON-NLS-1$
+    					String apiID = ComponentUtilities.getNodePropertyValue(node, "API_ID"); //$NON-NLS-1$
+
+    					if("BUILD_TYPE".equals(property.getKey().toString()) && null != buildType) {
+    						if ("tRESTRequest".equals(componentName)) {
+    							if(null == nodeType || !nodeType.equals("REPOSITORY")) {
+    								// when API Definition = built-in
+    								if(buildType.equals(OSGI)) {
+    									// nb jobs with tRESTRequest where build type is = OSGI and API definition is = Built-in
+    									String key = NB_DSREST_BUILTIN_OSGI;
+    									buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    									break;
+    								}else if(buildType.equals(REST_MS)) {
+    									//nb jobs with tRESTRequest where build type is = Microservice and API definition is = Built-in
+    									String key = NB_DSREST_BUILTIN_MS;
+    									buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    									break;
+    								}
+    							}else if(null != nodeType && nodeType.equals("REPOSITORY")){
+    								// when API Definition = Repository
+    								if(buildType.equals(OSGI)) {
+    									if(null!=apiID && !apiID.isEmpty()) {
+    										// nb jobs with tRESTRequest where build type is = OSGI and API definition is = imported from API Designer
+    										String key = NB_DSREST_APIDESIGNER_OSGI;
+    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    										break;
+    									}else {
+    										// nb jobs with tRESTRequest where build type is = OSGI and API definition is = imported from local file
+    										String key = NB_DSREST_APIFILE_OSGI;
+    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    										break;
+    									}
+    								}else if(buildType.equals(REST_MS)) {
+    									if(null!=apiID && !apiID.isEmpty()) {
+    										//nb jobs with tRESTRequest where build type is = Microservice and API definition is = imported from API Designer
+    										String key = NB_DSREST_APIDESIGNER_MS;
+    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    										break;
+    									}else {
+    										// nb jobs with tRESTRequest where build type is = Microservice and API definition is = imported from local file
+    										String key = NB_DSREST_APIFILE_MS;
+    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    										break;
+    									}
+    								}
+    							}
+    						} else if("cSOAP".equals(componentName)) {
+    							if(buildType.equals(ROUTE)) {
+    								// nb routes with cSOAP as producer where build type = OSGI
+    								String key = NB_ROUTESOAPDS_OSGI;
+    								buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    								break;
+    							}else if(buildType.equals(ROUTE_MICROSERVICE)) {
+    								// nb routes with cSOAP as producer where build type = Microservice
+    								String key = NB_ROUTESOAPDS_MS;
+    								buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    								break;
+    							}
+    						}else if("cREST".equals(componentName)) {
+    							if(null == nodeType || !nodeType.equals("REPOSITORY")) {
+    								if(buildType.equals(ROUTE)) {
+    									// nb routes with cREST as producer where build type = OSGI and API definition = Built-in
+    									String key = NB_ROUTERESTDS_BUILTIN_OSGI;
+    									buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    									break;
+    								}else if(buildType.equals(ROUTE_MICROSERVICE)) {
+    									// nb routes with cREST as producer where build build type = Microservice and API definition = Built-in
+    									String key = NB_ROUTERESTDS_BUILTIN_MS;
+    									buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    									break;
+    								}
+    							}else if(null != nodeType && nodeType.equals("REPOSITORY")){
+    								// when API Definition = Repository
+    								if(buildType.equals(ROUTE)) {
+    									if(null!=apiID && !apiID.isEmpty()) {
+    										// nb routes with cREST as producer where build type is = OSGI and API definition is = imported from API Designer
+    										String key = NB_ROUTERESTDS_APIDESIGNER_OSGI;
+    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    										break;
+    									}else {
+    										// nb routes with cREST as producer where build type is = OSGI and API definition is = imported from local file
+    										String key = NB_ROUTERESTDS_APIFILE_OSGI;
+    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    										break;
+    									}
+    								}else if(buildType.equals(ROUTE_MICROSERVICE)) {
+    									if(null!=apiID && !apiID.isEmpty()) {
+    										// nb routes with cREST as producer where build type is  = Microservice and API definition is = imported from API Designer
+    										String key = NB_ROUTERESTDS_APIDESIGNER_MS;
+    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    										break;
+    									}else {
+    										// nb routes with cREST as producer where build type is = Microservice and API definition is = imported from local file
+    										String key = NB_ROUTERESTDS_APIFILE_MS;
+    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    										break;
+    									}
+    								}
+    							}
+    						}else if(!"cSOAP".equals(componentName) && !"cREST".equals(componentName) && !checkedItemSet.contains(itemID)) {
+    							// nb of jobs which doesn't contains cSOAP or cREST components
+    							if(buildType.equals(ROUTE)) {
+    								// nb routes without cSOAP or cREST as producer where build type = OSGI
+    								String key = NB_ROUTE_OSGI;
+    								buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    								break;
+    							}else if(buildType.equals(ROUTE_MICROSERVICE)) {
+    								// nb routes without cSOAP or cREST as producer where build type = Microservice
+    								String key = NB_ROUTE_MS;
+    								buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    								break;
+    							}
+    						}
+    					}
+    				}
+    				checkedItemSet.add(itemID);
+    				break;
+    			}
+    		}
+    	}
+    }
+    
     /**
      * DOC nrousseau Comment method "collectJobDetails".
      *
@@ -255,6 +462,7 @@ public class TosTokenCollector extends AbstractTokenCollector {
      * @param type
      * @throws JSONException
      */
+    @SuppressWarnings("unchecked")
     private void collectJobDetails(List<IRepositoryViewObject> allRvo, JSONObject jobDetails, DynaEnum type)
             throws JSONException {
         IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
@@ -279,6 +487,8 @@ public class TosTokenCollector extends AbstractTokenCollector {
         int restJobInDIJob = 0;
         Map<String, JSONObject> camelComponentMap = new HashMap<>();
         Map<String, JSONObject> customCamelComponentMap = new HashMap<>();
+        Map<String,Integer> buildTypeDetails = new HashMap<String,Integer>();
+        extractBuildTypeData(allRvo, buildTypeDetails);
         for (IRepositoryViewObject rvo : allRvo) {
             Item item = rvo.getProperty().getItem();
             if (item instanceof ProcessItem) {
@@ -420,6 +630,10 @@ public class TosTokenCollector extends AbstractTokenCollector {
             jobDetails.put("nbds", restJobInDIJob + soapWsdlWithImpl.size());
             // nb Services (SOAP WSDL) with at least one operation implemented as job with tESBProviderRequest
             jobDetails.put("nbdssoap", soapWsdlWithImpl.size());
+        }
+	// put build type data
+        for(Map.Entry<String,Integer> entry : buildTypeDetails.entrySet()){
+        	jobDetails.put(entry.getKey(), entry.getValue());
         }
     }
 
