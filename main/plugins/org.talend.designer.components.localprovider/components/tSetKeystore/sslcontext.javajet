@@ -10,13 +10,16 @@
 	String passwordFieldName = "__SSL_TRUSTSERVER_PASSWORD__";
 %>
 	
-	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>	
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 	
 	final nl.altindag.ssl.SSLFactory.Builder sslFactoryBuilder_<%=cid%> = nl.altindag.ssl.SSLFactory.builder()
-		.withTrustMaterial(<%=trustStorePath %>, decryptedPassword_<%=cid%>==null ? null : decryptedPassword_<%=cid%>.toCharArray(), "<%=trustStoreType %>")
 		.withDefaultTrustMaterial()
 		.withSystemTrustMaterial();
 		
+	<%if(set_truststore){%>	
+	sslFactoryBuilder_<%=cid%>.withTrustMaterial(<%=trustStorePath %>, decryptedPassword_<%=cid%>==null ? null : decryptedPassword_<%=cid%>.toCharArray(), "<%=trustStoreType %>");
+	<%}%>
+	
 	<%
 	if(needClientAuth){
 		passwordFieldName = "__SSL_KEYSTORE_PASSWORD__";
