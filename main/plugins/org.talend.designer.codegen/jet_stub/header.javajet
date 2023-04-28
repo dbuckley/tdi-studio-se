@@ -368,14 +368,6 @@ public <%=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true)%> get<%=Ch
 	private final String projectName = "<%=codeGenArgument.getCurrentProjectName() %>";
 	public Integer errorCode = null;
 	private String currentComponent = "";
-	
-	<%
-	final boolean setKeystore = !process.getNodesOfType("tSetKeystore").isEmpty();
-	if(setKeystore) {
-	%>
-		private final routines.system.SingletonHolder singletonHolder = routines.system.SingletonHolder.getInstance();
-	<%}%>
-	
 	<%
 	// is necessary? avoid some compiler issue as var name not found? TODO consider remove it, also the currentComponent above
 	%>
