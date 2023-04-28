@@ -1,0 +1,36 @@
+<%@ jet 
+%>
+
+<%
+	//withSystemPropertyDerivedIdentityMaterial() and withSystemPropertyDerivedTrustMaterial() method can append the system property ssl setting for current tsetkeystore, 
+	//but now don't want to promise that as not sure user need it as user can use this mode always for all tsetkeystore
+%>
+
+<%
+	String passwordFieldName = "__SSL_TRUSTSERVER_PASSWORD__";
+%>
+	
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>	
+	
+	final nl.altindag.ssl.SSLFactory.Builder sslFactoryBuilder_<%=cid%> = nl.altindag.ssl.SSLFactory.builder()
+		.withTrustMaterial(<%=trustStorePath %>, decryptedPassword_<%=cid%>==null ? null : decryptedPassword_<%=cid%>.toCharArray(), "<%=trustStoreType %>")
+		.withDefaultTrustMaterial()
+		.withSystemTrustMaterial();
+		
+	<%
+	if(needClientAuth){
+		passwordFieldName = "__SSL_KEYSTORE_PASSWORD__";
+	%>
+	
+	<%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
+	String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+	<%} else {%>
+	String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
+	<%}%>
+	
+	sslFactoryBuilder_<%=cid%>.withIdentityMaterial(<%=keyStorePath %>, decryptedPwd_<%=cid%>==null ? null : decryptedPwd_<%=cid%>.toCharArray(), "<%=keyStoreType %>");
+	<%}%>
+	
+	final nl.altindag.ssl.SSLFactory sslFactory_<%=cid%> = sslFactoryBuilder_<%=cid%>.build();
+	
+	javax.net.ssl.SSLContext.setDefault(sslFactory_<%=cid%>.getSslContext());
