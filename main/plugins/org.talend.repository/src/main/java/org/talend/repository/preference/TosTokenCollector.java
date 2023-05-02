@@ -72,43 +72,43 @@ public class TosTokenCollector extends AbstractTokenCollector {
 
     private static final String NB_ROUTE_MS = "nb.route.ms";
 
-	private static final String NB_ROUTE_OSGI = "nb.route.osgi";
+    private static final String NB_ROUTE_OSGI = "nb.route.osgi";
 
-	private static final String NB_ROUTERESTDS_APIFILE_MS = "nb.routerestds.apifile.ms";
+    private static final String NB_ROUTERESTDS_APIFILE_MS = "nb.routerestds.apifile.ms";
 
-	private static final String NB_ROUTERESTDS_APIDESIGNER_MS = "nb.routerestds.apidesigner.ms";
+    private static final String NB_ROUTERESTDS_APIDESIGNER_MS = "nb.routerestds.apidesigner.ms";
 
-	private static final String NB_ROUTERESTDS_APIFILE_OSGI = "nb.routerestds.apifile.osgi";
+    private static final String NB_ROUTERESTDS_APIFILE_OSGI = "nb.routerestds.apifile.osgi";
 
-	private static final String NB_ROUTERESTDS_APIDESIGNER_OSGI = "nb.routerestds.apidesigner.osgi";
+    private static final String NB_ROUTERESTDS_APIDESIGNER_OSGI = "nb.routerestds.apidesigner.osgi";
 
-	private static final String NB_ROUTERESTDS_BUILTIN_MS = "nb.routerestds.builtin.ms";
+    private static final String NB_ROUTERESTDS_BUILTIN_MS = "nb.routerestds.builtin.ms";
 
-	private static final String NB_ROUTERESTDS_BUILTIN_OSGI = "nb.routerestds.builtin.osgi";
+    private static final String NB_ROUTERESTDS_BUILTIN_OSGI = "nb.routerestds.builtin.osgi";
 
-	private static final String NB_ROUTESOAPDS_MS = "nb.routesoapds.ms";
+    private static final String NB_ROUTESOAPDS_MS = "nb.routesoapds.ms";
 
-	private static final String NB_ROUTESOAPDS_OSGI = "nb.routesoapds.osgi";
+    private static final String NB_ROUTESOAPDS_OSGI = "nb.routesoapds.osgi";
 
-	private static final String ROUTE_MICROSERVICE = "ROUTE_MICROSERVICE";
+    private static final String ROUTE_MICROSERVICE = "ROUTE_MICROSERVICE";
 
-	private static final String ROUTE = "ROUTE";
+    private static final String ROUTE = "ROUTE";
 
-	private static final String REST_MS = "REST_MS";
+    private static final String REST_MS = "REST_MS";
 
-	private static final String OSGI = "OSGI";
+    private static final String OSGI = "OSGI";
 
-	private static final String NB_DSREST_APIFILE_MS = "nb.dsrest.apifile.ms";
+    private static final String NB_DSREST_APIFILE_MS = "nb.dsrest.apifile.ms";
 
-	private static final String NB_DSREST_APIDESIGNER_MS = "nb.dsrest.apidesigner.ms";
+    private static final String NB_DSREST_APIDESIGNER_MS = "nb.dsrest.apidesigner.ms";
 
-	private static final String NB_DSREST_APIFILE_OSGI = "nb.dsrest.apifile.osgi";
+    private static final String NB_DSREST_APIFILE_OSGI = "nb.dsrest.apifile.osgi";
 
-	private static final String NB_DSREST_APIDESIGNER_OSGI = "nb.dsrest.apidesigner.osgi";
+    private static final String NB_DSREST_APIDESIGNER_OSGI = "nb.dsrest.apidesigner.osgi";
 
-	private static final String NB_DSREST_BUILTIN_MS = "nb.dsrest.builtin.ms";
+    private static final String NB_DSREST_BUILTIN_MS = "nb.dsrest.builtin.ms";
 
-	private static final String NB_DSREST_BUILTIN_OSGI = "nb.dsrest.builtin.osgi";
+    private static final String NB_DSREST_BUILTIN_OSGI = "nb.dsrest.builtin.osgi";
 
     private static final String PREF_TOS_JOBS_RECORDS = "TOS_Jobs_Records"; //$NON-NLS-1$
 
@@ -235,7 +235,7 @@ public class TosTokenCollector extends AbstractTokenCollector {
                                 removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_DSREST_APIDESIGNER_MS);
                                 removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_DSREST_APIFILE_MS);
                             }else if (ERepositoryObjectType.PROCESS_ROUTE.equals(type)) {
-                            	removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_ROUTESOAPDS_OSGI);
+                                removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_ROUTESOAPDS_OSGI);
                                 removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_ROUTESOAPDS_MS);
                                 removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_ROUTERESTDS_BUILTIN_OSGI);
                                 removeUnwantedNodeFromjobDetails(typeStats, jobDetails, NB_ROUTERESTDS_BUILTIN_MS);
@@ -287,8 +287,8 @@ public class TosTokenCollector extends AbstractTokenCollector {
             }
         }
         if(repoStats.has("SERVICES")) {
-        	JSONObject serviceJson = (JSONObject)repoStats.get("SERVICES");
-        	serviceJson.put("nbdssoap", nbdssoap);
+            JSONObject serviceJson = (JSONObject)repoStats.get("SERVICES");
+            serviceJson.put("nbdssoap", nbdssoap);
         }
         jObject.put(PROJECTS.getKey(), repoStats); //$NON-NLS-1$
         jObject.put(TYPE.getKey(), ProjectManager.getInstance().getProjectType(currentProject));
@@ -310,145 +310,164 @@ public class TosTokenCollector extends AbstractTokenCollector {
     }
     
     private void removeUnwantedNodeFromjobDetails(JSONObject typeStats, JSONObject jobDetails, String key) throws JSONException {
-		if(jobDetails.has(key)) {
-			typeStats.put(key, jobDetails.get(key)); //$NON-NLS-1$
-			jobDetails.remove(key); //$NON-NLS-1$
-		}
-	}
+        if(jobDetails.has(key)) {
+            typeStats.put(key, jobDetails.get(key)); //$NON-NLS-1$
+            jobDetails.remove(key); //$NON-NLS-1$
+        }
+    }
     
     @SuppressWarnings("unchecked")
-    private void extractBuildTypeData(List<IRepositoryViewObject> allRvo, Map<String, Integer> buildTypeDetails) {
-    	Set<String> checkedItemSet = new HashSet<String>();
-    	for (IRepositoryViewObject rvo : allRvo) {
-    		Item item = rvo.getProperty().getItem();
-    		if (item instanceof ProcessItem) {
-    			ProcessType processType = ((ProcessItem) item).getProcess();
-    			String itemID = ((ProcessItem) item).getProperty().getId();
-    			List<NodeType> nodeList = (List<NodeType>) processType.getNode();
+    private void extractBuildTypeData(NodeType node, Item item, String itemID, String componentName, 
+    		Set<String> checkedItemSet, Map<String, Integer> buildTypeDetails) {
 
-    			for (NodeType node : nodeList) {
-    				String componentName = node.getComponentName();
-    				List<AdditionalInfoMapImpl> properties = item.getProperty().getAdditionalProperties();
-    				for (AdditionalInfoMapImpl property : properties) {
+    	List<AdditionalInfoMapImpl> properties = item.getProperty().getAdditionalProperties();
+    	boolean isItemChecked = false;
+    	boolean buildTypeIsPresent = false;
+    	String buildType = null;
 
-    					String buildType = property.getValue().toString();
-    					String nodeType = ComponentUtilities.getNodePropertyValue(node, "PROPERTY:PROPERTY_TYPE"); //$NON-NLS-1$
-    					String apiID = ComponentUtilities.getNodePropertyValue(node, "API_ID"); //$NON-NLS-1$
+    	for (AdditionalInfoMapImpl property : properties) {
 
-    					if("BUILD_TYPE".equals(property.getKey().toString()) && null != buildType) {
-    						if ("tRESTRequest".equals(componentName)) {
-    							if(null == nodeType || !nodeType.equals("REPOSITORY")) {
-    								// when API Definition = built-in
-    								if(buildType.equals(OSGI)) {
-    									// nb jobs with tRESTRequest where build type is = OSGI and API definition is = Built-in
-    									String key = NB_DSREST_BUILTIN_OSGI;
-    									buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    									break;
-    								}else if(buildType.equals(REST_MS)) {
-    									//nb jobs with tRESTRequest where build type is = Microservice and API definition is = Built-in
-    									String key = NB_DSREST_BUILTIN_MS;
-    									buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    									break;
-    								}
-    							}else if(null != nodeType && nodeType.equals("REPOSITORY")){
-    								// when API Definition = Repository
-    								if(buildType.equals(OSGI)) {
-    									if(null!=apiID && !apiID.isEmpty()) {
-    										// nb jobs with tRESTRequest where build type is = OSGI and API definition is = imported from API Designer
-    										String key = NB_DSREST_APIDESIGNER_OSGI;
-    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    										break;
-    									}else {
-    										// nb jobs with tRESTRequest where build type is = OSGI and API definition is = imported from local file
-    										String key = NB_DSREST_APIFILE_OSGI;
-    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    										break;
-    									}
-    								}else if(buildType.equals(REST_MS)) {
-    									if(null!=apiID && !apiID.isEmpty()) {
-    										//nb jobs with tRESTRequest where build type is = Microservice and API definition is = imported from API Designer
-    										String key = NB_DSREST_APIDESIGNER_MS;
-    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    										break;
-    									}else {
-    										// nb jobs with tRESTRequest where build type is = Microservice and API definition is = imported from local file
-    										String key = NB_DSREST_APIFILE_MS;
-    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    										break;
-    									}
-    								}
-    							}
-    						} else if("cSOAP".equals(componentName)) {
-    							if(buildType.equals(ROUTE)) {
-    								// nb routes with cSOAP as producer where build type = OSGI
-    								String key = NB_ROUTESOAPDS_OSGI;
-    								buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    								break;
-    							}else if(buildType.equals(ROUTE_MICROSERVICE)) {
-    								// nb routes with cSOAP as producer where build type = Microservice
-    								String key = NB_ROUTESOAPDS_MS;
-    								buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    								break;
-    							}
-    						}else if("cREST".equals(componentName)) {
-    							if(null == nodeType || !nodeType.equals("REPOSITORY")) {
-    								if(buildType.equals(ROUTE)) {
-    									// nb routes with cREST as producer where build type = OSGI and API definition = Built-in
-    									String key = NB_ROUTERESTDS_BUILTIN_OSGI;
-    									buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    									break;
-    								}else if(buildType.equals(ROUTE_MICROSERVICE)) {
-    									// nb routes with cREST as producer where build build type = Microservice and API definition = Built-in
-    									String key = NB_ROUTERESTDS_BUILTIN_MS;
-    									buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    									break;
-    								}
-    							}else if(null != nodeType && nodeType.equals("REPOSITORY")){
-    								// when API Definition = Repository
-    								if(buildType.equals(ROUTE)) {
-    									if(null!=apiID && !apiID.isEmpty()) {
-    										// nb routes with cREST as producer where build type is = OSGI and API definition is = imported from API Designer
-    										String key = NB_ROUTERESTDS_APIDESIGNER_OSGI;
-    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    										break;
-    									}else {
-    										// nb routes with cREST as producer where build type is = OSGI and API definition is = imported from local file
-    										String key = NB_ROUTERESTDS_APIFILE_OSGI;
-    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    										break;
-    									}
-    								}else if(buildType.equals(ROUTE_MICROSERVICE)) {
-    									if(null!=apiID && !apiID.isEmpty()) {
-    										// nb routes with cREST as producer where build type is  = Microservice and API definition is = imported from API Designer
-    										String key = NB_ROUTERESTDS_APIDESIGNER_MS;
-    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    										break;
-    									}else {
-    										// nb routes with cREST as producer where build type is = Microservice and API definition is = imported from local file
-    										String key = NB_ROUTERESTDS_APIFILE_MS;
-    										buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    										break;
-    									}
-    								}
-    							}
-    						}else if(!"cSOAP".equals(componentName) && !"cREST".equals(componentName) && !checkedItemSet.contains(itemID)) {
-    							// nb of jobs which doesn't contains cSOAP or cREST components
-    							if(buildType.equals(ROUTE)) {
-    								// nb routes without cSOAP or cREST as producer where build type = OSGI
-    								String key = NB_ROUTE_OSGI;
-    								buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    								break;
-    							}else if(buildType.equals(ROUTE_MICROSERVICE)) {
-    								// nb routes without cSOAP or cREST as producer where build type = Microservice
-    								String key = NB_ROUTE_MS;
-    								buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
-    								break;
-    							}
-    						}
-    					}
-    				}
-    				checkedItemSet.add(itemID);
-    				break;
+    		String buildTypeKey = property.getKey().toString();
+    		String buildTypeValue = property.getValue().toString();
+
+    		if("BUILD_TYPE".equals(buildTypeKey) && null != buildTypeValue) {
+    			buildType = buildTypeValue;
+    			buildTypeIsPresent = true;
+    			break;
+    		}
+    	}
+
+    	String nodeType = ComponentUtilities.getNodePropertyValue(node, "PROPERTY:PROPERTY_TYPE"); //$NON-NLS-1$
+    	String apiID = ComponentUtilities.getNodePropertyValue(node, "API_ID"); //$NON-NLS-1$
+
+    	// decide build type for Job/Route
+    	if(!buildTypeIsPresent || null==buildType) {
+    		if ("tRESTRequest".equals(componentName)) {
+    			// if Build type is not present then treat this job as OSGI
+    			buildType = OSGI;
+    		}else {
+    			// if Build type is not present then treat this Route as OSGI
+    			buildType = ROUTE;
+    		}
+    	}
+
+    	if ("tRESTRequest".equals(componentName)) {
+    		extractDataWhenItemHastRESTRequest(buildTypeDetails, buildType, nodeType, apiID);
+    		isItemChecked =true;
+    	} else if("cSOAP".equals(componentName)) {
+    		extractDataWhenItemHascSOAP(buildTypeDetails, buildType);
+    		isItemChecked =true;
+    	}else if("cREST".equals(componentName)) {
+    		extractDataWhenItemHascREST(buildTypeDetails, buildType, nodeType, apiID);
+    		isItemChecked =true;
+    	}else if(!"cSOAP".equals(componentName) && !"cREST".equals(componentName) && !checkedItemSet.contains(itemID)) {
+    		extractDataForRouteWithoutcRESTorcSOAP(buildTypeDetails, buildType);
+    		isItemChecked =true;
+    	}
+
+    	if(isItemChecked) {
+    		checkedItemSet.add(itemID);
+    	}
+    }
+
+    private void extractDataForRouteWithoutcRESTorcSOAP(Map<String, Integer> buildTypeDetails, String buildType) {
+    	// nb of jobs which doesn't contains cSOAP or cREST components
+    	if(buildType.equals(ROUTE)) {
+    		// nb routes without cSOAP or cREST as producer where build type = OSGI
+    		String key = NB_ROUTE_OSGI;
+    		buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    	}else if(buildType.equals(ROUTE_MICROSERVICE)) {
+    		// nb routes without cSOAP or cREST as producer where build type = Microservice
+    		String key = NB_ROUTE_MS;
+    		buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    	}
+    }
+
+    private void extractDataWhenItemHascREST(Map<String, Integer> buildTypeDetails, String buildType, String nodeType, String apiID) {
+    	if(null == nodeType || !nodeType.equals("REPOSITORY")) {
+    		if(buildType.equals(ROUTE)) {
+    			// nb routes with cREST as producer where build type = OSGI and API definition = Built-in
+    			String key = NB_ROUTERESTDS_BUILTIN_OSGI;
+    			buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    		}else if(buildType.equals(ROUTE_MICROSERVICE)) {
+    			// nb routes with cREST as producer where build build type = Microservice and API definition = Built-in
+    			String key = NB_ROUTERESTDS_BUILTIN_MS;
+    			buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    		}
+    	}else if(null != nodeType && nodeType.equals("REPOSITORY")){
+    		// when API Definition = Repository
+    		if(buildType.equals(ROUTE)) {
+    			if(null!=apiID && !apiID.isEmpty()) {
+    				// nb routes with cREST as producer where build type is = OSGI and API definition is = imported from API Designer
+    				String key = NB_ROUTERESTDS_APIDESIGNER_OSGI;
+    				buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    			}else {
+    				// nb routes with cREST as producer where build type is = OSGI and API definition is = imported from local file
+    				String key = NB_ROUTERESTDS_APIFILE_OSGI;
+    				buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    			}
+    		}else if(buildType.equals(ROUTE_MICROSERVICE)) {
+    			if(null!=apiID && !apiID.isEmpty()) {
+    				// nb routes with cREST as producer where build type is  = Microservice and API definition is = imported from API Designer
+    				String key = NB_ROUTERESTDS_APIDESIGNER_MS;
+    				buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    			}else {
+    				// nb routes with cREST as producer where build type is = Microservice and API definition is = imported from local file
+    				String key = NB_ROUTERESTDS_APIFILE_MS;
+    				buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    			}
+    		}
+    	}
+    }
+
+    private void extractDataWhenItemHascSOAP(Map<String, Integer> buildTypeDetails, String buildType) {
+    	if(buildType.equals(ROUTE)) {
+    		// nb routes with cSOAP as producer where build type = OSGI
+    		String key = NB_ROUTESOAPDS_OSGI;
+    		buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    		//break;
+    	}else if(buildType.equals(ROUTE_MICROSERVICE)) {
+    		// nb routes with cSOAP as producer where build type = Microservice
+    		String key = NB_ROUTESOAPDS_MS;
+    		buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    		//break;
+    	}
+    }
+
+    private void extractDataWhenItemHastRESTRequest(Map<String, Integer> buildTypeDetails, String buildType,
+    		String nodeType, String apiID) {
+    	if(null == nodeType || !nodeType.equals("REPOSITORY")) {
+    		// when API Definition = built-in
+    		if(buildType.equals(OSGI)) {
+    			// nb jobs with tRESTRequest where build type is = OSGI and API definition is = Built-in
+    			String key = NB_DSREST_BUILTIN_OSGI;
+    			buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    		}else if(buildType.equals(REST_MS)) {
+    			//nb jobs with tRESTRequest where build type is = Microservice and API definition is = Built-in
+    			String key = NB_DSREST_BUILTIN_MS;
+    			buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    		}
+    	}else if(null != nodeType && nodeType.equals("REPOSITORY")){
+    		// when API Definition = Repository
+    		if(buildType.equals(OSGI)) {
+    			if(null!=apiID && !apiID.isEmpty()) {
+    				// nb jobs with tRESTRequest where build type is = OSGI and API definition is = imported from API Designer
+    				String key = NB_DSREST_APIDESIGNER_OSGI;
+    				buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    			}else {
+    				// nb jobs with tRESTRequest where build type is = OSGI and API definition is = imported from local file
+    				String key = NB_DSREST_APIFILE_OSGI;
+    				buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    			}
+    		}else if(buildType.equals(REST_MS)) {
+    			if(null!=apiID && !apiID.isEmpty()) {
+    				//nb jobs with tRESTRequest where build type is = Microservice and API definition is = imported from API Designer
+    				String key = NB_DSREST_APIDESIGNER_MS;
+    				buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
+    			}else {
+    				// nb jobs with tRESTRequest where build type is = Microservice and API definition is = imported from local file
+    				String key = NB_DSREST_APIFILE_MS;
+    				buildTypeDetails.put(key, null!=buildTypeDetails.get(key) ? buildTypeDetails.get(key)+1 : 1);
     			}
     		}
     	}
@@ -488,9 +507,10 @@ public class TosTokenCollector extends AbstractTokenCollector {
         Map<String, JSONObject> camelComponentMap = new HashMap<>();
         Map<String, JSONObject> customCamelComponentMap = new HashMap<>();
         Map<String,Integer> buildTypeDetails = new HashMap<String,Integer>();
-        extractBuildTypeData(allRvo, buildTypeDetails);
+        Set<String> checkedIteSetForBuildTypes = new HashSet<String>();
         for (IRepositoryViewObject rvo : allRvo) {
             Item item = rvo.getProperty().getItem();
+            String itemID = ((ProcessItem) item).getProperty().getId();
             if (item instanceof ProcessItem) {
                 boolean has_tRestRequest = false;
                 boolean has_tESBProviderRequest = false;
@@ -516,6 +536,9 @@ public class TosTokenCollector extends AbstractTokenCollector {
                     component_names.put("count", nbComp + 1);
 
                     extractRuntimeFeature(node, component_names, componentName);
+                    if(!checkedIteSetForBuildTypes.contains(itemID)) {
+                        extractBuildTypeData(node, item, itemID, componentName, checkedIteSetForBuildTypes, buildTypeDetails);
+                    }
                     
                     if (dsComponentsInDIJobs.contains(componentName)) {
                         has_tESBProviderRequest_Or_tRESTRequest = true;
@@ -631,9 +654,9 @@ public class TosTokenCollector extends AbstractTokenCollector {
             // nb Services (SOAP WSDL) with at least one operation implemented as job with tESBProviderRequest
             jobDetails.put("nbdssoap", soapWsdlWithImpl.size());
         }
-	// put build type data
+    // put build type data
         for(Map.Entry<String,Integer> entry : buildTypeDetails.entrySet()){
-        	jobDetails.put(entry.getKey(), entry.getValue());
+            jobDetails.put(entry.getKey(), entry.getValue());
         }
     }
 
