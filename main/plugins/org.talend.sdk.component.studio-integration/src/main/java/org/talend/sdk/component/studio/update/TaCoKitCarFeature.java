@@ -300,6 +300,7 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
             String commandType = "studio-deploy";
             List<String> cmds = new ArrayList<String>();
             String javaCMD = getJavaCMD();
+            LOGGER.info("JavaCMD: " + javaCMD);
             cmds.add(javaCMD);
             cmds.add("-D" + TaCoKitConst.PARAM_CAR_INSTALLER_M2_REPO_PATH + "=" + m2RepoPath);
             cmds.add("-jar");
@@ -313,6 +314,7 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
             cmds.add(installationPath);
 
             ExceptionHandler.logDebug("tck install command line: " + cmds);
+            LOGGER.info("tck install command line: " + cmds);
 
             Process exec = null;
             try {
