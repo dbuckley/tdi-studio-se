@@ -178,7 +178,7 @@ public class TaCoKitCarFeature extends AbstractExtraFeature implements ITaCoKitC
     
     public static String getJavaCMD() {
         String vm = System.getProperty(EclipseCommandLine.PROP_VM);
-        if (!Platform.getOS().equals(Platform.OS_MACOSX) && !StringUtils.isBlank(vm)) {
+        if (!StringUtils.isBlank(vm)) {
             if (!vm.endsWith(JAVA_CMD) || !vm.endsWith(JAVA_CMD_EXE)) {
                 LOGGER.info("vm: " + vm);
                 String javaCMD = Platform.getOS().equals(Platform.OS_WIN32) ? JAVA_CMD_EXE : JAVA_CMD;
