@@ -318,7 +318,7 @@ public class TosTokenCollector extends AbstractTokenCollector {
     
     @SuppressWarnings("unchecked")
     private void extractBuildTypeData(NodeType node, Item item, String itemID, String componentName, 
-    		Set<String> checkedItemSet, Map<String, Integer> buildTypeDetails) {
+    		Set<String> checkedItemSet, Map<String, Integer> buildTypeDetails, Set<String> componentNamesList) {
 
     	List<AdditionalInfoMapImpl> properties = item.getProperty().getAdditionalProperties();
     	boolean isItemChecked = false;
@@ -360,7 +360,7 @@ public class TosTokenCollector extends AbstractTokenCollector {
     	}else if("cREST".equals(componentName)) {
     		extractDataWhenItemHascREST(buildTypeDetails, buildType, nodeType, apiID);
     		isItemChecked =true;
-    	}else if(!"cSOAP".equals(componentName) && !"cREST".equals(componentName) && !checkedItemSet.contains(itemID)) {
+    	}else if(!componentNamesList.contains("cSOAP") && !componentNamesList.contains("cREST")  && !checkedItemSet.contains(itemID)) {
     		extractDataForRouteWithoutcRESTorcSOAP(buildTypeDetails, buildType);
     		isItemChecked =true;
     	}
@@ -516,7 +516,12 @@ public class TosTokenCollector extends AbstractTokenCollector {
                 boolean has_tESBProviderRequest = false;
                 boolean has_tESBProviderRequest_Or_tRESTRequest = false;
                 ProcessType processType = ((ProcessItem) item).getProcess();
-                for (NodeType node : (List<NodeType>) processType.getNode()) {
+                List<NodeType> nodeTypeList = (List<NodeType>) processType.getNode();
+                Set<String> componentNamesList = new HashSet<String>();
+                for (NodeType node : nodeTypeList) {
+                	componentNamesList.add(node.getComponentName());
+                }
+                for (NodeType node : nodeTypeList) {
                     JSONObject component_names = null;
                     String componentName = node.getComponentName();
                     int nbComp = 0;
@@ -537,7 +542,7 @@ public class TosTokenCollector extends AbstractTokenCollector {
 
                     extractRuntimeFeature(node, component_names, componentName);
                     if(!checkedIteSetForBuildTypes.contains(itemID)) {
-                        extractBuildTypeData(node, item, itemID, componentName, checkedIteSetForBuildTypes, buildTypeDetails);
+                        extractBuildTypeData(node, item, itemID, componentName, checkedIteSetForBuildTypes, buildTypeDetails, componentNamesList);
                     }
                     
                     if (dsComponentsInDIJobs.contains(componentName)) {
