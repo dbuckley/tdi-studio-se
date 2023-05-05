@@ -38370,9 +38370,9 @@
                 UrlPath="platform:/base/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="asm-9.1"
-                MODULE="asm-9.1.jar"
-                MVN="mvn:org.ow2.asm/asm/9.1"
+                NAME="asm-9.5"
+                MODULE="asm-9.5.jar"
+                MVN="mvn:org.ow2.asm/asm/9.5"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
                 NAME="cxf-core-3.4.10"
@@ -38642,14 +38642,14 @@
                 MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.13.4"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
-                NAME="json-smart-2.4.7.jar"
-                MODULE="json-smart-2.4.7.jar"
-                MVN="mvn:net.minidev/json-smart/2.4.7"
+                NAME="json-smart-2.4.9.jar"
+                MODULE="json-smart-2.4.9.jar"
+                MVN="mvn:net.minidev/json-smart/2.4.9"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT
-                NAME="accessors-smart-2.4.7"
-                MODULE="accessors-smart-2.4.7.jar"
-                MVN="mvn:net.minidev/accessors-smart/2.4.7"
+                NAME="accessors-smart-2.4.9"
+                MODULE="accessors-smart-2.4.9.jar"
+                MVN="mvn:net.minidev/accessors-smart/2.4.9"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
             <IMPORT NAME="jakartaMail" MODULE="jakarta.mail-1.6.7.jar" MVN="mvn:com.sun.mail/jakarta.mail/1.6.7"
                 REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION=='API_2016_ODATA' OR API_VERSION=='API_2018_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016' OR MS_CRM_VERSION == 'CRM_2018'))" />
