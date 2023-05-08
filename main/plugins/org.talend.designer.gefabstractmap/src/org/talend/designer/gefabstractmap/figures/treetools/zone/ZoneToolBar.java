@@ -22,10 +22,9 @@ import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.designer.gefabstractmap.figures.layout.ZoneToolBarLayout;
 import org.talend.designer.gefabstractmap.figures.manager.RootModelManager;
 import org.talend.designer.gefabstractmap.figures.treetools.ToolBarButtonImageFigure;
-import org.talend.designer.gefabstractmap.resource.ColorInfo;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
 import org.talend.designer.gefabstractmap.resource.ImageInfo;
 import org.talend.designer.gefabstractmap.resource.ImageProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * DOC talend class global comment. Detailled comment
@@ -50,7 +49,7 @@ public abstract class ZoneToolBar extends Figure {
         manager.setSpacing(8);
         setLayoutManager(manager);
         setOpaque(true);
-        setBackgroundColor(ColorProviderMapper.getColor(ColorInfo.ZONE_BACKGROUND_COLOR));
+        setBackgroundColor(ColorInfo.ZONE_BACKGROUND_COLOR());
 
     }
 

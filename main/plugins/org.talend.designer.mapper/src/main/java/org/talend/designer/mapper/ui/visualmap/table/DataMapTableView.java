@@ -143,6 +143,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.runtime.services.IExpressionBuilderDialogService;
+import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.metadata.editor.MetadataTableEditorView;
 import org.talend.core.ui.proposal.TalendProposalProvider;
 import org.talend.designer.abstractmap.model.table.IDataMapTable;
@@ -169,7 +170,6 @@ import org.talend.designer.mapper.model.tableentry.OutputColumnTableEntry;
 import org.talend.designer.mapper.model.tableentry.TableEntryLocation;
 import org.talend.designer.mapper.model.tableentry.VarTableEntry;
 import org.talend.designer.mapper.ui.color.ColorInfo;
-import org.talend.designer.mapper.ui.color.ColorProviderMapper;
 import org.talend.designer.mapper.ui.dialog.ListStringValueDialog;
 import org.talend.designer.mapper.ui.dnd.CompleteDropTargetTableListener;
 import org.talend.designer.mapper.ui.dnd.DragNDrop;
@@ -387,9 +387,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     protected int changedOptions = 0;
 
-    private Color color = null;
-
-    protected Color previewColor = null;
+//    private Color color = null;
+//
+//    protected Color previewColor = null;
 
     private boolean needInitProposals = false;
 
@@ -426,8 +426,8 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         this.talendTypeFilter = NodeUtil.createMetadataTalendTypeFilter(mapperManager.getAbstractMapComponent());
         expressionColorProvider = new ExpressionColorProvider();
 
-        color = new Color(Display.getDefault(), 238, 238, 0);
-        previewColor = new Color(Display.getDefault(), 235, 0, 219);
+//        color = new Color(Display.getDefault(), 238, 238, 0);
+//        previewColor = new Color(Display.getDefault(), 235, 0, 219);
 
         createComponents();
         addListeners();
@@ -480,7 +480,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         headerGridData.heightHint = getHeaderHeight();
         headerComposite.setLayoutData(headerGridData);
         GridLayout headerLayout = new GridLayout();
-
+        
         int margin = 0;
         headerLayout.marginLeft = 3;
         headerLayout.marginRight = margin;
@@ -511,11 +511,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         dataNameLabel.minimumWidth = nameLabel.getText().length() * 8;
 
         nameLabel.setLayoutData(dataNameLabel);
-        // nameLabel.setBackground(nameLabel.getDisplay().getSystemColor(SWT.COLOR_RED));
-
+        
         int rightStyle = toolbarNeedToHaveRightStyle() ? SWT.RIGHT : SWT.NONE;
         toolBarActions = new ToolBar(headerComposite, SWT.FLAT | rightStyle | SWT.NONE);
-        // toolBarActions.setBackground(nameLabel.getDisplay().getSystemColor(SWT.COLOR_BLUE));
 
         if (addToolItems()) {
             addToolItemSeparator();
@@ -587,9 +585,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             new DragNDrop(mapperManager, tableForEntries, true, true);
         }
 
-        Composite footerComposite = new Composite(this, SWT.NONE);
-        GridData footerGridData = new GridData(10, 2);
-        footerComposite.setLayoutData(footerGridData);
+//        Composite footerComposite = new Composite(this, SWT.NONE);
+//        GridData footerGridData = new GridData(10, 2);
+//        footerComposite.setLayoutData(footerGridData);
 
         if (WindowSystem.isGTK()) {
             sizeToolBar = toolBarActions.computeSize(SWT.DEFAULT, SWT.DEFAULT);
@@ -605,6 +603,18 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     protected abstract void createContent();
 
     protected abstract void createMapSettingTable();
+    
+    public void setTableHeaderBackground(Color color) {
+        if(headerComposite != null && !headerComposite.isDisposed()) {
+            headerComposite.setBackground(color);
+        } 
+    }
+    
+    public void setNameLabelForceground(Color color) {
+        if (nameLabel != null && !nameLabel.isDisposed()) {
+            nameLabel.setForeground(color);
+        }
+    }
 
     protected void initMapSettingColumns(final TableViewerCreator<GlobalMapEntry> tableViewerCreator) {
         final Table table = tableViewerCreator.getTable();
@@ -623,20 +633,20 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 // do nothing
             }
         });
-        column.setColorProvider(new IColumnColorProvider<GlobalMapEntry>() {
-
-            public Color getBackgroundColor(GlobalMapEntry bean) {
-                if (needColumnBgColor(bean)) {
-                    return color;
-                }
-                return null;
-            }
-
-            public Color getForegroundColor(GlobalMapEntry bean) {
-                // TODO Auto-generated method stub
-                return null;
-            }
-        });
+//        column.setColorProvider(new IColumnColorProvider<GlobalMapEntry>() {
+//
+//            public Color getBackgroundColor(GlobalMapEntry bean) {
+//                if (needColumnBgColor(bean)) {
+//                    return color;
+//                }
+//                return null;
+//            }
+//
+//            public Color getForegroundColor(GlobalMapEntry bean) {
+//                // TODO Auto-generated method stub
+//                return null;
+//            }
+//        });
 
         final TableViewerCreatorColumn valueColumn = new TableViewerCreatorColumn(tableViewerCreator);
         valueColumn.setTitle("Value");
@@ -688,20 +698,20 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         }
         valueColumn.setBeanPropertyAccessors(getMapSettingValueAccess(cellEditor));
         valueColumn.setModifiable(true);
-        valueColumn.setColorProvider(new IColumnColorProvider<GlobalMapEntry>() {
-
-            public Color getBackgroundColor(GlobalMapEntry bean) {
-                if (needColumnBgColor(bean)) {
-                    return color;
-                }
-                return null;
-            }
-
-            public Color getForegroundColor(GlobalMapEntry bean) {
-                // TODO Auto-generated method stub
-                return null;
-            }
-        });
+//        valueColumn.setColorProvider(new IColumnColorProvider<GlobalMapEntry>() {
+//
+//            public Color getBackgroundColor(GlobalMapEntry bean) {
+//                if (needColumnBgColor(bean)) {
+//                    return color;
+//                }
+//                return null;
+//            }
+//
+//            public Color getForegroundColor(GlobalMapEntry bean) {
+//                // TODO Auto-generated method stub
+//                return null;
+//            }
+//        });
 
     }
 
@@ -1240,14 +1250,14 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
             public void widgetDisposed(DisposeEvent e) {
                 removeListenerForTrace();
-                if (color != null) {
-                    color.dispose();
-                    color = null;
-                }
-                if (previewColor != null) {
-                    previewColor.dispose();
-                    previewColor = null;
-                }
+//                if (color != null) {
+//                    color.dispose();
+//                    color = null;
+//                }
+//                if (previewColor != null) {
+//                    previewColor.dispose();
+//                    previewColor = null;
+//                }
             }
         });
 
@@ -2339,7 +2349,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             if (validCell) {
                 return null;
             } else {
-                return ColorProviderMapper.getColor(ColorInfo.COLOR_BACKGROUND_ERROR_EXPRESSION_CELL);
+                return ColorInfo.COLOR_BACKGROUND_ERROR_EXPRESSION_CELL();
             }
 
         }
@@ -2380,7 +2390,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         if (column.getId().equals(ID_EXPRESSION_COLUMN)) {
             return expressionColorProvider.getBackgroundColor(entry.getProblems() == null ? true : false);
         } else if (column.getId().equals(PREVIEW_COLUMN)) {
-            return ColorProviderMapper.getColor(ColorInfo.COLOR_TMAP_PREVIEW);
+            return ColorInfo.COLOR_TMAP_PREVIEW();
         }
         return null;
     }
@@ -2598,8 +2608,8 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             new DragNDrop(mapperManager, expressionFilterText, false, true);
 
             expressionFilterText.setVisible(table.isActivateExpressionFilter());
+            expressionFilterText.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED));
             gridData.exclude = !table.isActivateExpressionFilter();
-
             expressionFilterText.addFocusListener(new FocusListener() {
 
                 public void focusGained(FocusEvent e) {
@@ -2828,8 +2838,8 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             columnNameTextFilter.setVisible(table.isActivateColumnNameFilter());
             nameFilterTextGridData.exclude = !table.isActivateColumnNameFilter();
             //
-            columnNameTextFilter.setBackground(ColorProviderMapper.getColor(ColorInfo.COLOR_BACKGROUND_VALID_EXPRESSION_CELL));
-            columnNameTextFilter.setForeground(ColorProviderMapper.getColor(ColorInfo.COLOR_FOREGROUND_VALID_EXPRESSION_CELL));
+            columnNameTextFilter.setBackground(ColorInfo.COLOR_BACKGROUND_VALID_EXPRESSION_CELL());
+            columnNameTextFilter.setForeground(ColorInfo.COLOR_FOREGROUND_VALID_EXPRESSION_CELL());
 
             columnNameTextFilter.addFocusListener(new FocusListener() {
 
@@ -3002,17 +3012,17 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             expressionFilterText.setColoring(false);
             if (!mapperManager.isSearchOption()) {
                 expressionFilterText
-                        .setBackground(ColorProviderMapper.getColor(ColorInfo.COLOR_BACKGROUND_ERROR_EXPRESSION_CELL));
+                        .setBackground(ColorInfo.COLOR_BACKGROUND_ERROR_EXPRESSION_CELL());
                 expressionFilterText
-                        .setForeground(ColorProviderMapper.getColor(ColorInfo.COLOR_FOREGROUND_ERROR_EXPRESSION_CELL));
+                        .setForeground(ColorInfo.COLOR_FOREGROUND_ERROR_EXPRESSION_CELL());
             }
         } else {
             expressionFilterText.setColoring(true);
             if (!mapperManager.isSearchOption()) {
                 expressionFilterText
-                        .setBackground(ColorProviderMapper.getColor(ColorInfo.COLOR_BACKGROUND_VALID_EXPRESSION_CELL));
+                        .setBackground(ColorInfo.COLOR_BACKGROUND_VALID_EXPRESSION_CELL());
                 expressionFilterText
-                        .setForeground(ColorProviderMapper.getColor(ColorInfo.COLOR_FOREGROUND_VALID_EXPRESSION_CELL));
+                        .setForeground(ColorInfo.COLOR_FOREGROUND_VALID_EXPRESSION_CELL());
             }
         }
     }

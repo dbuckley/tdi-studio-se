@@ -29,6 +29,7 @@ String dbquery= ElementParameterParser.getValue(node, "__QUERY__");
 dbquery = org.talend.core.model.utils.NodeUtil.replaceCRLFInMEMO_SQL(dbquery);
 List<Map<String, String>> prepareStatementParameters = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SET_PREPAREDSTATEMENT_PARAMETERS__");
 String use_NB_Line = ElementParameterParser.getValue(node, "__USE_NB_LINE__");
+String dbType = ElementParameterParser.getValue(node, "__TYPE__");
 String incomingConnName = null;
 Set<String> inputCols = new HashSet<String>();
 List<IMetadataColumn> columnList = null;
@@ -85,9 +86,14 @@ if(!hasOutgoingDataConnection || columnList == null || columnList.size() < 1){
 globalMap.put("<%=cid %>_QUERY",query_<%=cid %>);
 <%
 if(("true").equals(propagateRecordset)){
-	%>
+%>
 	java.sql.ResultSet rs_<%=cid %> = null;
-	<%
+<%
+}
+if("Teradata".equals(dbType)||"MSSQL".equals(dbType)){
+%>
+	boolean isResultSet_<%=cid %> = false;
+<%
 }
 %>
 try {
@@ -110,27 +116,79 @@ try {
 		}
 		if(("true").equals(propagateRecordset)){
 %>
-		rs_<%=cid %> = pstmt_<%=cid %>.executeQuery();
+			rs_<%=cid %> = pstmt_<%=cid %>.executeQuery();
 <%
 		} else {
+			if("Teradata".equals(dbType)||"MSSQL".equals(dbType)){
 %>
-		pstmt_<%=cid %>.execute();
-		<%
+				isResultSet_<%=cid %> = pstmt_<%=cid %>.execute();
+<%			
+			}else{
+%>
+				pstmt_<%=cid %>.execute();
+<%
+			}
 		}
 	} else {
 		if(("true").equals(propagateRecordset)){
 %>
-		rs_<%=cid %> = stmt_<%=cid %>.executeQuery(query_<%=cid %>);
+			rs_<%=cid %> = stmt_<%=cid %>.executeQuery(query_<%=cid %>);
 <%
 		} else {
+			if("Teradata".equals(dbType)||"MSSQL".equals(dbType)){
 %>
-		stmt_<%=cid %>.execute(query_<%=cid %>);
-		<%
+				isResultSet_<%=cid %> = stmt_<%=cid %>.execute(query_<%=cid %>);
+<%			
+			}else{
+%>
+				stmt_<%=cid %>.execute(query_<%=cid %>);
+<%
+			}
 		}
 	}
 	log4jCodeGenerateUtil.logInfo(node,"debug",cid+" - Execute the query: '\" + query_" + cid  + " + \"' has finished.");
+	if("Teradata".equals(dbType)||"MSSQL".equals(dbType)){
+		if(("true").equals(propagateRecordset)) {
 %>
+			count_<%=cid %>++;
 <%
+		} else {
+%>
+			java.sql.Statement commonSt_<%=cid %> = null;
+			java.sql.ResultSet rsMulti_<%=cid %> = null;
+			int rsCount_<%=cid %> = -1;
+<%
+			if (usePrepareStatement) {
+%>
+				commonSt_<%=cid %> = pstmt_<%=cid %>;
+				rsMulti_<%=cid %> = pstmt_<%=cid %>.getResultSet();
+<%
+			} else {
+%>
+				commonSt_<%=cid %> = stmt_<%=cid %>;
+				rsMulti_<%=cid %> = stmt_<%=cid %>.getResultSet();
+<%
+			}
+%>
+			do {
+			    if (isResultSet_<%=cid %>) {
+			        if(rsMulti_<%=cid %> != null){
+						while(rsMulti_<%=cid %>.next()){
+							count_<%=cid %>++;
+						}
+					}
+			    } else {
+			    	rsCount_<%=cid %> = commonSt_<%=cid %>.getUpdateCount();
+			        if (rsCount_<%=cid %> > 0) {
+			            count_<%=cid %> += commonSt_<%=cid %>.getUpdateCount();
+			        }
+			    }
+			    isResultSet_<%=cid %> = commonSt_<%=cid %>.getMoreResults();
+			    if (isResultSet_<%=cid %>) rsMulti_<%=cid %> = commonSt_<%=cid %>.getResultSet();
+			} while (isResultSet_<%=cid %> || rsCount_<%=cid %> != -1);
+<%
+		}
+	}
 	if(usePrepareStatement){
 		if ("NB_LINE_INSERTED".equals(use_NB_Line)) {
 %>

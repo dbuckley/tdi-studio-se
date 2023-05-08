@@ -581,7 +581,9 @@ public class RunProcessContext {
             org.talend.designer.core.ui.editor.process.Process prs =
                     (org.talend.designer.core.ui.editor.process.Process) process;
             prs.checkDifferenceWithRepository();
+            synContext(getSelectedContext(), process.getContextManager().getDefaultContext());
         }
+        
         checkTraces();
 
         if (ProcessContextComposite.promptConfirmLauch(shell, getSelectedContext(), process)) {
@@ -706,7 +708,7 @@ public class RunProcessContext {
                                             // job doesn't verify if code is
                                             // correct
                                             // before launching
-                                            if (!JobErrorsChecker.hasErrors(shell)) {
+                                            if (isRemoteRun || !JobErrorsChecker.hasErrors(shell)) {
                                                 ps = processor
                                                         .run(getStatisticsPort(), getTracesPort(), watchParam,
                                                                 log4jRuntimeLevel, progressMonitor,
@@ -789,6 +791,28 @@ public class RunProcessContext {
             // Kill button have to be pressed manually.
             this.running = true;
             setRunning(false);
+        }
+    }
+
+    private void synContext(IContext selectedContextToUpdate, IContext updatedContext) {
+        if(!selectedContextToUpdate.getName().equals(updatedContext.getName())) {
+            return;
+        }
+        
+        List<IContextParameter> contextParameterList = updatedContext.getContextParameterList();
+        for(IContextParameter contextParam: contextParameterList) {
+            IContextParameter contextParameter = selectedContextToUpdate.getContextParameter(contextParam.getSource(), contextParam.getName());
+            if(contextParameter == null) {
+                contextParameter = selectedContextToUpdate.getContextParameter(contextParam.getName());
+            }
+            if(contextParameter != null) {
+                if(!StringUtils.equals(contextParameter.getValue(), contextParam.getValue())) {
+                    contextParameter.setValue(contextParam.getValue());
+                }
+            } else {
+                IContextParameter clone = contextParam.clone();
+                selectedContextToUpdate.getContextParameterList().add(clone);
+            }
         }
     }
 

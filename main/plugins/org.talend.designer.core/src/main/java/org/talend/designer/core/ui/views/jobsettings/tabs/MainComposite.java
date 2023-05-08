@@ -224,7 +224,7 @@ public class MainComposite extends AbstractTabComposite {
         nameText.setLayoutData(data);
         String nameContent = repositoryObject.getLabel();
         nameText.setText(nameContent != null ? nameContent : ""); //$NON-NLS-1$
-        nameText.setEnabled(allowEnableControl);
+        nameText.setEnabled(enableControl);
 
         // Adding the decorator for nameText
         nameTextDecorator = new ControlDecoration(nameText, SWT.TOP | SWT.RIGHT);
@@ -270,14 +270,14 @@ public class MainComposite extends AbstractTabComposite {
             data.right = new FormAttachment(100, 0);
             data.top = new FormAttachment(authorText, 0, SWT.CENTER);
             btnDown.setLayoutData(data);
-            btnDown.setEnabled(allowEnableControl);
+            btnDown.setEnabled(enableControl);
 
             btnUp = widgetFactory.createButton(composite, "M", SWT.PUSH); //$NON-NLS-1$
             data = new FormData();
             data.right = new FormAttachment(btnDown, 0);
             data.top = new FormAttachment(authorText, 0, SWT.CENTER);
             btnUp.setLayoutData(data);
-            btnUp.setEnabled(allowEnableControl);
+            btnUp.setEnabled(enableControl);
 
             versionText = widgetFactory.createText(composite, ""); //$NON-NLS-1$
             data = new FormData();
@@ -473,7 +473,7 @@ public class MainComposite extends AbstractTabComposite {
         String description = repositoryObject.getDescription();
         descriptionText.setText(description != null ? description : ""); //$NON-NLS-1$
         descriptionText.setEnabled(true);
-        descriptionText.setEditable(allowEnableControl);
+        descriptionText.setEditable(enableControl);
 
         CLabel descriptionLabel = widgetFactory.createCLabel(composite,
                 Messages.getString("MainComposite.DescriptionSection.Label")); //$NON-NLS-1$
@@ -483,7 +483,7 @@ public class MainComposite extends AbstractTabComposite {
         data.top = new FormAttachment(descriptionText, 0, SWT.TOP);
         descriptionLabel.setLayoutData(data);
 
-        if (allowEnableControl) {
+        if (enableControl) {
             btnConfirm = widgetFactory.createButton(composite, "Confirm", SWT.PUSH); //$NON-NLS-1$
             descriptionData.bottom = new FormAttachment(btnConfirm, 0, SWT.TOP);
             data = new FormData();
@@ -500,23 +500,25 @@ public class MainComposite extends AbstractTabComposite {
                     evaluateTextField();
                 }
             });
-            jobTypeCCombo.addModifyListener(new ModifyListener() {
+            if (allowEnableControl) {
+                jobTypeCCombo.addModifyListener(new ModifyListener() {
 
-                @Override
-                public void modifyText(final ModifyEvent e) {
-                    ConvertJobsUtil.updateJobFrameworkPart(jobTypeCCombo.getText(), jobFrameworkCCombo, (obj.getProperty()
-                            .getItem() instanceof JobletProcessItem));
-                    evaluateTextField();
-                }
-            });
+                    @Override
+                    public void modifyText(final ModifyEvent e) {
+                        ConvertJobsUtil.updateJobFrameworkPart(jobTypeCCombo.getText(), jobFrameworkCCombo,
+                                (obj.getProperty().getItem() instanceof JobletProcessItem));
+                        evaluateTextField();
+                    }
+                });
 
-            jobFrameworkCCombo.addModifyListener(new ModifyListener() {
+                jobFrameworkCCombo.addModifyListener(new ModifyListener() {
 
-                @Override
-                public void modifyText(final ModifyEvent e) {
-                    evaluateTextField();
-                }
-            });
+                    @Override
+                    public void modifyText(final ModifyEvent e) {
+                        evaluateTextField();
+                    }
+                });
+            }
 
             purposeText.addModifyListener(new ModifyListener() {
 
@@ -580,8 +582,9 @@ public class MainComposite extends AbstractTabComposite {
                                 .getProxyRepositoryFactory();
                         Property property = repositoryObject.getProperty();
                         if (nameText == null || nameText.isDisposed() || versionText == null || versionText.isDisposed()
-                                || purposeText == null || purposeText.isDisposed() || jobTypeCCombo == null
-                                || jobTypeCCombo.isDisposed() || jobFrameworkCCombo == null || jobFrameworkCCombo.isDisposed()
+                                || purposeText == null || purposeText.isDisposed()
+                                || (allowEnableControl && (jobTypeCCombo == null || jobTypeCCombo.isDisposed()
+                                        || jobFrameworkCCombo == null || jobFrameworkCCombo.isDisposed()))
                                 || statusText == null || statusText.isDisposed() || descriptionText == null
                                 || descriptionText.isDisposed() || btnConfirm == null || btnConfirm.isDisposed()
                                 || property == null) {
@@ -589,9 +592,13 @@ public class MainComposite extends AbstractTabComposite {
                         }
                         String oldVersion = repositoryObject.getVersion();
                         String originalName = nameText.getText();
-                        String originalJobType = jobTypeCCombo.getText();
-                        String originalFramework = ConvertJobsUtil.convertFrameworkByJobType(originalJobType,
-                                jobFrameworkCCombo.getText(), false);
+                        String originalJobType = null;
+                        String originalFramework = null;
+                        if (allowEnableControl) {
+                            originalJobType = jobTypeCCombo.getText();
+                            originalFramework = ConvertJobsUtil.convertFrameworkByJobType(originalJobType,
+                                    jobFrameworkCCombo.getText(), false);
+                        }
                         String originalversion = versionText.getText();
                         String originalPurpose = purposeText.getText();
                         String originalStatus = statusText.getText();
@@ -652,7 +659,8 @@ public class MainComposite extends AbstractTabComposite {
                             property.setDescription(originalDescription);
                         }
                         Item originalItem = repositoryObject.getProperty().getItem();
-                        if (ConvertJobsUtil.isNeedConvert(originalItem, originalJobType, originalFramework, true)) {
+                        if (allowEnableControl
+                                && ConvertJobsUtil.isNeedConvert(originalItem, originalJobType, originalFramework, true)) {
                             boolean hasTestCase = ConvertJobsUtil.hasTestCase(repositoryObject.getProperty());
                             final List<ItemReferenceBean> unDeleteItems = RepositoryNodeDeleteManager.getInstance()
                                     .getUnDeleteItems(repositoryObject, null, true);
@@ -720,7 +728,8 @@ public class MainComposite extends AbstractTabComposite {
                                                     }
                                                     if (!isOpened) {
                                                         repositoryObject = newRepositoryObject;
-                                                        if (!jobTypeCCombo.isDisposed() && !jobFrameworkCCombo.isDisposed()) {
+                                                        if (allowEnableControl && !jobTypeCCombo.isDisposed()
+                                                                && !jobFrameworkCCombo.isDisposed()) {
                                                             jobTypeValue = jobTypeCCombo.getText();
                                                             frameworkValue = jobFrameworkCCombo.getText();
                                                         }
@@ -764,7 +773,7 @@ public class MainComposite extends AbstractTabComposite {
                                 property.setLabel(newJobName);
                                 property.setDisplayName(newJobName);
                             }
-                            if (originalFramework != null) {
+                            if (allowEnableControl && originalFramework != null) {
                                 if (property.getAdditionalProperties().containsKey(ConvertJobsUtil.FRAMEWORK)) {
                                     property.getAdditionalProperties().removeKey(ConvertJobsUtil.FRAMEWORK);
                                 }
@@ -780,7 +789,7 @@ public class MainComposite extends AbstractTabComposite {
                                         public void run(final IProgressMonitor monitor) throws CoreException {
                                             try {
                                                 if (repositoryObject.getProperty() != null) {
-                                                	if (!originalversion.equals(StringUtils.trimToEmpty(oldVersion))) {
+                                                    if (!originalversion.equals(StringUtils.trimToEmpty(oldVersion))) {
                                                         RelationshipItemBuilder.getInstance().addOrUpdateItem(repositoryObject.getProperty().getItem());
                                                     }
                                                     proxyRepositoryFactory.save(ProjectManager.getInstance().getCurrentProject(),
@@ -992,8 +1001,10 @@ public class MainComposite extends AbstractTabComposite {
     protected void evaluateTextField() {
         IProxyRepositoryFactory proxyRepositoryFactory = CoreRuntimePlugin.getInstance().getProxyRepositoryFactory();
         if (nameText == null || nameText.isDisposed() || versionText == null || versionText.isDisposed() || purposeText == null
-                || purposeText.isDisposed() || jobTypeCCombo == null || jobTypeCCombo.isDisposed() || jobFrameworkCCombo == null
-                || jobFrameworkCCombo.isDisposed() || statusText == null || statusText.isDisposed() || descriptionText == null
+                || purposeText.isDisposed()
+                || (allowEnableControl && (jobTypeCCombo == null || jobTypeCCombo.isDisposed() || jobFrameworkCCombo == null
+                        || jobFrameworkCCombo.isDisposed()))
+                || statusText == null || statusText.isDisposed() || descriptionText == null
                 || descriptionText.isDisposed() || btnConfirm == null || btnConfirm.isDisposed()) {
             return;
         }
@@ -1050,9 +1061,11 @@ public class MainComposite extends AbstractTabComposite {
         } else if (!btnConfirm.isDisposed()
                 && !versionText.getText().equals(StringUtils.trimToEmpty(repositoryObject.getVersion()))) {
             btnConfirm.setEnabled(true);
-        } else if (!btnConfirm.isDisposed() && !jobTypeCCombo.getText().equals(StringUtils.trimToEmpty(jobTypeValue))) {
+        } else if (!btnConfirm.isDisposed() && allowEnableControl
+                && !jobTypeCCombo.getText().equals(StringUtils.trimToEmpty(jobTypeValue))) {
             btnConfirm.setEnabled(true);
-        } else if (!btnConfirm.isDisposed() && !jobFrameworkCCombo.getText().equals(StringUtils.trimToEmpty(frameworkValue))) {
+        } else if (!btnConfirm.isDisposed() && allowEnableControl
+                && !jobFrameworkCCombo.getText().equals(StringUtils.trimToEmpty(frameworkValue))) {
             btnConfirm.setEnabled(true);
         } else if (!btnConfirm.isDisposed()
                 && !purposeText.getText().equals(StringUtils.trimToEmpty(repositoryObject.getPurpose()))) {

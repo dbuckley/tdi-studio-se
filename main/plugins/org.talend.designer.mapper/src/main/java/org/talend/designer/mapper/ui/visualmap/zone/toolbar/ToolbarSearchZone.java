@@ -67,8 +67,8 @@ public class ToolbarSearchZone {
         searchText = new Text(composite, SWT.BORDER);
         GridData gridData = new GridData();
         gridData.widthHint = 150;
-        searchText.setBackground(EntryState.NONE.getColor());
         searchText.setLayoutData(gridData);
+        searchText.setBackground(EntryState.NONE.getColor());
         searchText.setToolTipText("Enter search text prefix or pattern(*,?,or camel case).");
 
         ToolBar toolBarActions = new ToolBar(composite, SWT.FLAT | SWT.RIGHT);

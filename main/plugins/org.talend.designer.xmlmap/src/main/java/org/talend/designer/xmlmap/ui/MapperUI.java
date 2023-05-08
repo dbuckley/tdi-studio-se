@@ -44,12 +44,12 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.images.CoreImageProvider;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.cmd.ExternalNodeChangeCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
 import org.talend.designer.gefabstractmap.resource.FontProviderMapper;
 import org.talend.designer.gefabstractmap.resource.ImageProviderMapper;
 import org.talend.designer.xmlmap.XmlMapComponent;
@@ -182,13 +182,13 @@ public class MapperUI {
         mainSashForm.setWeights(new int[] { 70, 30 });
 
         footerComposite = new FooterComposite(mapperShell, this);
+        CoreUIPlugin.setCSSClass(footerComposite, FooterComposite.class.getSimpleName());
         footerComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
+        
         mapperShell.addDisposeListener(new DisposeListener() {
 
             @Override
             public void widgetDisposed(DisposeEvent e) {
-                ColorProviderMapper.releaseColors();
                 FontProviderMapper.releaseFonts();
                 ImageProviderMapper.releaseImages();
             }

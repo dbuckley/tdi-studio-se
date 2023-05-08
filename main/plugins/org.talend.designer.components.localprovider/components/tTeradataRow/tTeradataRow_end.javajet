@@ -27,7 +27,7 @@ imports="
 	<%
     }
 	%>
-
+	globalMap.put("<%=cid%>_NB_LINE", count_<%=cid %>);
 <%
 	if (usePrepareStatement) {
 %>

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.BidiMap;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.ui.celleditor.ExtendedComboBoxCellEditor;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
@@ -56,6 +57,7 @@ import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.utils.TalendPropertiesUtil;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.process.IGEFProcess;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
@@ -472,12 +474,28 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
                 @Override
                 public Object get(IElementParameter bean) {
-                    final Object value = bean.getValue();
+                    Object value = bean.getValue();
+                    if (EParameterFieldType.COMPONENT_LIST == bean.getFieldType()
+                            && TalendPropertiesUtil.isEnabledUseShortJobletName()) {
+                        String completeValue = DesignerUtilities.getNodeInJobletCompleteUniqueName(node, value.toString());
+                        if (StringUtils.isNotBlank(completeValue)
+                                || StringUtils.isBlank(completeValue)
+                                        && DesignerUtilities.validateJobletShortName(value.toString())) {
+                            value = completeValue;
+                        }
+                    }
                     return value == null ? "" : String.valueOf(value); //$NON-NLS-1$
                 }
 
                 @Override
                 public void set(IElementParameter bean, Object value) {
+                    if (EParameterFieldType.COMPONENT_LIST == bean.getFieldType()
+                            && TalendPropertiesUtil.isEnabledUseShortJobletName()) {
+                        String shortValue = DesignerUtilities.getNodeInJobletShortUniqueName(node, value.toString());
+                        if (StringUtils.isNotBlank(shortValue)) {
+                            value = shortValue;
+                        }
+                    }
                     if (value != null && !value.equals(bean.getValue())) {
                         executeCommand(new PropertyChangeCommand(node, bean.getName(), value));
                         getTableViewerCreator().refresh();

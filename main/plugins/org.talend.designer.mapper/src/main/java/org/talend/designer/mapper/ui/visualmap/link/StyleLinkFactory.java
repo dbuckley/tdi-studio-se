@@ -14,6 +14,7 @@ package org.talend.designer.mapper.ui.visualmap.link;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Display;
 import org.talend.commons.ui.swt.drawing.link.BezierHorizontalLink;
 import org.talend.commons.ui.swt.drawing.link.ExtremityEastArrow;
 import org.talend.commons.ui.swt.drawing.link.ExtremityWestArrow;
@@ -32,7 +33,6 @@ import org.talend.designer.mapper.model.tableentry.ExpressionFilterEntry;
 import org.talend.designer.mapper.model.tableentry.FilterTableEntry;
 import org.talend.designer.mapper.model.tableentry.GlobalMapEntry;
 import org.talend.designer.mapper.ui.color.ColorInfo;
-import org.talend.designer.mapper.ui.color.ColorProviderMapper;
 import org.talend.designer.mapper.ui.visualmap.zone.Zone;
 
 /**
@@ -85,8 +85,7 @@ public class StyleLinkFactory {
      */
     private void init() {
 
-        selectedZoneToZoneStyle = getSelectedZoneToOtherZoneStyle(ColorProviderMapper
-                .getColor(ColorInfo.COLOR_SELECTED_ZONE_TO_ZONE_LINK));
+        selectedZoneToZoneStyle = getSelectedZoneToOtherZoneStyle(ColorInfo.COLOR_SELECTED_ZONE_TO_ZONE_LINK());
         unselectedZoneToZoneStyle = getUnselectedZoneToZoneStyle();
 
         selectedZoneToZoneFilterStyle = getSelectedZoneToZoneFilterStyle();
@@ -200,7 +199,7 @@ public class StyleLinkFactory {
         ExtremityEastArrow eastArrowTarget = new ExtremityEastArrow(style);
         eastArrowTarget.setXOffset(-eastArrowTarget.getSize().x);
         style.setExtremity2(eastArrowTarget);
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_SELECTED_FILTER_LINK));
+        style.setForegroundColor(ColorInfo.COLOR_SELECTED_FILTER_LINK());
         return style;
     }
 
@@ -218,7 +217,7 @@ public class StyleLinkFactory {
         ExtremityEastArrow eastArrowTarget = new ExtremityEastArrow(style);
         eastArrowTarget.setXOffset(-eastArrowTarget.getSize().x);
         style.setExtremity2(eastArrowTarget);
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_UNSELECTED_FILTER_LINK));
+        style.setForegroundColor(ColorInfo.COLOR_UNSELECTED_FILTER_LINK());
         return style;
     }
 
@@ -247,7 +246,7 @@ public class StyleLinkFactory {
         ExtremityEastArrow eastArrowTarget = new ExtremityEastArrow(style);
         eastArrowTarget.setXOffset(-eastArrowTarget.getSize().x);
         style.setExtremity2(eastArrowTarget);
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_UNSELECTED_ZONE_TO_ZONE_LINK));
+        style.setForegroundColor(ColorInfo.COLOR_UNSELECTED_ZONE_TO_ZONE_LINK());
         return style;
     }
 
@@ -263,7 +262,7 @@ public class StyleLinkFactory {
         ExtremityEastArrow eastArrowTarget = new ExtremityEastArrow(style);
         eastArrowTarget.setXOffset(-eastArrowTarget.getSize().x);
         style.setExtremity2(eastArrowTarget);
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_UNSELECTED_LOOKUP_LINKS));
+        style.setForegroundColor(ColorInfo.COLOR_UNSELECTED_LOOKUP_LINKS());
         return style;
     }
 
@@ -283,7 +282,7 @@ public class StyleLinkFactory {
         ExtremityEastArrow eastArrowTarget = new ExtremityEastArrow(style);
         eastArrowTarget.setXOffset(-eastArrowTarget.getSize().x);
         style.setExtremity2(eastArrowTarget);
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_SELECTED_LOOKUP_LINKS));
+        style.setForegroundColor(ColorInfo.COLOR_SELECTED_LOOKUP_LINKS());
         return style;
     }
 
@@ -295,7 +294,7 @@ public class StyleLinkFactory {
      */
     public IStyleLink getSelectedSameZoneFilterStyle() {
         IStyleLink style = getSelectedSameInputZoneStyle();
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_SELECTED_FILTER_LINK));
+        style.setForegroundColor(ColorInfo.COLOR_SELECTED_FILTER_LINK());
         return style;
     }
 
@@ -307,7 +306,7 @@ public class StyleLinkFactory {
      */
     public IStyleLink getUnselectedSameZoneFilterStyle() {
         IStyleLink style = getSelectedSameInputZoneStyle();
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_UNSELECTED_FILTER_LINK));
+        style.setForegroundColor(ColorInfo.COLOR_UNSELECTED_FILTER_LINK());
         return style;
     }
 
@@ -319,7 +318,7 @@ public class StyleLinkFactory {
      */
     private IStyleLink getSelectedSameZoneGlobalMapStyle() {
         IStyleLink style = getSelectedSameInputZoneStyle();
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_SELECTED_GLOBALMAP_LINK));
+        style.setForegroundColor(ColorInfo.COLOR_SELECTED_GLOBALMAP_LINK());
         return style;
     }
 
@@ -330,7 +329,7 @@ public class StyleLinkFactory {
      */
     private IStyleLink getUnselectedSameZoneGlobalMapStyle() {
         IStyleLink style = getSelectedSameInputZoneStyle();
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_UNSELECTED_GLOBALMAP_LINK));
+        style.setForegroundColor(ColorInfo.COLOR_UNSELECTED_GLOBALMAP_LINK());
         return style;
     }
 
@@ -349,7 +348,7 @@ public class StyleLinkFactory {
         ExtremityEastArrow eastArrowTarget = new ExtremityEastArrow(style);
         eastArrowTarget.setXOffset(-eastArrowTarget.getSize().x);
         style.setExtremity2(eastArrowTarget);
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_UNSELECTED_LOOKUP_LINKS));
+        style.setForegroundColor(ColorInfo.COLOR_UNSELECTED_LOOKUP_LINKS());
         return style;
     }
 
@@ -369,7 +368,7 @@ public class StyleLinkFactory {
         ExtremityEastArrow eastArrowTarget = new ExtremityEastArrow(style);
         eastArrowTarget.setXOffset(-eastArrowTarget.getSize().x);
         style.setExtremity2(eastArrowTarget);
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_SELECTED_LOOKUP_LINKS));
+        style.setForegroundColor(ColorInfo.COLOR_SELECTED_LOOKUP_LINKS());
         return style;
     }
 

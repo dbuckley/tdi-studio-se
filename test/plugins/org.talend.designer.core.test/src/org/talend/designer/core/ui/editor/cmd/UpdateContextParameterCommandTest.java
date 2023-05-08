@@ -1,19 +1,31 @@
 package org.talend.designer.core.ui.editor.cmd;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.junit.Test;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.context.JobContext;
 import org.talend.core.model.context.JobContextManager;
 import org.talend.core.model.context.JobContextParameter;
+import org.talend.core.model.context.link.ContextLink;
+import org.talend.core.model.context.link.ContextLinkService;
+import org.talend.core.model.context.link.ContextParamLink;
+import org.talend.core.model.context.link.ItemContextLink;
 import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.properties.ContextItem;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.update.EUpdateItemType;
@@ -111,5 +123,72 @@ public class UpdateContextParameterCommandTest {
         updateContextParameterCommand.execute();
         listContext = process.getContextManager().getListContext();
         assertTrue(listContext.size() == 2);
+    }
+    
+    @Test
+    public void testUpdateContextLink() {
+        Property processProp1 = PropertiesFactory.eINSTANCE.createProperty();
+        processProp1.setId("jobPropId1");
+        processProp1.setVersion("0.1");
+        processProp1.setLabel("testjob1");
+        Process process = new Process(processProp1);
+        ProcessItem processItem = PropertiesFactory.eINSTANCE.createProcessItem();
+        processItem.setProperty(processProp1);
+//        
+        ContextItem contextItem = PropertiesFactory.eINSTANCE.createContextItem();
+        Property myContextProperty = PropertiesFactory.eINSTANCE.createProperty();
+        myContextProperty.setId("_DHiJ0KPlEeGSwOgmctA-XA");
+        myContextProperty.setLabel("testContext");
+        myContextProperty.setVersion("0.1");
+        contextItem.setProperty(myContextProperty);
+        contextItem.setDefaultContext("Default");
+        
+        String oldContextParamName = "oldContextParamName";
+        String newContextParamName = "newContextParamName";
+        String contextGroupName = "NewContextGroup";
+        JobContext testGroup = new JobContext(contextGroupName);
+        IContextParameter contextParam = new JobContextParameter();
+        contextParam.setName(oldContextParamName);
+        contextParam.setSource(myContextProperty.getId());
+        contextParam.setType(JavaTypesManager.getDefaultJavaType().getId());
+        contextParam.setValue(oldContextParamName);
+        
+        ItemContextLink itemcontextLink = new ItemContextLink();
+        itemcontextLink.setItemId(processProp1.getId());
+        List<ContextLink> contextLinks = new ArrayList<>();
+        ContextLink contextLink = new ContextLink();
+        contextLink.setContextName(contextGroupName);
+        contextLink.setRepoId(myContextProperty.getId());
+        List<ContextParamLink> cpLinks = new ArrayList<>();
+        ContextParamLink cplink = new ContextParamLink();
+        cplink.setId("_D-EIsLMTEe2hideXX9atiw");
+        cplink.setName(oldContextParamName);
+        cpLinks.add(cplink);
+        contextLink.setParameterList(cpLinks);
+        
+        contextLinks.add(contextLink);
+        itemcontextLink.setContextList(contextLinks);
+        
+        try {
+            ContextLinkService.getInstance().saveContextLinkToJson(processItem, itemcontextLink);
+        } catch (PersistenceException e) {//
+        }
+        
+        UpdateCheckResult result = new UpdateCheckResult(new HashSet<String>());
+        new UpdateContextParameterCommand(result).updateContextLink(process, testGroup, contextParam, oldContextParamName, newContextParamName);
+        try {
+            ItemContextLink loadContextLinkFromJson = ContextLinkService.getInstance().loadContextLinkFromJson(processItem);
+            ContextParamLink paramLink = loadContextLinkFromJson.findContextParamLinkByName(contextParam.getSource(), testGroup.getName(), oldContextParamName);
+            assertNull(paramLink);
+            paramLink = loadContextLinkFromJson.findContextParamLinkByName(contextParam.getSource(), testGroup.getName(), newContextParamName);
+            assertNotNull(paramLink);
+        } catch (PersistenceException e) {
+        } finally {
+            try {
+                IFile linkFile = ContextLinkService.getInstance().calContextLinkFile(processItem);
+                linkFile.delete(true, new NullProgressMonitor());
+            } catch (PersistenceException | CoreException e) {
+            }
+        }
     }
 }

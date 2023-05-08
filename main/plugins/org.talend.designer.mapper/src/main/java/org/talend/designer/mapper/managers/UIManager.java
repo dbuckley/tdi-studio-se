@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
+import org.talend.commons.ui.runtime.ITalendThemeService;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageUtils;
 import org.talend.commons.ui.runtime.swt.tableviewer.selection.ILineSelectionListener;
@@ -117,6 +118,7 @@ import org.talend.designer.mapper.model.tableentry.OutputColumnTableEntry;
 import org.talend.designer.mapper.model.tableentry.TableEntryLocation;
 import org.talend.designer.mapper.model.tableentry.VarTableEntry;
 import org.talend.designer.mapper.ui.MapperUI;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 import org.talend.designer.mapper.ui.commands.DataMapTableViewSelectedCommand;
 import org.talend.designer.mapper.ui.dialog.AutoMappingDialog;
 import org.talend.designer.mapper.ui.dialog.MapReducePropertySetDialog;
@@ -149,7 +151,7 @@ import org.talend.designer.mapper.utils.ParseExpressionResult;
  *
  */
 public class UIManager extends AbstractUIManager {
-
+    
     private final MapperManager mapperManager;
 
     private MapperUI mapperUI;
@@ -438,10 +440,10 @@ public class UIManager extends AbstractUIManager {
                 // disable highlight for other DataMapTableView and highlight selected DataMapTableView
                 for (IDataMapTable table : tables) {
                     DataMapTableView otherDataMapTableView = mapperManager.retrieveAbstractDataMapTableView(table);
-                    otherDataMapTableView.setBackground(dataMapTableView.getDisplay().getSystemColor(
-                            SWT.COLOR_WIDGET_LIGHT_SHADOW));
+                    otherDataMapTableView.setBackground(ColorInfo.COLOR_UNSELECTED_TABLEHERDER_BG());
+                    otherDataMapTableView.setTableHeaderBackground(ColorInfo.COLOR_UNSELECTED_TABLEHERDER_BG());
                 }
-                dataMapTableView.setBackground(dataMapTableView.getDisplay().getSystemColor(SWT.COLOR_YELLOW));
+                dataMapTableView.setTableHeaderBackground(ColorInfo.COLOR_SELECTED_TABLEHERDER_BG());
             }
 
             if (selectAllEntries) {
@@ -1057,7 +1059,7 @@ public class UIManager extends AbstractUIManager {
         }
 
         // Color selectedColor = dataMapTableView.getDisplay().getSystemColor(SWT.COLOR_YELLOW);
-        Color unselectedColor = dataMapTableView.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+        Color unselectedColor = ColorInfo.COLOR_ENTRY_NONE();
 
         Zone currentZone = dataMapTableView.getZone();
 

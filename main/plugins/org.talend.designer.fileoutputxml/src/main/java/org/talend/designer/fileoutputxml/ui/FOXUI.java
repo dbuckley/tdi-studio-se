@@ -58,6 +58,7 @@ import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IConnectionCategory;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.utils.NodeUtil;
+import org.talend.core.ui.CoreUIPlugin;
 import org.talend.designer.fileoutputxml.FileOutputXMLComponent;
 import org.talend.designer.fileoutputxml.action.CreateAttributeAction;
 import org.talend.designer.fileoutputxml.action.CreateElementAction;
@@ -188,6 +189,7 @@ public class FOXUI {
         linker.setManager(foxManager);
         initSchemaTable();
         footerComp = new FooterComposite(mainComposite, SWT.NONE, foxManager);
+        CoreUIPlugin.setCSSClass(footerComp, FooterComposite.class.getSimpleName());
         xmlViewer.expandToLevel(3);
         linker.createLinks();
         if (Platform.OS_MACOSX.equals(Platform.getOS()) || Platform.OS_LINUX.equals(Platform.getOS())) {

@@ -117,8 +117,6 @@ import org.talend.designer.dbmap.model.tableentry.AbstractInOutTableEntry;
 import org.talend.designer.dbmap.model.tableentry.FilterTableEntry;
 import org.talend.designer.dbmap.model.tableentry.InputColumnTableEntry;
 import org.talend.designer.dbmap.model.tableentry.OutputColumnTableEntry;
-import org.talend.designer.dbmap.ui.color.ColorInfo;
-import org.talend.designer.dbmap.ui.color.ColorProviderMapper;
 import org.talend.designer.dbmap.ui.dialog.ExpressionBuilderDialogForElt;
 import org.talend.designer.dbmap.ui.dnd.DragNDrop;
 import org.talend.designer.dbmap.ui.event.MousePositionAnalyser;
@@ -132,6 +130,7 @@ import org.talend.designer.dbmap.ui.proposal.expression.ExpressionProposalProvid
 import org.talend.designer.dbmap.ui.proposal.expression.KeyWordProposalProvider;
 import org.talend.designer.dbmap.ui.tabs.StyledTextHandler;
 import org.talend.designer.dbmap.ui.visualmap.zone.Zone;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
@@ -375,9 +374,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         new DragNDrop(mapperManager, tableForEntries, true, true);
 
-        Composite footerComposite = new Composite(this, SWT.NONE);
-        GridData footerGridData = new GridData(10, 2);
-        footerComposite.setLayoutData(footerGridData);
+//        Composite footerComposite = new Composite(this, SWT.NONE);
+//        GridData footerGridData = new GridData(10, 2);
+//        footerComposite.setLayoutData(footerGridData);
 
         headerComposite.moveAbove(nameLabel);
 
@@ -387,6 +386,12 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             headerComposite.layout();
         }
 
+    }
+    
+    public void setTableHeaderBackground(Color color) {
+        if(headerComposite != null && !headerComposite.isDisposed()) {
+            headerComposite.setBackground(color);
+        } 
     }
 
     /**
@@ -1243,8 +1248,8 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             columnNameTextFilter.setVisible(table.isActivateColumnNameFilter());
             nameFilterTextGridData.exclude = !table.isActivateColumnNameFilter();
             //
-            columnNameTextFilter.setBackground(ColorProviderMapper.getColor(ColorInfo.COLOR_BACKGROUND_VALID_EXPRESSION_CELL));
-            columnNameTextFilter.setForeground(ColorProviderMapper.getColor(ColorInfo.COLOR_FOREGROUND_VALID_EXPRESSION_CELL));
+            columnNameTextFilter.setBackground(ColorInfo.COLOR_BACKGROUND_VALID_EXPRESSION_CELL());
+            columnNameTextFilter.setForeground(ColorInfo.COLOR_FOREGROUND_VALID_EXPRESSION_CELL());
 
             columnNameTextFilter.addFocusListener(new FocusListener() {
 
@@ -1967,14 +1972,14 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 }
                 if (hasError) {
                     if (isBackground) {
-                        return ColorProviderMapper.getColor(ColorInfo.COLOR_BACKGROUND_ERROR_EXPRESSION_CELL);
+                        return ColorInfo.COLOR_BACKGROUND_ERROR_EXPRESSION_CELL();
                     } else {
-                        return ColorProviderMapper.getColor(ColorInfo.COLOR_FOREGROUND_ERROR_EXPRESSION_CELL);
+                        return ColorInfo.COLOR_BACKGROUND_ERROR_EXPRESSION_CELL();
                     }
                 }
                 if (hasWarning) {
                     if (isBackground) {
-                        return ColorProviderMapper.getColor(ColorInfo.COLOR_BACKGROUND_WARNING_EXPRESSION_CELL);
+                        return ColorInfo.COLOR_BACKGROUND_WARNING_EXPRESSION_CELL();
                     } else {
                         return null;
                     }

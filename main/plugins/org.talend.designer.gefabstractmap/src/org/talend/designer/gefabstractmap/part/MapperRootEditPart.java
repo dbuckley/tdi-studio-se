@@ -36,10 +36,9 @@ import org.talend.designer.gefabstractmap.figures.sash.SashSeparator;
 import org.talend.designer.gefabstractmap.figures.treetools.zone.InputZoneToolBar;
 import org.talend.designer.gefabstractmap.figures.treetools.zone.OutputZoneToolBar;
 import org.talend.designer.gefabstractmap.figures.treetools.zone.SearchZoneToolBar;
-import org.talend.designer.gefabstractmap.resource.ColorInfo;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
 import org.talend.designer.gefabstractmap.resource.ImageInfo;
 import org.talend.designer.gefabstractmap.resource.ImageProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * created by Administrator on 2013-1-14 Detailled comment
@@ -80,7 +79,7 @@ public abstract class MapperRootEditPart extends BaseEditPart implements MouseWh
         inputZone.setLayoutManager(new ZoneLayout());
 
         inputToolBar = createInputZoneToolBar();
-        inputToolBar.setBorder(new LineBorder(ColorProviderMapper.getColor(ColorInfo.COLOR_TREE_BORDER)));
+        inputToolBar.setBorder(new LineBorder(ColorInfo.COLOR_TREE_BORDER()));
         inputZone.add(inputToolBar);
 
         inputScroll = new ScrollPane();
@@ -105,7 +104,7 @@ public abstract class MapperRootEditPart extends BaseEditPart implements MouseWh
 
         // search , var
         searchToolBar = createSearchZoneToolBar();
-        searchToolBar.setBorder(new LineBorder(ColorProviderMapper.getColor(ColorInfo.COLOR_TREE_BORDER)));
+        searchToolBar.setBorder(new LineBorder(ColorInfo.COLOR_TREE_BORDER()));
 
         varScroll = new ScrollPane();
         varScroll.setHorizontalScrollBarVisibility(ScrollPane.NEVER);
@@ -132,7 +131,7 @@ public abstract class MapperRootEditPart extends BaseEditPart implements MouseWh
         outputZone.setLayoutManager(new ZoneLayout());
 
         outputToolBar = createOutputZoneToolBar();
-        outputToolBar.setBorder(new LineBorder(ColorProviderMapper.getColor(ColorInfo.COLOR_TREE_BORDER)));
+        outputToolBar.setBorder(new LineBorder(ColorInfo.COLOR_TREE_BORDER()));
         outputZone.add(outputToolBar);
         outputScroll = new ScrollPane();
         outputScroll.setHorizontalScrollBarVisibility(ScrollPane.NEVER);
@@ -149,7 +148,7 @@ public abstract class MapperRootEditPart extends BaseEditPart implements MouseWh
         mainFigure.add(outputZone);
 
         mainFigure.setOpaque(true);
-        mainFigure.setBackgroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_BACKGROUND_LINKS_ZONE));
+        mainFigure.setBackgroundColor(ColorInfo.COLOR_BACKGROUND_LINKS_ZONE());
 
         separatorLeft.setLeftFigure(inputZone);
         separatorLeft.setRightFigure(varScroll);

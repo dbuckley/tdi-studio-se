@@ -348,7 +348,7 @@ public class PropertiesTableEditorView<B> extends AbstractPropertiesTableEditorV
                         public Color getBackgroundColor(Object bean) {
                             Object value = ((Map<String, Object>) bean).get(items[curCol]);
                             if (value == null || (!(value instanceof String))) {
-                                return Display.getCurrent().getSystemColor(SWT.COLOR_WHITE);
+                                return null;
                             }
                             return new Color(null, ColorUtils.stringToRGB((String) value));
                         }

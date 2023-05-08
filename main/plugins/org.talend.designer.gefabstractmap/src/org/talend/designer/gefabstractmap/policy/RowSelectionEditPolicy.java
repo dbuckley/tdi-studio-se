@@ -28,9 +28,8 @@ import org.talend.designer.gefabstractmap.figures.table.entity.TableEntityFigure
 import org.talend.designer.gefabstractmap.figures.var.VarEntityFigure;
 import org.talend.designer.gefabstractmap.part.MapperTablePart;
 import org.talend.designer.gefabstractmap.part.TableEntityPart;
-import org.talend.designer.gefabstractmap.resource.ColorInfo;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
 import org.talend.designer.gefabstractmap.utils.MapperUtils;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * WCHEN class global comment. Detailled comment
@@ -97,7 +96,7 @@ public class RowSelectionEditPolicy extends NonResizableEditPolicy {
             graphics.setAlpha(40);
             Rectangle r = getBounds().getCopy();
             r.shrink(1, 1);
-            graphics.setBackgroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_COLUMN_SELECTION));
+            graphics.setBackgroundColor(ColorInfo.COLOR_COLUMN_SELECTION());
             // graphics.setBackgroundColor(ColorConstants.blue);
             graphics.fillRectangle(r.x, r.y, r.width, r.height);
             // graphics.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_COLUMN_SELECTION));

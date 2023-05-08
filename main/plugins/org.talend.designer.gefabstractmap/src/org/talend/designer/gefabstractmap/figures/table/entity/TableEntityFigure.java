@@ -22,6 +22,7 @@ import org.talend.commons.ui.swt.geftree.layout.TreeAnimatingLayer;
 import org.talend.designer.gefabstractmap.figures.layout.TableEntityLayout;
 import org.talend.designer.gefabstractmap.figures.manager.TableEntityManager;
 import org.talend.designer.gefabstractmap.figures.table.AbstractTable;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * created by Administrator on 2013-1-16 Detailled comment
@@ -98,7 +99,7 @@ public abstract class TableEntityFigure extends Figure {
         super.paintFigure(graphics);
         // paint rows and columns in root figure
         if (isRoot()) {
-            graphics.setForegroundColor(ColorConstants.menuBackground);
+            graphics.setForegroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
             paintLines(this, graphics);
         }
 

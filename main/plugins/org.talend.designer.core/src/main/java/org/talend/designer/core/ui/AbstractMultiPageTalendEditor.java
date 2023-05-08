@@ -203,6 +203,8 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
     private boolean isCheckout = false;
 
+    private boolean isClose = false;
+
     protected AdapterImpl dirtyListener = new AdapterImpl() {
 
         @Override
@@ -323,8 +325,9 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
                             }
                         }
                     }
-                    IFile file = currentProject.getFolder("temp").getFile(
-                            getEditorInput().getName() + jobScriptVersion + "_job" + ".jobscript");
+                    IFile file = currentProject
+                            .getFolder("temp")
+                            .getFile(getEditorInput().getName() + jobScriptVersion + "_job" + ".jobscript");
                     if (file.exists()) {
                         file.delete(true, null);
                     }
@@ -336,6 +339,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
                 changeContextsViewStatus(true);
                 refreshTestContaierView();
             }
+            isClose=false;
         }
 
         @Override
@@ -387,6 +391,15 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         Map<String, Object> settings = brandingService.getBrandingConfiguration().getJobEditorSettings();
         if (settings.containsKey(DISPLAY_CODE_VIEW)) {
             useCodeView = (Boolean) settings.get(DISPLAY_CODE_VIEW);
+        }
+    }
+
+    @Override
+    public boolean isSaveOnCloseNeeded() {
+        try {
+            return super.isDirty();
+        } finally {
+            isClose = true;
         }
     }
 
@@ -1219,9 +1232,24 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
                 if ((node instanceof Node) && ((Node) node).isJoblet()) {
                     if (service != null) {
                         if (service.jobletIsDirty(node)) {
-                            MessageDialog.openWarning(this.getContainer().getShell(),
-                                    Messages.getString("MultiPageTalendEditor.DIRTY"), node.getComponent().getName() //$NON-NLS-1$
-                                            + Messages.getString("MultiPageTalendEditor.DIRTYMESSAGE")); //$NON-NLS-1$
+                            MessageDialog
+                                    .openWarning(this.getContainer().getShell(),
+                                            Messages.getString("MultiPageTalendEditor.DIRTY"), //$NON-NLS-1$
+                                            node.getComponent().getName() + " "
+                                                    + Messages.getString("MultiPageTalendEditor.DIRTYMESSAGE")); //$NON-NLS-1$
+                            // to avoid studio close current editor
+                            if (isClose) {
+                                // to reduce the chance causing this exception . if save directly then won't call this
+                                // code.
+                                // but when click cancel and then save directly . will still throw exception . this case
+                                // can't be excluded. also when close studio directly . if dirty job and dirty joblet.
+                                // it will save failed and close failed.
+                                isClose = false;
+                                throw new RuntimeException(Messages
+                                        .getString("MultiPageTalendEditor.SAVEJOBLEYFIRST",
+                                                node.getComponent().getName()));
+                            }
+                            isClose = false;
                             return true;
                         }
 
@@ -1229,9 +1257,9 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
                 }
             }
         }
+        isClose = false;
         return false;
     }
-
     private void changeCollapsedState(boolean state, Map<String, Boolean> map) {
         List<? extends INode> nodeList = getProcess().getGraphicalNodes();
         for (INode node : nodeList) {

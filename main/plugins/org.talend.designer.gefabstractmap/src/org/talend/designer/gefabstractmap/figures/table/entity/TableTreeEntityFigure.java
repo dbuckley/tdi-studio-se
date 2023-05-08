@@ -25,8 +25,7 @@ import org.talend.commons.ui.swt.geftree.TreeAnimation;
 import org.talend.commons.ui.swt.geftree.layout.TreeAnimatingLayer;
 import org.talend.designer.gefabstractmap.figures.manager.EntitySelectManager;
 import org.talend.designer.gefabstractmap.figures.manager.TableEntityManager;
-import org.talend.designer.gefabstractmap.resource.ColorInfo;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * wchen talend class global comment. Detailled comment
@@ -264,7 +263,7 @@ public abstract class TableTreeEntityFigure extends TableEntityFigure {
 
         // paint do lines of tree
         if (this.isExpanded() && getTreeBranch() != null) {
-            graphics.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_TREE_LINES));
+            graphics.setForegroundColor(ColorInfo.COLOR_TREE_LINES());
             getTreeBranch().getBranchLayout().paintLines(graphics);
             // getBranchLayout().paintLines(graphics);
         }

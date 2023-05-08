@@ -45,8 +45,7 @@ import org.talend.designer.gefabstractmap.part.TableEntityPart;
 import org.talend.designer.gefabstractmap.part.directedit.XmlMapNodeCellEditorLocator;
 import org.talend.designer.gefabstractmap.policy.RowSelectionEditPolicy;
 import org.talend.designer.gefabstractmap.policy.TreeExpandSupportEditPolicy;
-import org.talend.designer.gefabstractmap.resource.ColorInfo;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 import org.talend.designer.xmlmap.editor.XmlMapGraphicViewer;
 import org.talend.designer.xmlmap.figures.treeNode.TreeNodeEntityManager;
 import org.talend.designer.xmlmap.figures.treeNode.XmlmapTreeNodeFigure;
@@ -361,7 +360,7 @@ public class TreeNodeEditPart extends TableEntityPart implements NodeEditPart {
                     ExpressionFigure expression = treeNodeFigure.getExpressionFigure();
                     if (expression != null) {
                         expression.setOpaque(true);
-                        expression.setBackgroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_EXPREESION_DISABLE));
+                        expression.setBackgroundColor(ColorInfo.COLOR_EXPREESION_DISABLE());
 
                     }
                 }

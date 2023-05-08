@@ -31,6 +31,9 @@ import org.talend.core.model.context.JobContext;
 import org.talend.core.model.context.JobContextManager;
 import org.talend.core.model.context.JobContextParameter;
 import org.talend.core.model.context.UpdateContextVariablesHelper;
+import org.talend.core.model.context.link.ContextLinkService;
+import org.talend.core.model.context.link.ContextParamLink;
+import org.talend.core.model.context.link.ItemContextLink;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
@@ -153,16 +156,16 @@ public class UpdateContextParameterCommand extends Command {
                                     List<Object> parameter = (List<Object>) result.getParameter();
                                     if (parameter.size() >= 3) {
                                     item = (Item) parameter.get(0);
-                                        String sourceId = item.getProperty().getId();
-                                        String oldName = (String) parameter.get(1);
-                                        String newName = (String) parameter.get(2);
-                                        if (oldName.equals(param.getName()) && sourceId.equals(param.getSource())) {
-                                            if (newName != null) {
-                                                param.setName(newName);
-                                                ContextUtils.updateParameterFromRepository(item, param, context.getName());
-                                            }
+                                    String sourceId = item.getProperty().getId();
+                                    String oldName = (String) parameter.get(1);
+                                    String newName = (String) parameter.get(2);
+                                    if (oldName.equals(param.getName()) && sourceId.equals(param.getSource())) {
+                                        if (newName != null) {
+                                            param.setName(newName);
+                                            ContextUtils.updateParameterFromRepository(item, param, context.getName());
                                         }
-
+                                    }
+                                    updateContextLink(process, context, param, oldName, newName);
                                     }
                                     break;
                                 case BUIL_IN: // built-in
@@ -306,6 +309,24 @@ public class UpdateContextParameterCommand extends Command {
             }
         }
 
+    }
+
+
+    public void updateContextLink(IProcess2 process, IContext context, IContextParameter param, String oldName, String newName) {
+        ItemContextLink itemContextLink = null;
+        ContextParamLink paramLink = null;
+        try {
+            itemContextLink = ContextLinkService.getInstance().loadContextLinkFromJson(process.getProperty().getItem());
+            if (itemContextLink != null) {
+                paramLink = itemContextLink.findContextParamLinkByName(param.getSource(), context.getName(), oldName);
+                if(paramLink != null) {
+                    paramLink.setName(newName);
+                    ContextLinkService.getInstance().saveContextLinkToJson(process.getProperty().getItem(), itemContextLink);
+                }
+            }
+        } catch (PersistenceException e) {
+            ExceptionHandler.process(e);
+        }
     }
 
     /**

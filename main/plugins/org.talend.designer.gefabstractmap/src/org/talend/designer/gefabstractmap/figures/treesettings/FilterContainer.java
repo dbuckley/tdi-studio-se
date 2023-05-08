@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.talend.designer.gefabstractmap.figures.manager.TableManager;
 import org.talend.designer.gefabstractmap.resource.ImageInfo;
 import org.talend.designer.gefabstractmap.resource.ImageProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * wchen class global comment. Detailled comment
@@ -61,14 +62,14 @@ public abstract class FilterContainer extends Figure {
         this.add(textArea);
 
         textArea.setOpaque(true);
-        setBackgroundColor(ColorConstants.white);
+        setBackgroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
 
         button = new ImageFigure(ImageProviderMapper.getImage(ImageInfo.FILTER_BUTTON));
         addButtonListener();
         this.add(button);
 
         setOpaque(true);
-        setBackgroundColor(ColorConstants.yellow);
+        setBackgroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
         setBorder(new MarginBorder(2));
 
     }

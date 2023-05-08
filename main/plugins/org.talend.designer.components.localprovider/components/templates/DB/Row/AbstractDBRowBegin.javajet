@@ -29,6 +29,7 @@ imports="
 	java.sql.Connection conn_<%=cid%> = null;
 	String query_<%=cid %> = "";
 	boolean whetherReject_<%=cid%> = false;
+	int count_<%=cid %> = 0;
     <%
         dbRowBeginUtil.createConnection(node);
     %>

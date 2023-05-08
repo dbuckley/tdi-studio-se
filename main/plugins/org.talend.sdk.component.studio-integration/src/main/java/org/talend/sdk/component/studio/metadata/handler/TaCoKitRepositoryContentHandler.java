@@ -34,6 +34,7 @@ import org.talend.commons.utils.data.container.Container;
 import org.talend.commons.utils.data.container.RootContainer;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.MetadataManager;
+import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.PropertiesFactory;
@@ -54,6 +55,7 @@ import org.talend.sdk.component.studio.metadata.action.CreateTaCoKitConfiguratio
 import org.talend.sdk.component.studio.metadata.action.EditTaCoKitConfigurationAction;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationItemModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
+import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.ValueModel;
 import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
 import org.talend.sdk.component.studio.util.ETaCoKitImage;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
@@ -74,6 +76,8 @@ public class TaCoKitRepositoryContentHandler extends AbstractRepositoryContentHa
                 TaCoKitConfigurationItemModel itemModel = new TaCoKitConfigurationItemModel((ConnectionItem) item);
                 ERepositoryObjectType type = TaCoKitUtil
                         .getOrCreateERepositoryObjectType(itemModel.getConfigTypeNode());
+                //
+                updateTaCoKitSubConnection(item);
                 itemResource = create(project, (ConnectionItem) item, path, type);
             } catch (Exception e) {
                 throw new PersistenceException(e);
@@ -81,6 +85,24 @@ public class TaCoKitRepositoryContentHandler extends AbstractRepositoryContentHa
         }
 
         return itemResource;
+    }
+
+    public void updateTaCoKitSubConnection(Item item) throws PersistenceException {
+        try {
+            Connection conn = ((ConnectionItem) item).getConnection();
+            Map<String, String> connProperties = conn.getProperties();
+            TaCoKitConfigurationModel configurationModel = new TaCoKitConfigurationModel(conn);
+            String key = "configuration.formatConfiguration.csvConfiguration.lineConfiguration.lineSeparator"; //$NON-NLS-1$
+            ValueModel valueModel = configurationModel.getValue(key);
+            if (valueModel != null && TaCoKitConst.TYPE_STRING.equalsIgnoreCase(valueModel.getType())) {
+                String storedValue = valueModel.getValue();
+                if ("\n".equals(storedValue)) { //$NON-NLS-1$
+                    connProperties.put(key, "\\n"); //$NON-NLS-1$
+                }
+            }
+        } catch (Exception e) {
+            throw new PersistenceException(e);
+        }
     }
 
     private Resource create(final IProject project, final ConnectionItem item, final IPath path,

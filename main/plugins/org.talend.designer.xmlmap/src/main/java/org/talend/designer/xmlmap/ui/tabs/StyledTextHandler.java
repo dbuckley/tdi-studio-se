@@ -41,8 +41,7 @@ import org.talend.commons.ui.swt.proposal.ProposalUtils;
 import org.talend.core.ui.proposal.TalendProposalProvider;
 import org.talend.designer.gefabstractmap.part.TableEntityPart;
 import org.talend.designer.gefabstractmap.part.directedit.DirectEditType;
-import org.talend.designer.gefabstractmap.resource.ColorInfo;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 import org.talend.designer.xmlmap.commands.DirectEditCommand;
 import org.talend.designer.xmlmap.editor.XmlMapGraphicViewer;
 import org.talend.designer.xmlmap.model.emf.xmlmap.AbstractNode;
@@ -224,7 +223,7 @@ public class StyledTextHandler {
         Color whiteColor = this.styledText.getDisplay().getSystemColor(SWT.COLOR_WHITE);
         this.styledText.setLineBackground(0, lineCount, whiteColor);
         this.styledText.redraw();
-        this.styledText.setLineBackground(countCR, 1, ColorProviderMapper.getColor(ColorInfo.COLOR_HIGHLIGHTED_TEXT_ROW));
+        this.styledText.setLineBackground(countCR, 1, ColorInfo.COLOR_HIGHLIGHTED_TEXT_ROW());
         return countCR;
     }
 

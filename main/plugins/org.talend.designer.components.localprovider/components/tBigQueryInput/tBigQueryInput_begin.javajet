@@ -38,6 +38,7 @@
 	boolean advancedSeparator = (advancedSeparatorStr!=null&&!("").equals(advancedSeparatorStr))?("true").equals(advancedSeparatorStr):false;
 	String thousandsSeparator = ElementParameterParser.getValueWithJavaType(node, "__THOUSANDS_SEPARATOR__", JavaTypesManager.CHARACTER);
 	String decimalSeparator = ElementParameterParser.getValueWithJavaType(node, "__DECIMAL_SEPARATOR__", JavaTypesManager.CHARACTER);
+	final boolean forceSingleQueryExecution = ElementParameterParser.getBooleanValue(node,"__FORCE_SINGLE_QUERY_EXEC__");
 
 	query = query.replaceAll("\n"," ");
 	query = query.replaceAll("\r"," ");
@@ -320,7 +321,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
                 long nb_line_<%=cid%> = 0;
                 java.util.List<String> child_statistics_<%=cid%> = null;
                 java.util.List<com.google.cloud.bigquery.Job> childJobs_<%=cid%>;
-                if(job_<%=cid%>.getStatistics().getNumChildJobs() != null){
+                if(!<%=forceSingleQueryExecution%> && job_<%=cid%>.getStatistics().getNumChildJobs() != null){
                     childJobs_<%=cid%> = serviceAccountBigQueryUtil_<%=cid%>.getChildJobs(job_<%=cid%>.getJobId().getJob());
                     java.util.Collections.reverse(childJobs_<%=cid%>);
                     child_statistics_<%=cid%> = new java.util.ArrayList<>();
@@ -404,7 +405,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",ee_<%=cid%>.getMessage());
         %>
     } else {
         java.util.List<com.google.api.services.bigquery.model.Job> insert_jobs_<%=cid%>;
-        if (insert_<%=cid %>.getStatistics().getNumChildJobs() != null) {
+        if (!<%=forceSingleQueryExecution%> && insert_<%=cid %>.getStatistics().getNumChildJobs() != null) {
             insert_jobs_<%=cid%> = bigQueryUtil_<%=cid%>.listChildJobs(insert_<%=cid %>.getJobReference().getJobId());
         } else {
             insert_jobs_<%=cid%> = java.util.Collections.singletonList(insert_<%=cid%>);

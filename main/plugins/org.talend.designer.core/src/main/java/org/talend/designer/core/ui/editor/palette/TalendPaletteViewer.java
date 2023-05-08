@@ -203,7 +203,7 @@ public class TalendPaletteViewer extends PaletteViewer {
         toolbar.setLayout(toolbarLayout);
 
         Image findImage = cssStyleSetting.getSearchButtonImage();
-        if (findImage == null) {
+        if (findImage == null || findImage.isDisposed()) {
             findImage = ImageProvider.getImage(EImage.FIND_ICON);
         }
 

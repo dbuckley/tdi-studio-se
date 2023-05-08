@@ -45,6 +45,8 @@ public abstract class AbstractGuessSchemaProcess {
 
     protected static final String DEFAULT_JOB_NAME = "Mock_job_for_Guess_schema"; //$NON-NLS-1$
 
+    protected static final String ENABLE_LOG4J_FOR_GUESSSCHEMA = "enableLog4jForGuessSchema";
+
     protected static String TEMPFILE_APPEND_NAME = "GuessSchemaDelimitedFile"; //$NON-NLS-1$
 
     protected static final int maximumRowsToPreview = CorePlugin.getDefault().getPreferenceStore()
@@ -173,6 +175,14 @@ public abstract class AbstractGuessSchemaProcess {
         mockProperty.setLabel(DEFAULT_JOB_NAME);
 
         return mockProperty;
+    }
+
+    public static Boolean isEnableLog4jForGuessSchema() {
+
+        String isEnableLog4jForGuessSchema = System.getProperty(AbstractGuessSchemaProcess.ENABLE_LOG4J_FOR_GUESSSCHEMA, "false");//$NON-NLS-1$
+        Boolean isEnableLog4j = Boolean.valueOf(isEnableLog4jForGuessSchema);
+
+        return isEnableLog4j;
     }
 
     // write content to a temp .csv file

@@ -32,6 +32,7 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.properties.Property;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.EDatabaseComponentName;
@@ -80,6 +81,12 @@ public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
         Property property = getProperty();
         Process process = null;
         process = new Process(property);
+        IElementParameter log4jElemParam = process.getElementParameter(EParameterName.LOG4J_ACTIVATE.getName());
+        if (log4jElemParam != null) {
+
+            Boolean isEnableLog4j = AbstractGuessSchemaProcess.isEnableLog4jForGuessSchema();
+            log4jElemParam.setValue(isEnableLog4j);
+        }
         setProcess(process);
         INode node = getNode();
         configContext(process, node);

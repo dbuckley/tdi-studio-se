@@ -33,7 +33,7 @@ import org.talend.designer.dbmap.model.table.InputTable;
 import org.talend.designer.dbmap.model.table.OutputTable;
 import org.talend.designer.dbmap.model.tableentry.FilterTableEntry;
 import org.talend.designer.dbmap.ui.visualmap.table.DataMapTableView;
-import org.talend.designer.dbmap.ui.visualmap.table.EntryState;
+import org.talend.designer.mapper.ui.visualmap.table.EntryState;
 
 /**
  * DOC hcyi class global comment. Detailled comment

@@ -29,7 +29,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.talend.components.api,
  org.talend.expressionbuilder,
  org.eclipse.text,
- org.eclipse.jface.text
+ org.eclipse.jface.text,
+ org.talend.designer.mapper
 Bundle-ActivationPolicy: lazy
 Eclipse-LazyStart: true
 Export-Package: org.talend.designer.dbmap,
@@ -49,7 +50,6 @@ Export-Package: org.talend.designer.dbmap,
  org.talend.designer.dbmap.model.tableentry,
  org.talend.designer.dbmap.ui,
  org.talend.designer.dbmap.ui.automap,
- org.talend.designer.dbmap.ui.color,
  org.talend.designer.dbmap.ui.commands,
  org.talend.designer.dbmap.ui.dialog,
  org.talend.designer.dbmap.ui.dnd,

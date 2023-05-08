@@ -13,13 +13,14 @@ import org.talend.core.model.components.filters.IComponentFilter;
 import org.talend.core.model.components.filters.NameComponentFilter;
 import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.properties.Item;
-import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
+import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 /**
  * https://jira.talendforge.org/browse/TDI-45870
  */
 public class AddUseScientificNotationCheckboxTWriteJSONField extends AbstractJobMigrationTask {
+    private boolean modified = false;
 
     public ExecutionResult execute(Item item) {
         ProcessType processType = getProcessType(item);
@@ -28,7 +29,8 @@ public class AddUseScientificNotationCheckboxTWriteJSONField extends AbstractJob
         }
 
         String[] componentsName = new String[] {"tWriteJSONField","tWriteJSONFieldIn"};
-
+        modified = false;
+        
         try {
             for (int i = 0; i < componentsName.length; i++) {
                 IComponentFilter filter = new NameComponentFilter(componentsName[i]);
@@ -39,12 +41,16 @@ public class AddUseScientificNotationCheckboxTWriteJSONField extends AbstractJob
                                 if (ComponentUtilities.getNodeProperty(node, "USE_SCIENTIFIC_NOTATION") == null) {
                                     ComponentUtilities.addNodeProperty(node, "USE_SCIENTIFIC_NOTATION", "CHECK");
                                     ComponentUtilities.getNodeProperty(node, "USE_SCIENTIFIC_NOTATION").setValue("true");
+                                    modified = true;
                                 }
                             }
                         }));
             }
-
-            return ExecutionResult.SUCCESS_NO_ALERT;
+            if (modified) {
+                return ExecutionResult.SUCCESS_NO_ALERT;
+            } else {
+                return ExecutionResult.NOTHING_TO_DO;
+            }
         } catch (Exception e) {
             ExceptionHandler.process(e);
             return ExecutionResult.FAILURE;

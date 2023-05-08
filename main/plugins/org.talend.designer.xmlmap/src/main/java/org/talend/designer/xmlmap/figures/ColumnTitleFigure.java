@@ -14,7 +14,6 @@ package org.talend.designer.xmlmap.figures;
 
 import java.util.List;
 
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
@@ -25,6 +24,7 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.talend.designer.gefabstractmap.part.MapperTablePart;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 import org.talend.designer.xmlmap.model.emf.xmlmap.AbstractInOutTree;
 import org.talend.designer.xmlmap.model.emf.xmlmap.InputXmlTree;
 
@@ -64,7 +64,7 @@ public class ColumnTitleFigure extends Figure {
 
         setLayoutManager(new ColumnTitleLayout());
 
-        setBackgroundColor(ColorConstants.menuBackground);
+        setBackgroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
         setOpaque(true);
     }
 

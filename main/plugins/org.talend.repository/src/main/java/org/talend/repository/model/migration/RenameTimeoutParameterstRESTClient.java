@@ -39,8 +39,8 @@ public class RenameTimeoutParameterstRESTClient extends AbstractJobMigrationTask
 			return ExecutionResult.NOTHING_TO_DO;
 		}
 		try {
-			renameConnections(item, processType);
-			return ExecutionResult.SUCCESS_WITH_ALERT;
+			boolean modified = renameConnections(item, processType);
+			return modified? ExecutionResult.SUCCESS_WITH_ALERT: ExecutionResult.NOTHING_TO_DO;
 		} catch (Exception e) {
 			ExceptionHandler.process(e);
 			return ExecutionResult.FAILURE;
@@ -48,7 +48,7 @@ public class RenameTimeoutParameterstRESTClient extends AbstractJobMigrationTask
 	}
 
 
-	private void renameConnections(Item item, ProcessType processType) throws PersistenceException {
+	private boolean renameConnections(Item item, ProcessType processType) throws PersistenceException {
 
         ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
         boolean modified = false;
@@ -75,6 +75,7 @@ public class RenameTimeoutParameterstRESTClient extends AbstractJobMigrationTask
 			factory.save(item, true);
 		}
 
+		return modified;
 	}
 
 	public Date getOrder() {
