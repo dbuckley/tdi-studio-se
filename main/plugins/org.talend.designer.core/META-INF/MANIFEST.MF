@@ -211,6 +211,7 @@ Export-Package: org.talend.designer.core;
  org.talend.designer.core.ui.editor.properties.connections,
  org.talend.designer.core.ui.editor.properties.controllers,
  org.talend.designer.core.ui.editor.properties.controllers.creator,
+ org.talend.designer.core.ui.editor.properties.controllers.executors,
  org.talend.designer.core.ui.editor.properties.controllers.generator,
  org.talend.designer.core.ui.editor.properties.controllers.uidialog,
  org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor,
@@ -254,5 +255,6 @@ Export-Package: org.talend.designer.core;
  org.talend.designer.unifiedcomponent.delegate.service,
  org.talend.designer.unifiedcomponent.unifier
 Bundle-Vendor: .Talend SA.
+Service-Component: OSGI-INF/core.xml
 Import-Package: org.talend.hadoop.distribution,
  org.talend.hadoop.distribution.component

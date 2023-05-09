@@ -171,8 +171,7 @@ import org.talend.repository.model.IProxyRepositoryFactory;
  *
  */
 
-public abstract class AbstractElementPropertySectionController
-        implements PropertyChangeListener, IStigmaElementPropertyController {
+public abstract class AbstractElementPropertySectionController implements PropertyChangeListener {
 
     protected static final String SQLEDITOR = "SQLEDITOR"; //$NON-NLS-1$
 
@@ -201,7 +200,7 @@ public abstract class AbstractElementPropertySectionController
 
     public static final String NAME = "NAME"; //$NON-NLS-1$
 
-    protected static final String COLUMN = "COLUMN"; //$NON-NLS-1$
+    public static final String COLUMN = "COLUMN"; //$NON-NLS-1$
 
     // PTODO qzhang use PARAMETER_NAME it for bug 853.
     public static final String PARAMETER_NAME = TypedTextCommandExecutor.PARAMETER_NAME;
@@ -267,6 +266,10 @@ public abstract class AbstractElementPropertySectionController
     protected int getColorStyledTextRowSize(int nbLines) {
 
         return 0;
+    }
+
+    public BidiMap getHashCurControls() {
+        return hashCurControls;
     }
 
     protected boolean isInWizard() {
@@ -531,6 +534,10 @@ public abstract class AbstractElementPropertySectionController
      */
     public IDynamicProperty getDynamicProperty() {
         return this.dynamicProperty;
+    }
+
+    public IMultiPageTalendEditor getEditorPart() {
+        return this.part;
     }
 
     static WidgetFactory widgetFactory = null;
@@ -1199,17 +1206,6 @@ public abstract class AbstractElementPropertySectionController
         return (CommandStack) adapter;
     }
 
-    @Override
-    public boolean handleWidgetEvent(IControllerContext context) {
-        return false;
-    }
-
-    @Override
-    public String getControllerName() {
-        return null;
-    }
-
-    @Override
     public void executeCommand(Command c) {
         if (c == null) {
             return;
@@ -2791,6 +2787,10 @@ public abstract class AbstractElementPropertySectionController
 
     }
 
+    public Composite getComposite() {
+        return composite;
+    }
+
     public List<Problem> getCodeProblems() {
         return this.codeProblems;
     }
@@ -2911,9 +2911,12 @@ public abstract class AbstractElementPropertySectionController
         return element.getElementParameters();
     }
 
-    @Override
-    public Command createCommand(IControllerContext context) {
-        return null;
+    public IElement getElement() {
+        return this.elem;
+    }
+
+    public IElementParameter getCurParameter() {
+        return curParameter;
     }
 
 }

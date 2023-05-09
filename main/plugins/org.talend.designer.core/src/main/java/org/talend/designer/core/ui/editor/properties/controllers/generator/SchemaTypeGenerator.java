@@ -14,7 +14,9 @@ package org.talend.designer.core.ui.editor.properties.controllers.generator;
 
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
+import org.talend.designer.core.ui.editor.properties.controllers.IControllerContext;
 import org.talend.designer.core.ui.editor.properties.controllers.SchemaTypeController;
+import org.talend.designer.core.ui.editor.properties.controllers.executors.ISchemaControllerExecutor;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
@@ -31,6 +33,7 @@ public class SchemaTypeGenerator implements IControllerGenerator {
      *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IControllerGenerator#generate()
      */
+    @Override
     public AbstractElementPropertySectionController generate() {
         return new SchemaTypeController(dp);
     }
@@ -40,7 +43,21 @@ public class SchemaTypeGenerator implements IControllerGenerator {
      *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IControllerGenerator#setDynamicProperty(org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty)
      */
+    @Override
     public void setDynamicProperty(IDynamicProperty dp) {
         this.dp = dp;
     }
+
+    @Override
+    public String getControllerName() {
+        return SchemaTypeController.SCHEMA;
+    }
+
+    @Override
+    public ISchemaControllerExecutor createExecutor(IControllerContext ctx) {
+        ISchemaControllerExecutor executor = getImplementation(ISchemaControllerExecutor.class);
+        executor.init(ctx);
+        return executor;
+    }
+
 }

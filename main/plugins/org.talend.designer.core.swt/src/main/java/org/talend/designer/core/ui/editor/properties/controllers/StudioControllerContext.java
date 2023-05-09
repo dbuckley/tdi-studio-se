@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2022 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2023 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,6 +17,8 @@ import java.lang.reflect.Method;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.core.model.process.IElement;
+import org.talend.core.model.process.IElementParameter;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
@@ -55,6 +57,18 @@ public class StudioControllerContext extends AbsControllerContext {
 
     public Shell getShell() {
         return this.control.getShell();
+    }
+
+    @Override
+    public IElement getElement() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public IElementParameter getCurParameter() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -56,7 +56,7 @@ import org.talend.repository.UpdateRepositoryUtils;
  */
 public abstract class AbstractRepositoryController extends AbstractElementPropertySectionController {
 
-    protected static final String REPOSITORY_CHOICE = "REPOSITORY_CHOICE"; //$NON-NLS-1$
+    public static final String REPOSITORY_CHOICE = "REPOSITORY_CHOICE"; //$NON-NLS-1$
 
     protected static final int STANDARD_REPOSITORY_WIDTH = 250;
 
@@ -241,38 +241,13 @@ public abstract class AbstractRepositoryController extends AbstractElementProper
 
         @Override
         public void widgetSelected(SelectionEvent e) {
-            handleWidgetEvent(e);
+            Command cmd = createCommand(e);
+            if (cmd instanceof ChangeMetadataCommand) {
+                ((ChangeMetadataCommand) cmd).setConnection(getConnection());
+            }
+            executeCommand(cmd);
         }
     };
-
-    private void handleWidgetEvent(SelectionEvent e) {
-        Command cmd = null;
-        Object source = e.getSource();
-        if (source instanceof Control) {
-            StudioControllerContext ctx = new StudioControllerContext((Control) source);
-            if (source instanceof Button) {
-                cmd = createButtonCommand(ctx);
-            }
-            if (source instanceof CCombo) {
-                cmd = createComboCommand(ctx);
-            }
-        }
-        if (cmd instanceof ChangeMetadataCommand) {
-            ((ChangeMetadataCommand) cmd).setConnection(getConnection());
-        }
-        executeCommand(cmd);
-    }
-
-    @Override
-    public boolean handleWidgetEvent(IControllerContext context) {
-        // TODO: judge Button or CCombo
-        Command cmd = createButtonCommand(context);
-        if (cmd instanceof ChangeMetadataCommand) {
-            ((ChangeMetadataCommand) cmd).setConnection(getConnection());
-        }
-        executeCommand(cmd);
-        return cmd != null;
-    }
 
     /**
      *
@@ -280,7 +255,7 @@ public abstract class AbstractRepositoryController extends AbstractElementProper
      *
      * @return
      */
-    private Connection getConnection() {
+    public Connection getConnection() {
         if (this.elem == null) {
             return null;
         }
@@ -303,9 +278,19 @@ public abstract class AbstractRepositoryController extends AbstractElementProper
 
     }
 
-    protected abstract Command createButtonCommand(IControllerContext button);
+    private Command createCommand(SelectionEvent selectionEvent) {
+        if (selectionEvent.getSource() instanceof Button) {
+            return createButtonCommand((Button) selectionEvent.getSource());
+        }
+        if (selectionEvent.getSource() instanceof CCombo) {
+            return createComboCommand((CCombo) selectionEvent.getSource());
+        }
+        return null;
+    }
 
-    protected abstract Command createComboCommand(IControllerContext combo);
+    protected abstract Command createButtonCommand(Button button);
+
+    protected abstract Command createComboCommand(CCombo combo);
 
     /*
      * (non-Javadoc)

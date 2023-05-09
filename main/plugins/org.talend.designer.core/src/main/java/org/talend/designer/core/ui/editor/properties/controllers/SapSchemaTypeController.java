@@ -485,7 +485,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
      *
      * @param button
      */
-    private void updateRepositorySchema(IControllerContext button) {
+    private void updateRepositorySchema(Button button) {
         String paramName = (String) button.getData(PARAMETER_NAME);
         String fullParamName = paramName + ":" + getRepositoryChoiceParamName(); //$NON-NLS-1$
         IElementParameter schemaParam = elem.getElementParameter(fullParamName);
@@ -545,7 +545,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
      *
      * @param button
      */
-    private boolean checkForRepositoryShema(IControllerContext button) {
+    private boolean checkForRepositoryShema(Button button) {
         boolean stop = false;
         if (button.getData(NAME).equals(SCHEMA)) {
             String paramName = (String) button.getData(PARAMETER_NAME);
@@ -562,8 +562,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
                 if (node.getJobletNode() != null) {
                     isReadOnly = node.isReadOnly();
                 }
-                ModelSelectionDialog modelSelect = new ModelSelectionDialog(((StudioControllerContext) button).getShell(),
-                        ESelectionType.SCHEMA, isReadOnly);
+                ModelSelectionDialog modelSelect = new ModelSelectionDialog(button.getShell(), ESelectionType.SCHEMA, isReadOnly);
                 stop = true;
                 if (modelSelect.open() == ModelSelectionDialog.OK) {
                     if (modelSelect.getOptionValue() == EEditSelection.REPOSITORY) {
@@ -593,13 +592,13 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
      * .eclipse.swt.widgets.Button)
      */
     @Override
-    protected Command createButtonCommand(IControllerContext button) {
+    protected Command createButtonCommand(Button button) {
         // see 0003766: Problems with the read only mode of the properties on repository mode.
         if (checkForRepositoryShema(button)) {
             return null;
         }
 
-        IControllerContext inputButton = button;
+        Button inputButton = button;
         IElementParameter switchParam = elem.getElementParameter(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
 
         if (inputButton.getData(NAME).equals(SCHEMA)) {
@@ -673,8 +672,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
             }
 
             if (connectionParam != null && inputMetadata == null) {
-                MessageDialog.openError(((StudioControllerContext) button).getShell(),
-                        Messages.getString("SchemaTypeController.inputNotSet"), //$NON-NLS-1$
+                MessageDialog.openError(button.getShell(), Messages.getString("SchemaTypeController.inputNotSet"), //$NON-NLS-1$
                         Messages.getString("SchemaTypeController.connectionNotAvaliable")); //$NON-NLS-1$
                 return null;
             }
@@ -903,8 +901,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
                 }
             }
 
-            RepositoryReviewDialog dialog = new RepositoryReviewDialog(((StudioControllerContext) button).getShell(), type,
-                    filter);
+            RepositoryReviewDialog dialog = new RepositoryReviewDialog(button.getShell(), type, filter);
             if (dialog.open() == RepositoryReviewDialog.OK) {
                 RepositoryNode node = dialog.getResult();
                 while (node.getObject().getProperty().getItem() == null
@@ -1022,7 +1019,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
                     if (currentValRuleObj != null) {
                         List<IRepositoryViewObject> valRuleObjs = ValidationRulesUtil.getRelatedValidationRuleObjs(value);
                         if (!ValidationRulesUtil.isCurrentValRuleObjInList(valRuleObjs, currentValRuleObj)) {
-                            if (!MessageDialog.openConfirm(((StudioControllerContext) button).getShell(),
+                            if (!MessageDialog.openConfirm(button.getShell(),
                                     Messages.getString("SchemaTypeController.validationrule.title.confirm"), //$NON-NLS-1$
                                     Messages.getString("SchemaTypeController.validationrule.selectMetadataMsg"))) { //$NON-NLS-1$
                                 return null;
@@ -1104,7 +1101,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
      * .eclipse.swt.custom.CCombo)
      */
     @Override
-    protected Command createComboCommand(IControllerContext combo) {
+    protected Command createComboCommand(CCombo combo) {
         IMetadataTable repositoryMetadata = null;
 
         String fullParamName = (String) combo.getData(PARAMETER_NAME);
@@ -1123,7 +1120,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
         boolean isValRulesLost = false;
         IRepositoryViewObject currentValRuleObj = ValidationRulesUtil.getCurrentValidationRuleObjs(elem);
         if (value.equals(EmfComponent.BUILTIN) && currentValRuleObj != null) {
-            if (!MessageDialog.openConfirm(((StudioControllerContext) combo).getShell(),
+            if (!MessageDialog.openConfirm(combo.getShell(),
                     Messages.getString("SchemaTypeController.validationrule.title.confirm"), //$NON-NLS-1$
                     Messages.getString("SchemaTypeController.validationrule.selectBuildInMsg"))) { //$NON-NLS-1$
                 return null;

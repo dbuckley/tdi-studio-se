@@ -20,6 +20,7 @@ import java.util.Set;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.talend.components.api.properties.ComponentProperties;
@@ -54,9 +55,7 @@ import org.talend.designer.core.ui.editor.cmd.RepositoryChangeMetadataCommand;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractSchemaController;
-import org.talend.designer.core.ui.editor.properties.controllers.IControllerContext;
 import org.talend.designer.core.ui.editor.properties.controllers.RetrieveSchemaHelper;
-import org.talend.designer.core.ui.editor.properties.controllers.StudioControllerContext;
 import org.talend.designer.core.ui.editor.properties.controllers.SynchronizeSchemaHelper;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.designer.runprocess.ItemCacheManager;
@@ -85,11 +84,11 @@ public class SchemaReferenceController extends AbstractSchemaController {
     }
 
     @Override
-    protected Command createButtonCommand(IControllerContext button) {
+    protected Command createButtonCommand(Button button) {
         if (checkForRepositoryShema(button)) {
             return null;
         }
-        IControllerContext inputButton = button;
+        Button inputButton = button;
         IElementParameter switchParam = elem.getElementParameter(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
 
         if (inputButton.getData(NAME).equals(SCHEMA)) {
@@ -162,8 +161,7 @@ public class SchemaReferenceController extends AbstractSchemaController {
             }
 
             if (connectionParam != null && inputMetadata == null) {
-                MessageDialog.openError(((StudioControllerContext) button).getShell(),
-                        Messages.getString("SchemaReferenceController.inputNotSet"), //$NON-NLS-1$
+                MessageDialog.openError(button.getShell(), Messages.getString("SchemaReferenceController.inputNotSet"), //$NON-NLS-1$
                         Messages.getString("SchemaReferenceController.connectionNotAvaliable")); //$NON-NLS-1$
                 return null;
             }
@@ -365,8 +363,7 @@ public class SchemaReferenceController extends AbstractSchemaController {
 
             ERepositoryObjectType type = ERepositoryObjectType.METADATA_CON_TABLE;
             String filter = schemaParam.getFilter();
-            RepositoryReviewDialog dialog = new RepositoryReviewDialog(((StudioControllerContext) button).getShell(), type,
-                    filter);
+            RepositoryReviewDialog dialog = new RepositoryReviewDialog(button.getShell(), type, filter);
             if (dialog.open() == RepositoryReviewDialog.OK) {
                 RepositoryNode node = dialog.getResult();
                 while (node.getObject().getProperty().getItem() == null
@@ -399,7 +396,7 @@ public class SchemaReferenceController extends AbstractSchemaController {
                     if (currentValRuleObj != null) {
                         List<IRepositoryViewObject> valRuleObjs = ValidationRulesUtil.getRelatedValidationRuleObjs(value);
                         if (!ValidationRulesUtil.isCurrentValRuleObjInList(valRuleObjs, currentValRuleObj)) {
-                            if (!MessageDialog.openConfirm(((StudioControllerContext) button).getShell(),
+                            if (!MessageDialog.openConfirm(button.getShell(),
                                     Messages.getString("SchemaReferenceController.validationrule.title.confirm"), //$NON-NLS-1$
                                     Messages.getString("SchemaReferenceController.validationrule.selectMetadataMsg"))) { //$NON-NLS-1$
                                 return null;

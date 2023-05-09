@@ -46,39 +46,52 @@ public class DynamicPropertyGenerator {
 
     private Map<EParameterFieldType, AbstractElementPropertySectionController> dtpControls = new HashMap<EParameterFieldType, AbstractElementPropertySectionController>();
 
+    private Map<EParameterFieldType, IControllerGenerator> generatorMap = new HashMap<>();
+
+    public void initGeneratorMap() {
+        for (IConfigurationElement element : extensionElements) {
+            try {
+                String controllerName = element.getAttribute("mapping"); //$NON-NLS-1$
+                EParameterFieldType key = EParameterFieldType.getFieldTypeByName(controllerName);
+                if (EParameterFieldType.DYNAMIC_GUESS_SCHEMA == key && !PluginChecker.isTIS()) {
+                    continue;
+                }
+                if (!dtpControls.containsKey(key)) {
+                    if (!controllerName.equals(key.toString())) {
+                        throw new RuntimeException("Mapping attribute " + controllerName //$NON-NLS-1$
+                                + " not included in eumn EParameterFieldType"); //$NON-NLS-1$
+                    }
+                    IControllerGenerator generator = (IControllerGenerator) element.createExecutableExtension("class"); //$NON-NLS-1$
+                    generatorMap.put(key, generator);
+                }
+            } catch (CoreException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+    }
+
+    public Map<EParameterFieldType, IControllerGenerator> getGeneratorMap() {
+        if (generatorMap.isEmpty()) {
+            initGeneratorMap();
+        }
+        return generatorMap;
+    }
+
     /**
      * DOC yzhang Comment method "initController".
      */
     public void initController(IDynamicProperty dp) {
         if (!initialized) {
-
-            for (IConfigurationElement element : extensionElements) {
-                try {
-                    String controllerName = element.getAttribute("mapping"); //$NON-NLS-1$
-                    EParameterFieldType key = EParameterFieldType.getFieldTypeByName(controllerName);
-                    if (EParameterFieldType.DYNAMIC_GUESS_SCHEMA == key && !PluginChecker.isTIS()) {
-                        continue;
-                    }
-                    if (!dtpControls.containsKey(key)) {
-                        if (!controllerName.equals(key.toString())) {
-                            throw new RuntimeException("Mapping attribute " + controllerName //$NON-NLS-1$
-                                    + " not included in eumn EParameterFieldType"); //$NON-NLS-1$
-                        }
-                        IControllerGenerator generator = (IControllerGenerator) element.createExecutableExtension("class"); //$NON-NLS-1$
-                        generator.setDynamicProperty(dp);
-                        AbstractElementPropertySectionController controller = generator.generate();
-                        dtpControls.put(key, controller);
-                        if (controller instanceof AbstractRepositoryController) {
-                            ControllerRepositoryValueHander repositoryValueHander = ((AbstractRepositoryController) controller)
-                                    .getRepositoryValueHander();
-                            ControllerRepositoryValueHander.getRepositoryValueHandlerMap().put(key, repositoryValueHander);
-                        }
-                    }
-                } catch (CoreException e) {
-                    ExceptionHandler.process(e);
+            getGeneratorMap().forEach((key, gen) -> {
+                gen.setDynamicProperty(dp);
+                AbstractElementPropertySectionController controller = gen.generate();
+                dtpControls.put(key, controller);
+                if (controller instanceof AbstractRepositoryController) {
+                    ControllerRepositoryValueHander repositoryValueHander = ((AbstractRepositoryController) controller)
+                            .getRepositoryValueHander();
+                    ControllerRepositoryValueHander.getRepositoryValueHandlerMap().put(key, repositoryValueHander);
                 }
-
-            }
+            });
             initialized = true;
         }
     }
@@ -117,6 +130,7 @@ public class DynamicPropertyGenerator {
             dtpControls.clear();
             // dtpControls = null;
         }
+        generatorMap.clear();
     }
 
 }

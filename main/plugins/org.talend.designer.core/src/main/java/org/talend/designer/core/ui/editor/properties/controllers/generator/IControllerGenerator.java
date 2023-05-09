@@ -12,8 +12,13 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.properties.controllers.generator;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
+import org.talend.designer.core.ui.editor.properties.controllers.IControllerContext;
+import org.talend.designer.core.ui.editor.properties.controllers.executors.IControllerExecutor;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
@@ -26,5 +31,19 @@ public interface IControllerGenerator {
     public AbstractElementPropertySectionController generate();
 
     public void setDynamicProperty(IDynamicProperty dp);
+
+    default String getControllerName() {
+        throw new UnsupportedOperationException("Implement it!! => " + this.getClass().getCanonicalName());
+    }
+
+    default IControllerExecutor createExecutor(IControllerContext ctx) {
+        throw new UnsupportedOperationException("Implement it!! => " + this.getClass().getCanonicalName());
+    }
+
+    default <T> T getImplementation(Class<T> clazz) {
+        BundleContext bc = FrameworkUtil.getBundle(IControllerGenerator.class).getBundleContext();
+        ServiceReference<T> serviceReference = bc.getServiceReference(clazz);
+        return bc.getService(serviceReference);
+    }
 
 }
