@@ -21,7 +21,7 @@ synchronized(singletonHolder_<%=cid%>) {
 	
 	<%if(set_truststore){%>	
 		if(!singletonHolder_<%=cid%>.containsKey(<%=trustStorePath %>)) { 
-			sslFactoryBuilder_<%=cid%>.withTrustMaterial(<%=trustStorePath %>, decryptedPassword_<%=cid%>==null ? null : decryptedPassword_<%=cid%>.toCharArray(), "<%=trustStoreType %>");
+			sslFactoryBuilder_<%=cid%>.withTrustMaterial(java.nio.file.Paths.get(<%=trustStorePath %>), decryptedPassword_<%=cid%>==null ? null : decryptedPassword_<%=cid%>.toCharArray(), "<%=trustStoreType %>");
 			singletonHolder_<%=cid%>.put(<%=trustStorePath %>, true);
 		}
 	<%}%>
@@ -37,7 +37,7 @@ synchronized(singletonHolder_<%=cid%>) {
 		<%}%>
 		
 		if(!singletonHolder_<%=cid%>.containsKey(<%=keyStorePath %>)) {
-			sslFactoryBuilder_<%=cid%>.withIdentityMaterial(<%=keyStorePath %>, decryptedPwd_<%=cid%>==null ? null : decryptedPwd_<%=cid%>.toCharArray(), "<%=keyStoreType %>");
+			sslFactoryBuilder_<%=cid%>.withIdentityMaterial(java.nio.file.Paths.get(<%=keyStorePath %>), decryptedPwd_<%=cid%>==null ? null : decryptedPwd_<%=cid%>.toCharArray(), "<%=keyStoreType %>");
 			singletonHolder_<%=cid%>.put(<%=keyStorePath %>, true);
 		}
 	<%}%>
