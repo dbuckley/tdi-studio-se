@@ -698,31 +698,39 @@ public class TosTokenCollector extends AbstractTokenCollector {
                 }
             }
         }
-        // cREST, tRESTRequest, tRESTClient
-        if (Arrays.asList("cREST", "tRESTRequest", "tRESTClient").contains(componentName)) {
+        // Runtime feature count
+        if (Arrays.asList("cREST", "tRESTRequest", "tRESTClient", "cSOAP", "tESBConsumer").contains(componentName)) {
             EList elementParameter = node.getElementParameter();
             boolean useAuthentication = false;
             for (Object obj : elementParameter) {
                 if (obj instanceof ElementParameterType) {
                     ElementParameterType ep = (ElementParameterType) obj;
-                    // check if service locator is used
-                    if (ep.getName().equals("SERVICE_LOCATOR") && ep.getValue().equals("true")) {
+                    if (!ep.isShow()) {
+                        continue;
+                    }
+                    // check if service locator is used 
+                    if ((ep.getName().equals("SERVICE_LOCATOR") || ep.getName().equals("ENABLE_SL")) && ep.getValue().equals("true")) {
                         addCountInComponent("count_use_service_locator", component_names);
                     }
+                    
+                    // check if service registry is used
+                    if ((ep.getName().equals("ENABLE_REGISTRY") || ep.getName().equals("USE_SR"))
+                            && ep.getValue().equals("true")) {
+                        addCountInComponent("count_use_service_registry", component_names);
+                    }
                     // check if service activity monitoring is used
-                    if (ep.getName().equals("SERVICE_ACTIVITY_MONITOR") && ep.getValue().equals("true")) {
+                    if ((ep.getName().equals("SERVICE_ACTIVITY_MONITOR") || ep.getName().equals("ENABLE_SAM"))
+                            && ep.getValue().equals("true")) {
                         addCountInComponent("count_use_service_activity_monitoring", component_names);
                     }
                     // check if authentication is used.
-                    if (("cREST".equals(componentName) && ep.getName().equals("ENABLE_SECURITY") && ep.getValue().equals("true"))
-                            || ((Arrays.asList("tRESTRequest", "tRESTClient").contains(componentName) && ep.getName().equals("NEED_AUTH")
-                                    && ep.getValue().equals("true")))) {
+                    if ((ep.getName().equals("ENABLE_SECURITY") || ep.getName().equals("NEED_AUTH"))
+                            && ep.getValue().equals("true")) {
                         useAuthentication = true;
                     }
                     // get authentication type
                     if (useAuthentication
-                            && ((("cREST".equals(componentName) && ep.getName().equals("SECURITY_TYPE"))
-                                    || ((Arrays.asList("tRESTRequest", "tRESTClient").contains(componentName) && ep.getName().equals("AUTH_TYPE")))))) {
+                            && (ep.getName().equals("SECURITY_TYPE") || ep.getName().equals("AUTH_TYPE"))) {
                         if (ep.getValue().equals("SAML")) {
                             addCountInComponent("count_use_authent_SAML_token", component_names);
                         }
@@ -736,12 +744,26 @@ public class TosTokenCollector extends AbstractTokenCollector {
                         }
                         
                         if(ep.getValue().equals("OAUTH2_BEARER")) {
-                            addCountInComponent("count_use_OAuther2_Bearer", component_names);
+                            addCountInComponent("count_use_OAuth2_Bearer", component_names);
                         }
                         
-                        if(ep.getValue().equals("HTTP Digest")) {
+                        if(ep.getValue().equals("HTTP Digest") || ep.getValue().equals("DIGEST")) {
                             addCountInComponent("count_use_authent_http_digest", component_names);
                         }
+                        
+                        if (ep.getValue().equals("USER") || ep.getValue().equals("TOKEN")) {
+                            addCountInComponent("count_use_authent_UsernameToken", component_names);
+                        }
+                    }
+                    
+                    if ((ep.getName().equals("USE_AUTHORIZATION") || ep.getName().equals("NEED_AUTHORIZATION"))
+                            && ep.getValue().equals("true")) {
+                        addCountInComponent("count_use_authorization", component_names);
+                    }
+                    // check if use business correlation is checked
+                    if ((ep.getName().equals("ENABLE_CORRELATION") || ep.getName().equals("USE_BUSINESS_CORRELATION"))
+                            && ep.getValue().equals("true")) {
+                        addCountInComponent("count_use_business_correlation", component_names);
                     }
                 }
             }
