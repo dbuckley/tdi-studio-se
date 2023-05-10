@@ -1139,7 +1139,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         return param.isValueSetToDefault();
     }
 
-    public void saveElementParameter(IElementParameter param, ProcessType process, TalendFileFactory fileFact,
+    private void saveElementParameter(IElementParameter param, ProcessType process, TalendFileFactory fileFact,
             List<? extends IElementParameter> paramList, EList listParamType) {
         ElementParameterType pType;
         boolean isJoblet = false;
