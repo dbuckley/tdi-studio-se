@@ -48,11 +48,11 @@
     NAME="DB_VERSION"
     FIELD="CLOSED_LIST"
     NUM_ROW="10"
-    READONLY="true"
-    SHOW="false"
+    REPOSITORY_VALUE="DB_VERSION"
     >
     <ITEMS DEFAULT="MYSQL_5">
       <ITEM NAME="MYSQL_5" VALUE="MYSQL_5" />
+      <ITEM NAME="MYSQL_8" VALUE="MYSQL_8" />
     </ITEMS>
   </PARAMETER>
 
@@ -214,7 +214,8 @@
     <TEMPLATE_PARAM SOURCE="self.AUTO_COMMIT" TARGET="in.AUTO_COMMIT"/>
     </TEMPLATES>
      <IMPORTS>
-       <IMPORT NAME="Driver-MysqlConnector" MODULE="mysql-connector-java-5.1.49.jar" MVN="mvn:mysql/mysql-connector-java/5.1.49" />
+       <IMPORT NAME="Mysql_Driver5" MODULE="mysql-connector-java-5.1.49.jar" MVN="mvn:mysql/mysql-connector-java/5.1.49" REQUIRED_IF="(DB_VERSION == 'MYSQL_5')"/>
+       <IMPORT NAME="Mysql_Driver8"  MODULE="mysql-connector-j-8.0.33.jar" MVN="mvn:com.mysql/mysql-connector-j/8.0.33" REQUIRED_IF="(DB_VERSION == 'MYSQL_8')" />
        <IMPORT NAME="slf4j-api-1.7.34.jar" MODULE="slf4j-api-1.7.34.jar" MVN="mvn:org.slf4j/slf4j-api/1.7.34" REQUIRED_IF="(USE_SHARED_CONNECTION == 'true' AND SPECIFY_DATASOURCE_ALIAS=='false')" />
        <IMPORT NAME="slf4j-reload4j-1.7.34.jar" MODULE="slf4j-reload4j-1.7.34.jar" MVN="mvn:org.slf4j/slf4j-reload4j/1.7.34" REQUIRED_IF="(USE_SHARED_CONNECTION == 'true' AND SPECIFY_DATASOURCE_ALIAS=='false')" />
      </IMPORTS>
