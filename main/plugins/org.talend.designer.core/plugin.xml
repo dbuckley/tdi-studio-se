@@ -811,6 +811,15 @@
              name="UpdateModuleListInComponents2MigrationTask"
              version="7.3.1">
        </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="8.0.1"
+             class="org.talend.designer.core.model.process.migration.AddDistributionForDIItemMigrationTask"
+             description="Add distribution if it's lost"
+             id="org.talend.designer.core.model.process.migration.AddDistributionForDIItemMigrationTask"
+             name="AddDistributionForDIItemMigrationTask"
+             version="8.0.1">
+       </projecttask>
     </extension>
     <extension
           point="org.talend.repository.projectsetting_page">

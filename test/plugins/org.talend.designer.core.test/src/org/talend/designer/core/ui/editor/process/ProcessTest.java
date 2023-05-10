@@ -12,14 +12,14 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.process;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.hamcrest.CoreMatchers.is;
 
 import org.junit.Test;
 import org.talend.core.model.components.ComponentCategory;
@@ -28,7 +28,6 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IElementParameterDefaultValue;
 import org.talend.core.model.process.INode;
-import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.FakePropertyImpl;
@@ -36,7 +35,6 @@ import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.ElementParameterDefaultValue;
-import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 
@@ -174,6 +172,20 @@ public class ProcessTest {
         s = process.getNodesOfType("tAmazonOracleConnection");
         assertEquals(s.size(),1); //amazon one
         
+    }
+
+    @Test
+    public void testIsParamDistribution() {
+        Process p = new Process(new FakePropertyImpl());
+        IElement elem = new FakeElement("test");
+        IElementParameter param = new ElementParameter(elem);
+        param.setName("DISTRIBUTION");
+        param.setValue("Cloudera");
+        assertTrue(p.isParamDistribution(param));
+        param = new ElementParameter(elem);
+        param.setName("DB_VERSION");
+        param.setValue("Mysql8");
+        assertFalse(p.isParamDistribution(param));
     }
 
 }

@@ -1139,7 +1139,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         return param.isValueSetToDefault();
     }
 
-    private void saveElementParameter(IElementParameter param, ProcessType process, TalendFileFactory fileFact,
+    public void saveElementParameter(IElementParameter param, ProcessType process, TalendFileFactory fileFact,
             List<? extends IElementParameter> paramList, EList listParamType) {
         ElementParameterType pType;
         boolean isJoblet = false;
@@ -1150,7 +1150,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 isJoblet = true;
             }
         }
-        if (isDefaultValue(param)) {
+        // fix when distribution is default lose Distribution param issue
+        if (isDefaultValue(param) && !isParamDistribution(param)) {
             return;
         }
 
@@ -1323,6 +1324,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         listParamType.add(pType);
     }
 
+    public boolean isParamDistribution(IElementParameter param) {
+        return "DISTRIBUTION".equals(param.getName());
+    }
     private boolean isTable(final IElementParameter parameter) {
         return parameter.getFieldType().equals(EParameterFieldType.TABLE) ||
                 parameter.getFieldType().equals(EParameterFieldType.TACOKIT_SUGGESTABLE_TABLE)
