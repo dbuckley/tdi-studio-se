@@ -47,11 +47,11 @@
     NAME="DB_VERSION"
     FIELD="CLOSED_LIST"
     NUM_ROW="10"
-    READONLY="true"
     SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
-    SHOW="false">
+    REPOSITORY_VALUE="DB_VERSION">
     <ITEMS DEFAULT="MYSQL_5">
       <ITEM NAME="MYSQL_5" VALUE="MYSQL_5" />
+      <ITEM NAME="MYSQL_8" VALUE="MYSQL_8" />
     </ITEMS>
   </PARAMETER>
 
@@ -298,7 +298,8 @@
       <TEMPLATE_PARAM SOURCE="self.TRIM" TARGET="in.TRIM"/>
       </TEMPLATES>
        <IMPORTS>
-         <IMPORT NAME="Driver-Mysql5" MODULE="mysql-connector-java-5.1.49.jar" MVN="mvn:mysql/mysql-connector-java/5.1.49"  REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
+         <IMPORT NAME="Mysql_Driver8"  MODULE="mysql-connector-j-8.0.33.jar" MVN="mvn:com.mysql/mysql-connector-j/8.0.33" REQUIRED_IF="(DB_VERSION == 'MYSQL_8') AND (USE_EXISTING_CONNECTION == 'false')" />
+         <IMPORT NAME="Mysql_Driver5"  MODULE="mysql-connector-java-5.1.49.jar" MVN="mvn:mysql/mysql-connector-java/5.1.49"   REQUIRED_IF="(DB_VERSION == 'MYSQL_5') AND (USE_EXISTING_CONNECTION == 'false')" />
        </IMPORTS>
       </CODEGENERATION>
 
