@@ -47,4 +47,5 @@ synchronized(singletonHolder_<%=cid%>) {
 	singletonHolder_<%=cid%>.put("sslFactoryBuilder", sslFactoryBuilder_<%=cid%>);
 	
 	javax.net.ssl.SSLContext.setDefault(sslFactory_<%=cid%>.getSslContext());
+	javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sslFactory_<%=cid%>.getSslContext().getSocketFactory());
 }
