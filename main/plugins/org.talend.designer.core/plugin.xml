@@ -813,7 +813,7 @@
        </projecttask>
        <projecttask
              beforeLogon="false"
-             breaks="8.0.1"
+             breaks="8.0.0"
              class="org.talend.designer.core.model.process.migration.AddDistributionForDIItemMigrationTask"
              description="Add distribution if it's lost"
              id="org.talend.designer.core.model.process.migration.AddDistributionForDIItemMigrationTask"

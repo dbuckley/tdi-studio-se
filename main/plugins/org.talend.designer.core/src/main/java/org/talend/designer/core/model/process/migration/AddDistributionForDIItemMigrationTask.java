@@ -27,6 +27,7 @@ import org.talend.core.model.components.filters.IComponentFilter;
 import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
@@ -42,12 +43,13 @@ public class AddDistributionForDIItemMigrationTask extends AbstractJobMigrationT
         List<ERepositoryObjectType> toReturn = new ArrayList<>();
         toReturn.add(ERepositoryObjectType.PROCESS);
         toReturn.add(ERepositoryObjectType.JOBLET);
+        toReturn.add(ERepositoryObjectType.TEST_CONTAINER);
         return toReturn;
     }
 
     @Override
     public Date getOrder() {
-        GregorianCalendar gc = new GregorianCalendar(2008, 11, 24, 12, 0, 0);
+        GregorianCalendar gc = new GregorianCalendar(2023, 5, 11, 10, 0, 0);
         return gc.getTime();
     }
 
@@ -61,6 +63,15 @@ public class AddDistributionForDIItemMigrationTask extends AbstractJobMigrationT
     public ExecutionResult execute(Item item) {
         ProcessType processType = getProcessType(item);
         try {
+            // only deal with DI testcase
+            ERepositoryObjectType itemType = ERepositoryObjectType.getItemType(item);
+            if (itemType == ERepositoryObjectType.TEST_CONTAINER
+                    && !ConvertJobsUtil.JobType.STANDARD
+                            .getDisplayName()
+                            .equalsIgnoreCase(getTestContainerJobType(item, processType))) {
+                return ExecutionResult.NOTHING_TO_DO;
+            }
+            
             // only filter when :
             // 1.components contains HBase/HDFS/Hive/Impala
             // 2.node parampter contains version but there's no distribution
