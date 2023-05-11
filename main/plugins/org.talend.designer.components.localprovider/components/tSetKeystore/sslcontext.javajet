@@ -17,9 +17,9 @@ synchronized(singletonHolder_<%=cid%>) {
 <%
 	String passwordFieldName = "__SSL_TRUSTSERVER_PASSWORD__";
 %>
-	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-	
 	<%if(set_truststore){%>	
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+		
 		if(!singletonHolder_<%=cid%>.containsKey(<%=trustStorePath %>)) { 
 			sslFactoryBuilder_<%=cid%>.withTrustMaterial(java.nio.file.Paths.get(<%=trustStorePath %>), decryptedPassword_<%=cid%>==null ? null : decryptedPassword_<%=cid%>.toCharArray(), "<%=trustStoreType %>");
 			singletonHolder_<%=cid%>.put(<%=trustStorePath %>, true);
