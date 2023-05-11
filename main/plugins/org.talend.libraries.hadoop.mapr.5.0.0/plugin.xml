@@ -117,33 +117,7 @@
             <library
                   id="avro-1.7.4.jar">
             </library>
-         </libraryNeededGroup>        
-         <libraryNeededGroup
-              description="The lastest HBase libraries of MAPR50X"
-              id="HBASE-LIB-MAPR50X_LASTEST"
-              name="HBASE-LIB-MAPR50X_LASTEST">
-           <group
-                 id="HDFS-LIB-MAPR50X_LASTEST">
-           </group>
-           <library
-                 id="hbase-client-mapr-5.0.X-lastest">
-           </library>
-           <library
-                 id="hbase-common-mapr-5.0.X-lastest">
-           </library>
-           <library
-                 id="hbase-protocol-mapr-5.0.X-lastest">
-           </library>
-           <library
-                 id="htrace-core-2.04.jar">
-           </library>
-           <library
-                 id="commons-codec-1.5.jar">
-           </library>
-           <library
-                 id="netty-3.6.2.Final.jar">
-           </library>
-        </libraryNeededGroup>        
+         </libraryNeededGroup>
         <libraryNeededGroup
               description="The lastest Sqoop libraries of MAPR50X"
               id="SQOOP-LIB-MAPR50X_LASTEST"
