@@ -66,8 +66,9 @@ public class AddDistributionForDIItemMigrationTask extends AbstractJobMigrationT
             // 2.node parampter contains version but there's no distribution
             IComponentFilter filter = new IComponentFilter() {
 
-                final List<String> names = new ArrayList<String>() {
+                final transient List<String> names = new ArrayList<String>() {
 
+                    private static final long serialVersionUID = 1L;
                     {
                         add("HBase"); //$NON-NLS-1$
                         add("HDFS"); //$NON-NLS-1$
