@@ -1,6 +1,70 @@
 <%@ jet
 %>
 
+<%
+final boolean needPassphrase = "PUBLICKEY".equals(authMethod) || "PUBLIC_KEY_AND_PASSWORD".equals(authMethod);
+%>
+
+class MyUserInfo implements com.jcraft.jsch.UserInfo, com.jcraft.jsch.UIKeyboardInteractive {
+
+    <%
+    if(needPassphrase) {
+        passwordFieldName = "__PASSPHRASE__";
+        if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
+        %> 
+            String decryptedPassphrase_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+        <%
+        } else {
+        %>
+            String decryptedPassphrase_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>;
+        <%
+        }
+    %>
+
+    String passphrase_<%=cid %> = decryptedPassphrase_<%=cid%>;
+    
+    public String getPassphrase() { return passphrase_<%=cid %>; }
+
+    <%
+    } else {
+    //here use the default one in component XML to avoid some risk
+    %>
+    public String getPassphrase() { return "secret"; }
+    <%
+    }
+    %>
+
+    public boolean promptPassword(String arg0) { return true; } 
+
+    public boolean promptPassphrase(String arg0) { return true; } 
+
+    public boolean promptYesNo(String arg0) { return true; } 
+
+    public void showMessage(String arg0) { } 
+
+    public String[] promptKeyboardInteractive(String destination, String name, String instruction, String[] prompt,
+    boolean[] echo) {
+        return new String[] {getPassword()};
+    }
+
+    public String getPassword() {
+        <% if ("PASSWORD".equals(authMethod) || "PUBLIC_KEY_AND_PASSWORD".equals(authMethod)) { %>
+            <% passwordFieldName = passwordFieldKey; %>
+
+            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+            return decryptedPassword_<%=cid%>;
+        <% } else { %>
+            return null;
+        <% } %>
+    }
+};
+final com.jcraft.jsch.UserInfo defaultUserInfo_<%=cid%> = new MyUserInfo();
+
+<%
+passwordFieldName = passwordFieldKey;
+%>
+
 boolean retry_<%=cid%> = false;
 int retry_count_<%=cid%> = 0;
 int retry_max_<%=cid%> = 5;
@@ -34,7 +98,7 @@ do {
     com.jcraft.jsch.JSch.setLogger(new JschLogger_<%=cid %>());
     com.jcraft.jsch.JSch jsch_<%=cid%> = new com.jcraft.jsch.JSch(); 
 
-    <%if (("PUBLICKEY").equals(authMethod) || ("PUBLIC_KEY_AND_PASSWORD").equals(authMethod)){%>
+    <%if (needPassphrase){%>
         <%if(isLog4jEnabled){%>
             log.info("<%=cid%> - SFTP authentication using a public key.");
             log.debug("<%=cid%> - Private key: '" + <%=privateKey%> + "'.");

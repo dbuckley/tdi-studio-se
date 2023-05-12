@@ -374,9 +374,10 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         new DragNDrop(mapperManager, tableForEntries, true, true);
 
-//        Composite footerComposite = new Composite(this, SWT.NONE);
-//        GridData footerGridData = new GridData(10, 2);
-//        footerComposite.setLayoutData(footerGridData);
+        // To support resize
+        Composite footerComposite = new Composite(this, SWT.NONE);
+        GridData footerGridData = new GridData(10, 2);
+        footerComposite.setLayoutData(footerGridData);
 
         headerComposite.moveAbove(nameLabel);
 

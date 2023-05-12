@@ -124,7 +124,7 @@ public abstract class AbstractTableContainer extends GenericFigure {
             scroll.getViewport().setContentsTracksWidth(true);
 
             // ///
-            scroll.setBackgroundColor(ColorInfo.ZONE_BACKGROUND_COLOR());
+            scroll.setBackgroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
             scroll.setOpaque(true);
             this.add(scroll);
         } else {
