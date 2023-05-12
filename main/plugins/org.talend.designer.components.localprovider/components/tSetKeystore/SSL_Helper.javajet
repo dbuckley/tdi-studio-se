@@ -8,8 +8,12 @@ class SSL_HELPER{
 	}
 	
 	public boolean useHTTPS() {
-        return node != null;
-    }
+		return node != null;
+	}
+	
+	public boolean needTrustStore() {
+		return ElementParameterParser.getBooleanValue(node, "__SET_TRUSTSTORE__");
+	}
 	
 	public String getTSType(){
 		return ElementParameterParser.getValue(node, "__TRUSTSTORE_TYPE__");
