@@ -1098,7 +1098,8 @@ public static class <%=conn.getName() %>Struct<%=templateOrigin %> implements ro
 					<%
 				} else if(javaType.isObjectBased() || typeToGenerate.equals("Geometry") || typeToGenerate.equals("Dynamic")) {
 					%>
-       			    	dos.writeObject(this.<%=column.getLabel() %>);
+						dos.clearInstanceCache();
+						dos.writeObject(this.<%=column.getLabel() %>);
 					<%
 				} else {
 					typeToGenerate =JavaTypesManager.getTypeToGenerate(column.getTalendType(), false);
@@ -1430,7 +1431,8 @@ public static class <%=conn.getName() %>Struct<%=templateOrigin %> implements ro
 					<%
 				} else if(typeToGenerate.equals("Object") || typeToGenerate.equals("Geometry") || typeToGenerate.equals("BigDecimal") || typeToGenerate.equals("List") || typeToGenerate.equals("Dynamic") || typeToGenerate.equals("Document")) {
 					%>
-       			    	objectOut.writeObject(this.<%=column.getLabel() %>);
+						objectOut.clearInstanceCache();
+						objectOut.writeObject(this.<%=column.getLabel() %>);
 					<%
 				} else {
 					typeToGenerate =JavaTypesManager.getTypeToGenerate(column.getTalendType(), false);
