@@ -14,53 +14,45 @@ package org.talend.designer.core.ui.editor.properties.controllers.executors;
 
 import org.eclipse.gef.commands.Command;
 import org.talend.core.model.metadata.builder.connection.Connection;
-import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
-import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
-import org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController;
-import org.talend.designer.core.ui.editor.properties.controllers.IControllerContext;
+import org.talend.designer.core.ui.editor.properties.controllers.ui.IRepositoryControllerUI;
+import org.talend.designer.core.ui.editor.properties.controllers.ui.IWidgetContext;
 import org.talend.repository.UpdateRepositoryUtils;
 
-
 /**
- * DOC cmeng  class global comment. Detailled comment
+ * DOC cmeng class global comment. Detailled comment
  */
-public abstract class RepositoryControllerExecutor extends ControllerExecutorForCustomUI {
+public abstract class RepositoryControllerExecutor extends BusinessControllerExecutor {
 
-    protected static final String REPOSITORY_CHOICE = AbstractRepositoryController.REPOSITORY_CHOICE;
+    public static final String REPOSITORY_CHOICE = "REPOSITORY_CHOICE"; //$NON-NLS-1$
 
-    protected abstract String getRepositoryTypeParamName();
+    public abstract String getRepositoryTypeParamName();
 
-    protected abstract String getRepositoryChoiceParamName();
+    public abstract String getRepositoryChoiceParamName();
 
-    protected abstract Command createCommand(IControllerContext button);
+    public abstract Command createButtonCommand(IWidgetContext button);
 
-    protected void handleWidgetEvent(Command cmd) {
-        if (cmd instanceof ChangeMetadataCommand) {
-            ((ChangeMetadataCommand) cmd).setConnection(getConnection());
-        }
-        executeCommand(cmd);
-    }
+    public abstract Command createComboCommand(IWidgetContext combo);
 
     @Override
-    public boolean execute() {
-        Command cmd = createCommand(getControllerContext());
-        if (cmd == null) {
-            return false;
-        }
-        handleWidgetEvent(cmd);
-        return true;
+    protected IRepositoryControllerUI getUi() {
+        return (IRepositoryControllerUI) super.getUi();
     }
 
-    protected Connection getConnection() {
-        IElement elem = getControllerContext().getElement();
-        if (elem == null) {
+    /**
+     *
+     * DOC wzhang Comment method "getConnection".
+     *
+     * @return
+     */
+    public Connection getConnection() {
+        if (this.elem == null) {
             return null;
         }
         if (elem instanceof Node) {

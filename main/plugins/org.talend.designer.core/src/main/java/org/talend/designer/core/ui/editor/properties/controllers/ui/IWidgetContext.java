@@ -10,18 +10,18 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.designer.core.ui.editor.properties.controllers.executors;
+package org.talend.designer.core.ui.editor.properties.controllers.ui;
 
-import org.talend.designer.core.ui.editor.properties.controllers.IControllerContext;
-import org.talend.designer.core.ui.editor.properties.controllers.ui.IControllerUI;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface IControllerExecutor {
+public interface IWidgetContext {
 
-    void init(IControllerContext ctx, IControllerUI ui);
+    String getText();
 
-    boolean execute();
+    Object getData(String param);
+
+    void setData(String param, Object value);
 
 }

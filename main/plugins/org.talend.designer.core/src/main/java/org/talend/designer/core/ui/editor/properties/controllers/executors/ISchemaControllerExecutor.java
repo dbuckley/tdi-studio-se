@@ -15,6 +15,18 @@ package org.talend.designer.core.ui.editor.properties.controllers.executors;
 /**
  * Fake class, don't add anything in it, implement it in fragments for different Platform!!
  */
-public interface ISchemaControllerExecutor extends IControllerExecutor {
+public interface ISchemaControllerExecutor extends IRepositoryControllerExecutor {
+
+    public static final String FORCE_READ_ONLY = "FORCE_READ_ONLY"; //$NON-NLS-1$
+
+    public static final String RESET_COLUMNS = "RESET_COLUMNS"; //$NON-NLS-1$
+
+    public static final String COPY_CHILD_COLUMNS = "COPY_CHILD_COLUMNS"; //$NON-NLS-1$
+
+    public static final String SCHEMA = "SCHEMA"; //$NON-NLS-1$
+
+    public static final String RETRIEVE_SCHEMA = "Retrieve Schema"; //$NON-NLS-1$
+
+    public static final String TUNISERVBTGENERIC = "tUniservBTGeneric"; //$NON-NLS-1$
 
 }

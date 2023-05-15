@@ -13,6 +13,7 @@
 package org.talend.designer.core.ui.editor.properties.controllers;
 
 import java.util.List;
+import java.util.Map;
 
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
@@ -20,6 +21,7 @@ import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.Problem;
 import org.talend.core.sqlbuilder.util.ConnectionParameters;
 
@@ -27,12 +29,6 @@ import org.talend.core.sqlbuilder.util.ConnectionParameters;
  * DOC cmeng  class global comment. Detailled comment
  */
 public interface IControllerContext {
-
-    String getText();
-
-    Object getData(String param);
-
-    void setData(String param, Object value);
 
     IElement getElement();
 
@@ -65,5 +61,13 @@ public interface IControllerContext {
     List<Problem> getCodeProblems();
 
     void setCodeProblems(List<Problem> codeProblems);
+
+    boolean isInWizard();
+
+    IProcess2 getProcess();
+
+    Map<String, String> getTableIdAndDbTypeMap();
+
+    Map<String, String> getTableIdAndDbSchemaMap();
 
 }

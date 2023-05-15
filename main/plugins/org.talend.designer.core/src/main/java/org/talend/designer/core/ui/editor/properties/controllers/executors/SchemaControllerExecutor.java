@@ -12,16 +12,8 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.properties.controllers.executors;
 
-import org.talend.designer.core.ui.editor.properties.controllers.IControllerContext;
-import org.talend.designer.core.ui.editor.properties.controllers.ui.IControllerUI;
-
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface IControllerExecutor {
-
-    void init(IControllerContext ctx, IControllerUI ui);
-
-    boolean execute();
-
+public abstract class SchemaControllerExecutor extends RepositoryControllerExecutor implements ISchemaControllerExecutor {
 }
