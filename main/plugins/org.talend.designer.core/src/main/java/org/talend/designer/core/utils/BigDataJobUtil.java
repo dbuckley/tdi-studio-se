@@ -92,17 +92,17 @@ public class BigDataJobUtil {
     }
 
     public boolean isMRWithHDInsight() {
-        Boolean isMRWithHDInsight = false;
+        Boolean isHDInsight = false;
         if (process != null) {
             isMRWithHDInsight = false;
             if (isBDJobWithFramework(ERepositoryObjectType.PROCESS_MR, HadoopConstants.FRAMEWORK_MAPREDUCE)) {
                 List<? extends IElementParameter> parameters = process.getElementParametersWithChildrens();
                 for (IElementParameter pt : parameters) {
-                    if (pt.getName().equals("DISTRIBUTION") //$NON-NLS-1$
-                            && EHadoopDistributions.MICROSOFT_HD_INSIGHT.getName().equals(pt.getValue())) {
-                        isMRWithHDInsight = true;
-                        break;
-                    }
+                    boolean isHDISparkMode = HadoopConstants.SPARK_MODE_HDI.equals(pt.getName()) && ESparkMode.HDI.getValue().equals(pt.getValue());
+		     boolean isHDIDistribution = pt.getName().equals("DISTRIBUTION") && EHadoopDistributions.MICROSOFT_HD_INSIGHT.getName().equals(pt.getValue());
+                if (isHDISparkMode || isHDIDistribution) {
+                    		isHDInsight = true;
+                   }
                 }
             }
         }
