@@ -145,6 +145,7 @@
 		<fileSet> <!-- add items -->
 			<directory>${items.dir}</directory>
 			<outputDirectory>${talend.job.name}</outputDirectory>
+			<useDefaultExcludes>false</useDefaultExcludes>
 			<includes>
 				<include>**</include>
 			</includes>
