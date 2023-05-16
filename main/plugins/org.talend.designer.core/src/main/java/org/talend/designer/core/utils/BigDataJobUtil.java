@@ -66,8 +66,9 @@ public class BigDataJobUtil {
                 || isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM, HadoopConstants.FRAMEWORK_SPARKSTREAMING)) {
             List<? extends IElementParameter> parameters = process.getElementParametersWithChildrens();
             for (IElementParameter pt : parameters) {
-                if (pt.getName().equals("DISTRIBUTION") //$NON-NLS-1$
-                        && EHadoopDistributions.MICROSOFT_HD_INSIGHT.getName().equals(pt.getValue())) {
+                boolean isHDISparkMode = HadoopConstants.SPARK_MODE_HDI.equals(pt.getName()) && ESparkMode.HDI.getValue().equals(pt.getValue());
+                boolean isHDIDistribution = pt.getName().equals("DISTRIBUTION") && EHadoopDistributions.MICROSOFT_HD_INSIGHT.getName().equals(pt.getValue());
+                if (isHDISparkMode || isHDIDistribution) {
                     isSparkWithHDInsight = true;
                 }
             }
@@ -92,16 +93,15 @@ public class BigDataJobUtil {
     }
 
     public boolean isMRWithHDInsight() {
-        Boolean isHDInsight = false;
+        Boolean isMRWithHDInsight = false;
         if (process != null) {
             isMRWithHDInsight = false;
             if (isBDJobWithFramework(ERepositoryObjectType.PROCESS_MR, HadoopConstants.FRAMEWORK_MAPREDUCE)) {
                 List<? extends IElementParameter> parameters = process.getElementParametersWithChildrens();
                 for (IElementParameter pt : parameters) {
-                    boolean isHDISparkMode = HadoopConstants.SPARK_MODE_HDI.equals(pt.getName()) && ESparkMode.HDI.getValue().equals(pt.getValue());
-		     boolean isHDIDistribution = pt.getName().equals("DISTRIBUTION") && EHadoopDistributions.MICROSOFT_HD_INSIGHT.getName().equals(pt.getValue());
-                if (isHDISparkMode || isHDIDistribution) {
-                    		isHDInsight = true;
+             boolean isHDIDistribution = pt.getName().equals("DISTRIBUTION") && EHadoopDistributions.MICROSOFT_HD_INSIGHT.getName().equals(pt.getValue());
+                if (isHDIDistribution) {
+                    isMRWithHDInsight = true;
                    }
                 }
             }
