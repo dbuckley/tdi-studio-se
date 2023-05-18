@@ -66,7 +66,7 @@ public class BigDataJobUtil {
                 || isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM, HadoopConstants.FRAMEWORK_SPARKSTREAMING)) {
             List<? extends IElementParameter> parameters = process.getElementParametersWithChildrens();
             for (IElementParameter pt : parameters) {
-                boolean isHDISparkMode = HadoopConstants.SPARK_MODE_HDI.equals(pt.getName()) && ESparkMode.HDI.getValue().equals(pt.getValue());
+                boolean isHDISparkMode = HadoopConstants.SPARK_MODE_HD_INSIGHT.equals(pt.getName()) && ESparkMode.HD_INSIGHT.getValue().equals(pt.getValue());
                 boolean isHDIDistribution = pt.getName().equals("DISTRIBUTION") && EHadoopDistributions.MICROSOFT_HD_INSIGHT.getName().equals(pt.getValue());
                 if (isHDISparkMode || isHDIDistribution) {
                     isSparkWithHDInsight = true;
