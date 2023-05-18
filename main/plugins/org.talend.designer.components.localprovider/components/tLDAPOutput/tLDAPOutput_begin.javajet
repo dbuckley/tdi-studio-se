@@ -117,50 +117,50 @@ int nb_line_rejected_<%=cid%> = 0;
 <%	}%>
 	//check is base64 begin	
 	class CheckBase64_<%=cid%>{
-		public void checkByteArray(boolean isBase64,String columnName,javax.naming.directory.Attributes entry,byte[] bytearray) throws com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException{
+		public void checkByteArray(boolean isBase64,String columnName,javax.naming.directory.Attributes entry,byte[] bytearray) {
 			if(isBase64){
-				entry.put(columnName,com.sun.org.apache.xml.internal.security.utils.Base64.decode(bytearray));
+				entry.put(columnName,java.util.Base64.getMimeDecoder().decode(bytearray));
 			}
 			else{
 				entry.put(columnName,bytearray);
 			}
 		}
 		
-		public void checkString(boolean isBase64,String columnName,javax.naming.directory.Attributes entry,String inputValue) throws com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException{
+		public void checkString(boolean isBase64,String columnName,javax.naming.directory.Attributes entry,String inputValue) {
 			if(isBase64){
-				entry.put(columnName,com.sun.org.apache.xml.internal.security.utils.Base64.decode(inputValue));
+				entry.put(columnName,java.util.Base64.getMimeDecoder().decode(inputValue));
 			}
 			else{
 				entry.put(columnName,inputValue);
 			}
 		}
 		
-		public void addToAttribute(boolean isBase64,javax.naming.directory.Attribute attr,String inputValue) throws com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException{
+		public void addToAttribute(boolean isBase64,javax.naming.directory.Attribute attr,String inputValue) {
 			if(isBase64){
-  				attr.add(com.sun.org.apache.xml.internal.security.utils.Base64.decode(inputValue));
+  				attr.add(java.util.Base64.getMimeDecoder().decode(inputValue));
 			}else{
 				attr.add(inputValue);
 			}
 		}
 		
-		public void checkByteArrayUpdate(boolean isBase64,String columnName,List<javax.naming.directory.Attribute> forUpate,byte[] bytearray) throws com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException{
+		public void checkByteArrayUpdate(boolean isBase64,String columnName,List<javax.naming.directory.Attribute> forUpate,byte[] bytearray) {
 			if(isBase64){
-				forUpate.add(new javax.naming.directory.BasicAttribute(columnName, com.sun.org.apache.xml.internal.security.utils.Base64.decode(bytearray)));
+				forUpate.add(new javax.naming.directory.BasicAttribute(columnName, java.util.Base64.getMimeDecoder().decode(bytearray)));
 			}else{
 				forUpate.add(new javax.naming.directory.BasicAttribute(columnName, bytearray));
 			}
 		}
-		public void checkStringUpdate(boolean isBase64,String columnName,List<javax.naming.directory.Attribute> forUpate,String inputValue) throws com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException{
+		public void checkStringUpdate(boolean isBase64,String columnName,List<javax.naming.directory.Attribute> forUpate,String inputValue) {
 			if(isBase64){
-				forUpate.add(new javax.naming.directory.BasicAttribute(columnName, com.sun.org.apache.xml.internal.security.utils.Base64.decode(inputValue)));
+				forUpate.add(new javax.naming.directory.BasicAttribute(columnName, java.util.Base64.getMimeDecoder().decode(inputValue)));
 			}else{
 				forUpate.add(new javax.naming.directory.BasicAttribute(columnName, inputValue));
 			}
 		}
 		
-		public void checkStringUpdateAttr(boolean isBase64,String columnName,javax.naming.directory.Attribute attrForUpdate,String inputValue) throws com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException{
+		public void checkStringUpdateAttr(boolean isBase64,String columnName,javax.naming.directory.Attribute attrForUpdate,String inputValue) {
 			if(isBase64){
-				attrForUpdate.add(com.sun.org.apache.xml.internal.security.utils.Base64.decode(inputValue));
+				attrForUpdate.add(java.util.Base64.getMimeDecoder().decode(inputValue));
 			}else{
 				attrForUpdate.add(inputValue);
 			}
