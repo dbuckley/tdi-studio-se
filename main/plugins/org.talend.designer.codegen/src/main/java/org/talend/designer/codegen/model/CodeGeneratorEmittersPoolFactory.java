@@ -502,7 +502,7 @@ public final class CodeGeneratorEmittersPoolFactory {
                             jetBean.getClassLoader()));
                 }
 
-            } else if (PluginChecker.isPluginLoaded(bigdataDIUtilsPluginName) && ("BIGDATA_DI".equals(component.getPaletteType()))) { //$NON-NLS-1$
+            } else if (PluginChecker.isPluginLoaded(bigdataDIUtilsPluginName)) { //$NON-NLS-1$
                     jetBean.addClassPath("BIGDATA_DI_LIBRARIES", bigdataDIUtilsPluginName); //$NON-NLS-1$
                     jetBean.setClassLoader(createDelegateClassLoader(new CodeGeneratorEmittersPoolFactory().getClass().getClassLoader(),
                                     bigdataDIUtilsPluginName, "org.talend.designer.bigdata.di.BigdataDiPlugin")); //$NON-NLS-1$
