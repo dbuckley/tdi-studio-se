@@ -480,6 +480,7 @@ public final class CodeGeneratorEmittersPoolFactory {
             // generate the code.
             String sparkUtilsPluginName = "org.talend.designer.spark"; //$NON-NLS-1$
             String bigDataUtilsPluginName = "org.talend.designer.bigdata"; //$NON-NLS-1$
+            String bigdataDIUtilsPluginName = "org.talend.designer.bigdata.di"; //$NON-NLS-1$
             if (PluginChecker.isPluginLoaded(sparkUtilsPluginName) && ("SPARK".equals(component.getPaletteType()) //$NON-NLS-1$
                     || "MR".equals(component.getPaletteType()) || "STORM".equals(component.getPaletteType()) //$NON-NLS-1$ //$NON-NLS-2$
                     || "SPARKSTREAMING".equals(component.getPaletteType()))) { //$NON-NLS-1$
@@ -501,10 +502,7 @@ public final class CodeGeneratorEmittersPoolFactory {
                             jetBean.getClassLoader()));
                 }
 
-            } else if (component.getPluginExtension() != null) {
-                // need for TBD-14993
-                String bigdataDIUtilsPluginName = "org.talend.designer.bigdata.di"; //$NON-NLS-1$
-                if (PluginChecker.isPluginLoaded(bigdataDIUtilsPluginName) && ("BIGDATA_DI".equals(component.getPaletteType()))) { //$NON-NLS-1$
+            } else if (PluginChecker.isPluginLoaded(bigdataDIUtilsPluginName) && ("BIGDATA_DI".equals(component.getPaletteType()))) { //$NON-NLS-1$
                     jetBean.addClassPath("BIGDATA_DI_LIBRARIES", bigdataDIUtilsPluginName); //$NON-NLS-1$
                     jetBean.setClassLoader(createDelegateClassLoader(new CodeGeneratorEmittersPoolFactory().getClass().getClassLoader(),
                                     bigdataDIUtilsPluginName, "org.talend.designer.bigdata.di.BigdataDiPlugin")); //$NON-NLS-1$
