@@ -876,7 +876,6 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 			 		hasAtLeastOneObjectType = true;
 					%>
 						this.<%= connection.getName() %>__<%= column.getLabel() %> = (<%= typeToGenerate %>) objectIn.readObject();
-					
 					<%
 				} else {
 					typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), false);
@@ -961,7 +960,6 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 			 		hasAtLeastOneObjectType = true;
 					%>
            				this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %> = (<%= typeToGenerate %>) objectIn.readObject();
-					
 					<%
 				} else {
 					typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), false);
@@ -1236,7 +1234,8 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 					<%
 				} else if(("Object").equals(typeToGenerate) || ("BigDecimal").equals(typeToGenerate) || ("List").equals(typeToGenerate)) {
 					%>
-       			    	objectOut.writeObject(this.<%= connection.getName() %>__<%= column.getLabel() %>);
+						objectOut.clearInstanceCache();
+						objectOut.writeObject(this.<%= connection.getName() %>__<%= column.getLabel() %>);
 					<%
 				} else {
 					typeToGenerate =JavaTypesManager.getTypeToGenerate(column.getTalendType(), false);
@@ -1249,6 +1248,7 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
            			    	<%
            						if ("Dynamic".equals(typeToGenerate)) {
            					%>
+           							objectOut.clearInstanceCache();
            							objectOut.writeObject(this.<%= connection.getName() %>__<%= column.getLabel() %>);
            					<%
            						} else {
@@ -1307,7 +1307,8 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
 					<%
 				} else if(("Object").equals(typeToGenerate) || ("BigDecimal").equals(typeToGenerate) || ("List").equals(typeToGenerate)) {
 					%>
-       			    	objectOut.writeObject(this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %>);
+						objectOut.clearInstanceCache();
+						objectOut.writeObject(this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %>);
 					<%
 				} else {
 					typeToGenerate =JavaTypesManager.getTypeToGenerate(column.getTalendType(), false);
@@ -1320,6 +1321,7 @@ for (int iInputTable = 0; iInputTable < sizeInputTables - 1; iInputTable++) { //
            			    	<%
            						if ("Dynamic".equals(typeToGenerate)) {
            					%>
+           							objectOut.clearInstanceCache();
            							objectOut.writeObject(this.exprKey_<%= nextInputTable.getName() %>__<%= column.getLabel() %>);
            					<%
            						} else {

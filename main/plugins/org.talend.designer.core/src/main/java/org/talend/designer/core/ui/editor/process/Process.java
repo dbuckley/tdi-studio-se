@@ -235,6 +235,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
     private boolean activate = true;
 
+    private boolean isRefactoringToJoblet = false;
+
     // list where is stored each unique name for the connections
     private final List<String> uniqueConnectionNameList = new ArrayList<String>();
 
@@ -3420,6 +3422,16 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     @Override
     public void setActivate(boolean activate) {
         this.activate = activate;
+    }
+
+    @Override
+    public boolean isRefactoringToJoblet() {
+        return this.isRefactoringToJoblet;
+    }
+
+    @Override
+    public void refactoringToJoblet(boolean isRefactoring) {
+        this.isRefactoringToJoblet = isRefactoring;
     }
 
     /**

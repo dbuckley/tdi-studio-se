@@ -1295,7 +1295,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 			if ("id_Date".equals(columnList.get(i).getTalendType())) {
 		       // it's input component. we should avoid data rounding here. for dynamic schema we have another algo
 %>
-		excelReader_<%=cid%>.addDateFormat(<%=i%>,new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+		excelReader_<%=cid%>.addDateFormat(<%=i%> + start_column_<%= cid %>,new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
 <%
 			}
 		}
