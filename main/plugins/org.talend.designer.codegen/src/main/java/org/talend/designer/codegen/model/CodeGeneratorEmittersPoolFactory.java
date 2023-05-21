@@ -504,10 +504,9 @@ public final class CodeGeneratorEmittersPoolFactory {
             } else if (component.getPluginExtension() != null) {
                 // need for TBD-14993
                 String bigdataDIUtilsPluginName = "org.talend.designer.bigdata.di"; //$NON-NLS-1$
-                if (PluginChecker.isPluginLoaded(bigdataDIUtilsPluginName) && ("BIGDATA_DI".equals(component.getPaletteType()) { //$NON-NLS-1$
+                if (PluginChecker.isPluginLoaded(bigdataDIUtilsPluginName) && ("BIGDATA_DI".equals(component.getPaletteType()))) { //$NON-NLS-1$
                     jetBean.addClassPath("BIGDATA_DI_LIBRARIES", bigdataDIUtilsPluginName); //$NON-NLS-1$
-                    jetBean.setClassLoader(createDelegateClassLoader(
-                            createDelegateClassLoader(new CodeGeneratorEmittersPoolFactory().getClass().getClassLoader(),
+                    jetBean.setClassLoader(createDelegateClassLoader(new CodeGeneratorEmittersPoolFactory().getClass().getClassLoader(),
                                     bigdataDIUtilsPluginName, "org.talend.designer.bigdata.di.BigdataDiPlugin")); //$NON-NLS-1$
 
                     // If Spark AND with an external component, use the external component as the parent classloader and
