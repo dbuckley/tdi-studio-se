@@ -418,6 +418,13 @@ public final class CodeGeneratorEmittersPoolFactory {
             jetBean.setClassLoader(createDelegateClassLoader(jetBean.getClassLoader(), sparkUtilsPluginName,
                     "org.talend.designer.spark.SparkPlugin")); //$NON-NLS-1$
         }
+        String bigdataDIUtilsPluginName = "org.talend.designer.bigdata.di"; //$NON-NLS-1$
+        if (PluginChecker.isPluginLoaded(bigdataDIUtilsPluginName)) {
+            jetBean.addClassPath("BIGDATA_DI_LIBRARIES", bigdataDIUtilsPluginName); //$NON-NLS-1$
+            jetBean.setClassLoader(createDelegateClassLoader(jetBean.getClassLoader(), bigdataDIUtilsPluginName,
+                    "org.talend.designer.bigdata.di.BigdataDiPlugin")); //$NON-NLS-1$
+        }
+
         return jetBean;
     }
 
@@ -493,6 +500,26 @@ public final class CodeGeneratorEmittersPoolFactory {
                             ExternalNodesFactory.getInstance(component.getPluginExtension()).getClass().getClassLoader(),
                             jetBean.getClassLoader()));
                 }
+
+            } else if (component.getPluginExtension() != null) {
+                // need for TBD-14993
+                String bigdataDIUtilsPluginName = "org.talend.designer.bigdata.di"; //$NON-NLS-1$
+                if (PluginChecker.isPluginLoaded(bigdataDIUtilsPluginName) && ("BIGDATA_DI".equals(component.getPaletteType()) { //$NON-NLS-1$
+                    jetBean.addClassPath("BIGDATA_DI_LIBRARIES", bigdataDIUtilsPluginName); //$NON-NLS-1$
+                    jetBean.setClassLoader(createDelegateClassLoader(
+                            createDelegateClassLoader(new CodeGeneratorEmittersPoolFactory().getClass().getClassLoader(),
+                                    bigdataDIUtilsPluginName, "org.talend.designer.bigdata.di.BigdataDiPlugin")); //$NON-NLS-1$
+
+                    // If Spark AND with an external component, use the external component as the parent classloader and
+                    // spark as a secondary, delegate classloader.
+                    if (component.getPluginExtension() != null) {
+                        jetBean.addClassPath(
+                                "EXTERNAL_COMPONENT_" + component.getPluginExtension().toUpperCase().replaceAll("\\.", "_"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                component.getPluginExtension());
+                        jetBean.setClassLoader(new DelegateClassLoader(
+                                ExternalNodesFactory.getInstance(component.getPluginExtension()).getClass().getClassLoader(),
+                                jetBean.getClassLoader()));
+                    }
 
             } else if (component.getPluginExtension() != null) {
 
