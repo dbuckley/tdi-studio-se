@@ -142,6 +142,8 @@ public class UpdatesitePreferencePage extends PreferencePage {
     
     private static final boolean M2_DELETE_DEFAULT= false;
     
+    private static final String HOW_UPDATE_WORK_LINK = "https://help.talend.com/r/en-US/8.0/studio-user-guide/configuring-update-repositories";
+
     private static final String LINK_MORE_URL = "https://document-link.us.cloud.talend.com/ts_mg_update-studio?version=80&lang=en&env=prd";
     
     private static final String PROPERTY_REMOVE_M2 = "talend.studio.m2.clean";
@@ -290,6 +292,14 @@ public class UpdatesitePreferencePage extends PreferencePage {
             adminInfoLabel.setBackground(ColorConstants.INFO_COLOR);
             adminInfoLabel.setText(Messages.getString("UpdatesitePreferencePage.infoPanel") + " <a>"
                     + Messages.getString("UpdatesitePreferencePage.infoPanel.link") + "</a>");
+            adminInfoLabel.addSelectionListener(new SelectionAdapter() {
+
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    Program.launch(HOW_UPDATE_WORK_LINK);
+                }
+
+            });
             Label moreImgLabel = new Label(adminInfoPanel, SWT.WRAP);
             Image moreImage = ImageProvider.getImage(EImage.MOREINFO_ICON);
             moreImage.setBackground(ColorConstants.INFO_COLOR);
@@ -652,6 +662,9 @@ public class UpdatesitePreferencePage extends PreferencePage {
             boolean overwriteTmcUpdateSettings = config.isOverwriteTmcUpdateSettings(monitor);
             if (overwriteRemoteUpdateSettingsBtn != null) {
                 overwriteRemoteUpdateSettingsBtn.setSelection(overwriteTmcUpdateSettings);
+                if (overwriteWarnPanel != null) {
+                    overwriteWarnPanel.setVisible(overwriteTmcUpdateSettings);
+                }
                 updateLocalPanelVisible(overwriteTmcUpdateSettings);
             }
 
@@ -973,6 +986,9 @@ public class UpdatesitePreferencePage extends PreferencePage {
     }
 
     private void onOverwriteRemoteUpdateSettingsBtn(SelectionEvent e) {
+        if (overwriteWarnPanel != null) {
+            overwriteWarnPanel.setVisible(overwriteRemoteUpdateSettingsBtn.getSelection());
+        }
         updateLocalPanelVisible(overwriteRemoteUpdateSettingsBtn.getSelection());
         updateLocalBasicAuthUI();
         updateRemoteBasicAuthUI();
