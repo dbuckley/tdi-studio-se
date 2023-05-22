@@ -703,7 +703,7 @@ public class UpdatesitePreferencePage extends PreferencePage {
             @Override
             public void modifyText(ModifyEvent e) {
                 updateLocalBasicAuthUI();
-                setValid(validateBasicAuth());
+                setValid(true);
                 refresh();
             }
         });
@@ -712,7 +712,7 @@ public class UpdatesitePreferencePage extends PreferencePage {
             @Override
             public void modifyText(ModifyEvent e) {
                 updateLocalBasicAuthUI();
-                setValid(validateBasicAuth());
+                setValid(true);
                 refresh();
             }
         });
@@ -1162,6 +1162,11 @@ public class UpdatesitePreferencePage extends PreferencePage {
     @Override
     public boolean performOk() {
         if (this.isControlCreated()) {
+            if (!validateBasicAuth()) {
+                setValid(false);
+                return false;
+            }
+
             try {
                 if (m2Delete.getSelection() != p2Service.removeM2()) {
                     p2Service.saveRemoveM2(m2Delete.getSelection());
