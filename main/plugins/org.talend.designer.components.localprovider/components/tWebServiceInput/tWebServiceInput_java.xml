@@ -249,33 +249,33 @@ for(int i = 0; i &lt; result.length; i++){
 		
 			<!-- cxf api support -->
 			<IMPORT
-				NAME="cxf-core-3.4.10"
-				MODULE="cxf-core-3.4.10.jar"
-				MVN="mvn:org.apache.cxf/cxf-core/3.4.10"
+				NAME="cxf-core-3.5.5"
+				MODULE="cxf-core-3.5.5.jar"
+				MVN="mvn:org.apache.cxf/cxf-core/3.5.5"
 				REQUIRED_IF="(API=='CXF')"
 			/>
 			<IMPORT
-				NAME="cxf-rt-frontend-simple-3.4.10"
-				MODULE="cxf-rt-frontend-simple-3.4.10.jar"
-				MVN="mvn:org.apache.cxf/cxf-rt-frontend-simple/3.4.10"
+				NAME="cxf-rt-frontend-simple-3.5.5"
+				MODULE="cxf-rt-frontend-simple-3.5.5.jar"
+				MVN="mvn:org.apache.cxf/cxf-rt-frontend-simple/3.5.5"
 				REQUIRED_IF="(API=='CXF')"
 			/>
 			<IMPORT
 				NAME="XMLSCHEMA-CORE"
-				MODULE="xmlschema-core-2.2.3.jar"
-				MVN="mvn:org.apache.ws.xmlschema/xmlschema-core/2.2.3"
+				MODULE="xmlschema-core-2.3.0.jar"
+				MVN="mvn:org.apache.ws.xmlschema/xmlschema-core/2.3.0"
 				REQUIRED_IF="(API=='CXF')"
 			/>
 			<IMPORT
-				NAME="cxf-tools-common-3.4.10"
-				MODULE="cxf-tools-common-3.4.10.jar"
-				MVN="mvn:org.apache.cxf/cxf-tools-common/3.4.10"
+				NAME="cxf-tools-common-3.5.5"
+				MODULE="cxf-tools-common-3.5.5.jar"
+				MVN="mvn:org.apache.cxf/cxf-tools-common/3.5.5"
 				REQUIRED_IF="(API=='CXF')"
 			/>
 			<IMPORT
-				NAME="cxf-rt-wsdl-3.4.10"
-				MODULE="cxf-rt-wsdl-3.4.10.jar"
-				MVN="mvn:org.apache.cxf/cxf-rt-wsdl/3.4.10"
+				NAME="cxf-rt-wsdl-3.5.5"
+				MODULE="cxf-rt-wsdl-3.5.5.jar"
+				MVN="mvn:org.apache.cxf/cxf-rt-wsdl/3.5.5"
 				REQUIRED_IF="(API=='CXF')"
 			/>
 			<IMPORT
@@ -291,27 +291,27 @@ for(int i = 0; i &lt; result.length; i++){
 				REQUIRED_IF="(API=='CXF')"
 			/>
 			<IMPORT
-				NAME="cxf-rt-bindings-soap-3.4.10"
-				MODULE="cxf-rt-bindings-soap-3.4.10.jar"
-				MVN="mvn:org.apache.cxf/cxf-rt-bindings-soap/3.4.10"
+				NAME="cxf-rt-bindings-soap-3.5.5"
+				MODULE="cxf-rt-bindings-soap-3.5.5.jar"
+				MVN="mvn:org.apache.cxf/cxf-rt-bindings-soap/3.5.5"
 				REQUIRED_IF="(API=='CXF')"
 			/>
 			<IMPORT
-				NAME="cxf-rt-databinding-jaxb-3.4.10"
-				MODULE="cxf-rt-databinding-jaxb-3.4.10.jar"
-				MVN="mvn:org.apache.cxf/cxf-rt-databinding-jaxb/3.4.10"
+				NAME="cxf-rt-databinding-jaxb-3.5.5"
+				MODULE="cxf-rt-databinding-jaxb-3.5.5.jar"
+				MVN="mvn:org.apache.cxf/cxf-rt-databinding-jaxb/3.5.5"
 				REQUIRED_IF="(API=='CXF')"
 			/>
 			<IMPORT
-				NAME="cxf-rt-transports-http-jetty-3.4.10"
-				MODULE="cxf-rt-transports-http-jetty-3.4.10.jar"
-				MVN="mvn:org.apache.cxf/cxf-rt-transports-http-jetty/3.4.10"
+				NAME="cxf-rt-transports-http-jetty-3.5.5"
+				MODULE="cxf-rt-transports-http-jetty-3.5.5.jar"
+				MVN="mvn:org.apache.cxf/cxf-rt-transports-http-jetty/3.5.5"
 				REQUIRED_IF="(API=='CXF')"
 			/>
 			<IMPORT
-				NAME="cxf-rt-transports-http-3.4.10"
-				MODULE="cxf-rt-transports-http-3.4.10.jar"
-				MVN="mvn:org.apache.cxf/cxf-rt-transports-http/3.4.10"
+				NAME="cxf-rt-transports-http-3.5.5"
+				MODULE="cxf-rt-transports-http-3.5.5.jar"
+				MVN="mvn:org.apache.cxf/cxf-rt-transports-http/3.5.5"
 				REQUIRED_IF="(API=='CXF')"
 			/>
 			<IMPORT
@@ -354,8 +354,8 @@ for(int i = 0; i &lt; result.length; i++){
 			/>
 			<IMPORT
 				NAME="talend-ws"
-				MODULE="talend-ws-2.1-20230114.jar"
-				MVN="mvn:org.talend.components/talend-ws/2.1-20230114"
+				MODULE="talend-ws-2.2-20230512.jar"
+				MVN="mvn:org.talend.components/talend-ws/2.2-20230512"
 				REQUIRED_IF="(API=='CXF')"
 			/>
 	

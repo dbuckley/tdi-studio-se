@@ -59,6 +59,17 @@ public class ProcessMessage implements IProcessMessage {
 
         this.type = type;
         this.content = content;
+        int maxCharCountOneLine = 30000; //a magic number maybe larger than 32000, get from the StyledText's line limit, here take a smaller value
+        if(content.length() > maxCharCountOneLine) {
+            StringBuffer buf = new StringBuffer();
+            String _content = content;
+            buf.append(_content.substring(0, maxCharCountOneLine) + "\n");
+            do {
+                _content = _content.substring(maxCharCountOneLine);
+                buf.append(_content.substring(0, Math.min(_content.length(), maxCharCountOneLine)) + "\n");
+            } while(_content.length() > maxCharCountOneLine);
+            this.content = buf.toString();
+        }
     }
 
     /**

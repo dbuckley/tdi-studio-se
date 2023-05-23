@@ -141,6 +141,7 @@ import org.talend.core.ui.ILastVersionChecker;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.process.IGEFProcess;
 import org.talend.core.utils.KeywordsValidator;
+import org.talend.cwm.helper.StudioEncryptionHelper;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.ITestContainerGEFService;
 import org.talend.designer.core.i18n.Messages;
@@ -234,6 +235,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     private final String name = new String(Messages.getString("Process.Job")); //$NON-NLS-1$
 
     private boolean activate = true;
+
+    private boolean isRefactoringToJoblet = false;
 
     // list where is stored each unique name for the connections
     private final List<String> uniqueConnectionNameList = new ArrayList<String>();
@@ -1292,7 +1295,10 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 }
             }
         } else if (EParameterFieldType.isPassword(param.getFieldType()) && value instanceof String) {
+            // To avoid encrypt the same value (Cache original value)
+            pType.setValue(param.getOrignEncryptedValue());
             pType.setRawValue((String) value);
+            param.setOrignEncryptedValue(pType.getValue()); // For origin value is null or the encryption key upgrade          
         } else if (param.getFieldType().equals(EParameterFieldType.COMPONENT_LIST) && value != null) {
             String componentValue = value.toString();
             if (TalendPropertiesUtil.isEnabledUseShortJobletName() && (param.getElement() instanceof INode)) {
@@ -1663,6 +1669,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 if (generic && !"tacokit".equalsIgnoreCase(String.valueOf(sourceName))) {
                     param.setValue(value);
                 } else {
+                  //To avoid encrypt the same value
+                    param.setOrignEncryptedValue(pType.getValue());
                     param.setValue(pType.getRawValue());
                 }
             } else if (param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE)) {
@@ -3420,6 +3428,16 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     @Override
     public void setActivate(boolean activate) {
         this.activate = activate;
+    }
+
+    @Override
+    public boolean isRefactoringToJoblet() {
+        return this.isRefactoringToJoblet;
+    }
+
+    @Override
+    public void refactoringToJoblet(boolean isRefactoring) {
+        this.isRefactoringToJoblet = isRefactoring;
     }
 
     /**

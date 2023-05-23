@@ -178,7 +178,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
                 display = Display.getCurrent();
             }
             if (display != null) {
-                display.syncExec(new Runnable() {
+                display.asyncExec(new Runnable() {
 
                     @Override
                     public void run() {
@@ -186,10 +186,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
                         Font font = new Font(null, "courier", 10, SWT.NONE); //$NON-NLS-1$
                         PreferenceConverter.setDefault(corePluginStore, TalendDesignerPrefConstants.MEMO_TEXT_FONT, font.getFontData());
                         PreferenceConverter.setDefault(corePluginStore, TalendDesignerPrefConstants.CONSOLT_TEXT_FONT, font.getFontData());
-                        // designer color
-                        DesignerColorUtils.initPreferenceDefault(store);
-                        // default colors for the ColorStyledText.
-                        ColorManager.initDefaultColors(store);
                     }
                 });
             }
