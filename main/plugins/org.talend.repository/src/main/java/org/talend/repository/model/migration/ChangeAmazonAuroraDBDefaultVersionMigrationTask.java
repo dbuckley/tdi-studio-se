@@ -34,7 +34,7 @@ public class ChangeAmazonAuroraDBDefaultVersionMigrationTask extends AbstractIte
 
     @Override
     public Date getOrder() {
-        GregorianCalendar gc = new GregorianCalendar(2020, 05, 25, 18, 0, 0);
+        GregorianCalendar gc = new GregorianCalendar(2023, 05, 23, 18, 0, 0);
         return gc.getTime();
     }
 
