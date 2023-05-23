@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.process.EParameterFieldType;
+import org.talend.cwm.helper.StudioEncryptionHelper;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.Lookups;
@@ -61,6 +62,8 @@ public class TaCoKitConfigurationModel {
     private String parentConfigurationModelItemId;
 
     private boolean printEncryptionException = true;
+    
+    private Map<String, String> originalEncryptedValueMap = new HashMap<String, String>();
 
     public TaCoKitConfigurationModel(final Connection connection) {
         this(connection, Lookups.taCoKitCache().getConfigTypeNode(getConfigId(connection)));
@@ -177,6 +180,7 @@ public class TaCoKitConfigurationModel {
         try {
             if (!TaCoKitUtil.isBlank(value) && contains(key)
                     && PropertyDefinitionDecorator.wrap(getDefinition(key)).isCredential()) {
+                originalEncryptedValueMap.put(key, value);
                 decryptedValue = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).decrypt(value);
                 if (decryptedValue == null) {
                     // if null, means error occurs, just reuse the original value
@@ -290,11 +294,14 @@ public class TaCoKitConfigurationModel {
             getAllProperties().remove(key);
         } else {
             String storeValue = originalValue;
-
             try {
                 if (contains(key) && PropertyDefinitionDecorator.wrap(getDefinition(key)).isCredential()) {
-                    storeValue = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM)
-                            .encrypt(originalValue);
+                    if (StudioEncryptionHelper.isLatestEncryptionKey(originalEncryptedValueMap.get(key)) && originalValue.equals(StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).decrypt(originalEncryptedValueMap.get(key)))) {
+                        storeValue = originalEncryptedValueMap.get(key);
+                    } else {
+                        storeValue = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM)
+                                .encrypt(originalValue);  
+                    }
                 }
             } catch (Exception e) {
                 ExceptionHandler.process(e);

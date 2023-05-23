@@ -199,6 +199,8 @@ public class ImportProjectSettings {
         if (PasswordEncryptUtil.isPasswordField(foundType.getField())) {
             String decValue = StudioEncryption.getStudioEncryption(StudioEncryption.EncryptionKeyName.SYSTEM).decrypt(value);
             if (decValue != null) {
+              //To avoid encrypt the same value
+                foundType.setValue(value);
                 value = decValue;
             }
         }
