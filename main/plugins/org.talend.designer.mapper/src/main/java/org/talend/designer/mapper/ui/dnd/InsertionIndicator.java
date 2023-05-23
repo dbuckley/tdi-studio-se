@@ -35,7 +35,6 @@ import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.designer.mapper.managers.MapperManager;
 import org.talend.designer.mapper.managers.UIManager;
 import org.talend.designer.mapper.ui.color.ColorInfo;
-import org.talend.designer.mapper.ui.color.ColorProviderMapper;
 import org.talend.designer.mapper.ui.visualmap.table.DataMapTableView;
 import org.talend.designer.mapper.ui.visualmap.zone.scrollable.TablesZoneView;
 
@@ -76,7 +75,7 @@ public class InsertionIndicator {
 
     private boolean visible;
 
-    private final Color colorIndicator = ColorProviderMapper.getColor(ColorInfo.COLOR_DRAGGING_INSERTION_INDICATOR);
+    private final Color colorIndicator = ColorInfo.COLOR_DRAGGING_INSERTION_INDICATOR();
 
     private int lastNPixelsCovered;
 

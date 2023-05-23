@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -147,6 +148,10 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
     protected static final String FINISH_ACTION_CREATE_NEW_PROJECT = "CREATE_NEW_PROJECT"; //$NON-NLS-1$
 
+    private static final String METADATA_FOLDER = ".metadata";
+
+    private static final String GIT_REPOSITORIES_FOLDER = ".repositories";
+
     protected static ConnectionBean bean = null;
 
     protected static Logger log = Logger.getLogger(LoginProjectPage.class);
@@ -270,6 +275,8 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         if (selectedConnBean != null && selectedConnBean.isLoginViaCloud()) {
             selectedConnBean.setWorkSpace(getRecentWorkSpace());
         }
+        // update git storage mode
+        setGitStorageMode();
     }
 
     private void scheduleCheckSandboxJob() {
@@ -2176,6 +2183,48 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     protected String getRecentWorkSpace() {
         String filePath = new Path(Platform.getInstanceLocation().getURL().getPath()).toFile().getPath();
         return filePath;
+    }
+    
+    protected void setGitStorageMode() {
+        // no git provider
+        if (LoginHelper.getInstance().getGitProviderService() == null) {
+            return;
+        }
+        log.info("start to update git storage mode");
+        File workspaceDir = new File(getRecentWorkSpace());
+
+        /**
+         * For a new workspace which is not logoned before, then only have .metadata and .repositories
+         */
+        boolean needUpdate = false;
+        if (workspaceDir.listFiles() == null || workspaceDir.listFiles().length == 0) {
+            needUpdate = true;
+        } else {
+            if (workspaceDir.listFiles().length == 1 && workspaceDir.listFiles()[0].isDirectory() && StringUtils.equals(workspaceDir.listFiles()[0].getName(), METADATA_FOLDER)) {
+                needUpdate = true;
+            } else {
+                for (File f : workspaceDir.listFiles()) {
+                    if (f.isDirectory() && StringUtils.equals(GIT_REPOSITORIES_FOLDER, f.getName())) {
+                        if (f.listFiles().length < 2) {
+                            // only one must be temp, no old repos were cloned
+                            needUpdate = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (needUpdate) {
+            if (!LoginHelper.getInstance().getGitProviderService().isGitModeInPreference()) {
+                // new workspace
+                LoginHelper.getInstance().getGitProviderService().setStandardMode(true);
+                log.info("updated git storage mode to standard");
+            } else {
+                log.info("git storage mode was already set, standard: " + LoginHelper.getInstance().getGitProviderService().isStandardMode());
+            }
+        } else {
+            log.info("old workspace, git storage mode not changed");
+        }
     }
 
     protected void fillUIProjectListWithBusyCursor() {

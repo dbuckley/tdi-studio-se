@@ -30,6 +30,10 @@ boolean containsTPartitioner = node.getProcess().getNodesOfType("tPartitioner").
 boolean isRunJob = "tRunJob".equals(node.getComponent().getName());
 IProcess process = node.getProcess();
 
+final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__"));
+final boolean isLog4j2Enabled = ("true").equals(ElementParameterParser.getValue(process, "__LOG4J2_ACTIVATE__"));//log4j2 enable
+final String MDC_CLASS = "org.slf4j.MDC";
+
 boolean isTestContainer=ProcessUtils.isTestContainer(process);
 String className = process.getName();
 if (isTestContainer) {
@@ -191,8 +195,11 @@ for (IConnection iterateConn : iterateConnSet) { //1
 				}
 
 
-				public void run() {		
-		
+				public void run() {
+					<% if(isLog4jEnabled && isLog4j2Enabled) { %>
+						mdcInfo.forEach(<%=MDC_CLASS%>::put);
+					<% } %>
+
 					java.util.Map threadRunResultMap = new java.util.HashMap();
 					threadRunResultMap.put("errorCode", null);
 					threadRunResultMap.put("status", "");

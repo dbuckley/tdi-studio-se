@@ -16,8 +16,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
 import org.talend.designer.gefabstractmap.figures.routers.LookupConnectionRouter;
-import org.talend.designer.gefabstractmap.resource.ColorInfo;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * DOC wchen class global comment. Detailled comment
@@ -36,7 +35,7 @@ public abstract class LookupConnectionPart extends BaseConnectionEditPart {
         PolylineConnection connection = new PolylineConnection();
         connection.setTargetDecoration(new PolygonDecoration());
         // connection.setBackgroundColor(ColorConstants.yellow);
-        connection.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_UNSELECTED_LOOKUP_LINKS));
+        connection.setForegroundColor(ColorInfo.COLOR_UNSELECTED_LOOKUP_LINKS());
         connection.setLineWidth(2);
         cr = new LookupConnectionRouter();
         connection.setConnectionRouter(cr);
@@ -57,9 +56,9 @@ public abstract class LookupConnectionPart extends BaseConnectionEditPart {
     @Override
     public void updateForegroundColor(boolean selected) {
         if (selected) {
-            getFigure().setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_SELECTED_LOOKUP_LINKS));
+            getFigure().setForegroundColor(ColorInfo.COLOR_SELECTED_LOOKUP_LINKS());
         } else {
-            getFigure().setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_UNSELECTED_LOOKUP_LINKS));
+            getFigure().setForegroundColor(ColorInfo.COLOR_UNSELECTED_LOOKUP_LINKS());
         }
     }
 

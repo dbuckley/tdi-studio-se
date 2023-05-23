@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.oro.text.regex.Pattern;
 import org.apache.oro.text.regex.PatternMatcher;
@@ -34,7 +33,20 @@ import org.talend.core.model.components.IODataComponent;
 import org.talend.core.model.components.IODataComponentContainer;
 import org.talend.core.model.genhtml.HTMLDocUtils;
 import org.talend.core.model.metadata.IMetadataTable;
-import org.talend.core.model.process.*;
+import org.talend.core.model.process.BlockCode;
+import org.talend.core.model.process.EConnectionType;
+import org.talend.core.model.process.HashConfiguration;
+import org.talend.core.model.process.HashableColumn;
+import org.talend.core.model.process.IComponentDocumentation;
+import org.talend.core.model.process.IConnection;
+import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.IExternalData;
+import org.talend.core.model.process.IHashConfiguration;
+import org.talend.core.model.process.IHashableColumn;
+import org.talend.core.model.process.IHashableInputConnections;
+import org.talend.core.model.process.ILookupMode;
+import org.talend.core.model.process.IMatchingMode;
+import org.talend.core.model.process.Problem;
 import org.talend.core.model.process.node.IExternalMapEntry;
 import org.talend.core.model.process.node.IExternalMapTable;
 import org.talend.core.model.temp.ECodePart;
@@ -922,7 +934,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
     }
     private boolean isSimpleExpression(String expression){
         java.util.regex.Pattern simpleExpressionPattern =  java.util.regex.Pattern.compile("(" + getInputNames() + ")(\\.[_\\w]+)*");
-        return simpleExpressionPattern.matcher(expression).matches();
+        return simpleExpressionPattern.matcher(expression.trim()).matches();
 
     }
 

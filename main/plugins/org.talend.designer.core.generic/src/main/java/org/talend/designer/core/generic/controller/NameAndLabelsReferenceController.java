@@ -43,6 +43,7 @@ import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.ParameterUtilTool;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
@@ -148,7 +149,9 @@ public class NameAndLabelsReferenceController extends AbstractElementPropertySec
         Control cLayout = dField.getLayoutControl();
         Text moduleText = (Text) dField.getControl();
         moduleText.setData(PARAMETER_NAME, param.getName());
-        moduleText.setEditable(false);
+        editionControlHelper.register(param.getName(), moduleText);
+        boolean editable = !param.isReadOnly() && (elem instanceof FakeElement || !param.isRepositoryValueUsed());
+        moduleText.setEditable(editable);
         cLayout.setBackground(subComposite.getBackground());
 
         addDragAndDropTarget(moduleText);

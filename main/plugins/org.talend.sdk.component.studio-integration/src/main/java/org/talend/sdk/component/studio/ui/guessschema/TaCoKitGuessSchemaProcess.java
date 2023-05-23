@@ -37,9 +37,11 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.properties.Property;
+import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.process.DataProcess;
 import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.designer.core.ui.editor.properties.controllers.AbstractGuessSchemaProcess;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.sdk.component.server.front.model.ActionReference;
@@ -121,11 +123,6 @@ public class TaCoKitGuessSchemaProcess {
                 final Pattern pattern = Pattern.compile("^\\[\\s*(INFO|WARN|ERROR|DEBUG|TRACE)\\s*]");
                 String out;
                 final List<String> err = new ArrayList();
-                // read stderr stream
-                try (final BufferedReader reader = new BufferedReader(new InputStreamReader(executeProcess.getErrorStream()))) {
-                    err.addAll(reader.lines().collect(toList()));
-                    err.add("===== Root cause ======");
-                }
                 // read stdout stream
                 try (final BufferedReader reader =
                              new BufferedReader(new InputStreamReader(executeProcess.getInputStream()))) {
@@ -135,6 +132,12 @@ public class TaCoKitGuessSchemaProcess {
                             .filter(l -> l.startsWith("[") || l.startsWith("{"))    // ignore line with non json data
                             .collect(joining("\n"));
                 }
+                // read stderr stream
+                try (final BufferedReader reader = new BufferedReader(new InputStreamReader(executeProcess.getErrorStream()))) {
+                    err.addAll(reader.lines().parallel().collect(toList()));
+                    err.add("===== Root cause ======");
+                }
+
                 return new GuessSchemaResult(out, err.stream().collect(joining("\n")));
             });
 
@@ -204,6 +207,11 @@ public class TaCoKitGuessSchemaProcess {
                 DataProcess dataProcess = new DataProcess(originalProcess);
                 dataProcess.buildFromGraphicalProcess(nodes);
                 process = dataProcess.getDuplicatedProcess();
+                IElementParameter log4jElemParam = process.getElementParameter(EParameterName.LOG4J_ACTIVATE.getName());
+                if (log4jElemParam != null) {
+                    Boolean isEnableLog4j = AbstractGuessSchemaProcess.isEnableLog4jForGuessSchema();
+                    log4jElemParam.setValue(isEnableLog4j);
+                }
                 process.getContextManager()
                         .getListContext()
                         .addAll(originalProcess.getContextManager().getListContext());

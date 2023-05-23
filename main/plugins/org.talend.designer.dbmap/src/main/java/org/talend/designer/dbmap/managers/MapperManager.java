@@ -57,12 +57,12 @@ import org.talend.designer.dbmap.ui.automap.AutoMapper;
 import org.talend.designer.dbmap.ui.dialog.AliasDialog;
 import org.talend.designer.dbmap.ui.visualmap.TableEntryProperties;
 import org.talend.designer.dbmap.ui.visualmap.table.DataMapTableView;
-import org.talend.designer.dbmap.ui.visualmap.table.EntryState;
 import org.talend.designer.dbmap.ui.visualmap.table.InputDataMapTableView;
 import org.talend.designer.dbmap.ui.visualmap.table.OutputDataMapTableView;
 import org.talend.designer.dbmap.ui.visualmap.zone.Zone;
 import org.talend.designer.dbmap.ui.visualmap.zone.scrollable.TablesZoneView;
 import org.talend.designer.dbmap.utils.DataMapExpressionParser;
+import org.talend.designer.mapper.ui.visualmap.table.EntryState;
 import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.RepositoryConstants;
 

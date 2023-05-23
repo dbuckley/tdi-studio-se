@@ -2,8 +2,8 @@ package org.talend.designer.core.ui.editor.jobletcontainer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -346,7 +346,7 @@ public class JobletContainer extends AbstractJobletContainer {
                 
                 JobletUtil util = new JobletUtil();
                 IProcess jobletProcess = this.getNode().getComponent().getProcess();
-                Set<IConnection> conns = new HashSet<IConnection>();
+                Set<IConnection> conns = new LinkedHashSet<IConnection>();
                 List<? extends INode> jobletNodes = jobletProcess.getGraphicalNodes();
                 boolean lockByOther = false;
                 if (jobletProcess instanceof IProcess2) {
@@ -777,7 +777,7 @@ public class JobletContainer extends AbstractJobletContainer {
     }
 
     private Set<IConnection> getFlowInput(Set<IConnection> inputs) {
-        Set<IConnection> finputs = new HashSet<IConnection>();
+        Set<IConnection> finputs = new LinkedHashSet<IConnection>();
         Iterator<IConnection> ite = inputs.iterator();
         while (ite.hasNext()) {
             IConnection conn = ite.next();

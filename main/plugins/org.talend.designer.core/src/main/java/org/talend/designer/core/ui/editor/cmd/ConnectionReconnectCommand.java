@@ -13,7 +13,7 @@
 package org.talend.designer.core.ui.editor.cmd;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.eclipse.gef.commands.Command;
@@ -358,15 +358,15 @@ public class ConnectionReconnectCommand extends Command {
         }
         if (oldSource instanceof Node) {
             if (((Node) oldSource).isJoblet()) {
-                ((Node) oldSource).getNodeContainer().setInputs(new HashSet<IConnection>(((Node) oldSource).getInputs()));
-                ((Node) oldSource).getNodeContainer().setOutputs(new HashSet<IConnection>(((Node) oldSource).getOutputs()));
+                ((Node) oldSource).getNodeContainer().setInputs(new LinkedHashSet<IConnection>(((Node) oldSource).getInputs()));
+                ((Node) oldSource).getNodeContainer().setOutputs(new LinkedHashSet<IConnection>(((Node) oldSource).getOutputs()));
             }
 
         }
         if (oldTarget instanceof Node) {
             if (((Node) oldTarget).isJoblet()) {
-                ((Node) oldTarget).getNodeContainer().setInputs(new HashSet<IConnection>(((Node) oldTarget).getInputs()));
-                ((Node) oldTarget).getNodeContainer().setOutputs(new HashSet<IConnection>(((Node) oldTarget).getOutputs()));
+                ((Node) oldTarget).getNodeContainer().setInputs(new LinkedHashSet<IConnection>(((Node) oldTarget).getInputs()));
+                ((Node) oldTarget).getNodeContainer().setOutputs(new LinkedHashSet<IConnection>(((Node) oldTarget).getOutputs()));
             }
         }
     }

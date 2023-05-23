@@ -20,6 +20,7 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.talend.designer.gefabstractmap.figures.layout.TableLayout;
 import org.talend.designer.gefabstractmap.figures.manager.TableManager;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * wchen class global comment. Detailled comment
@@ -60,7 +61,7 @@ public abstract class AbstractTable extends Figure implements ITable {
         // table column container
         tableItemContainer = new Figure();
         tableItemContainer.setLayoutManager(new ToolbarLayout());
-        tableItemContainer.setBackgroundColor(ColorConstants.white);
+        tableItemContainer.setBackgroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
         tableItemContainer.setOpaque(true);
         add(tableItemContainer);
     }

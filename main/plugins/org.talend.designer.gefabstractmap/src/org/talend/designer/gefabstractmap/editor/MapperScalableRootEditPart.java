@@ -15,6 +15,7 @@ package org.talend.designer.gefabstractmap.editor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Viewport;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * WCHEN talend class global comment. Detailled comment
@@ -29,6 +30,7 @@ public class MapperScalableRootEditPart extends ScalableRootEditPart {
     @Override
     protected IFigure createFigure() {
         Viewport figure = (Viewport) super.createFigure();
+        figure.setBackgroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
         figure.setContentsTracksWidth(true);
         return figure;
     }

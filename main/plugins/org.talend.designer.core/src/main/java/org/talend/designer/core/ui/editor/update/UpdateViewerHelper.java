@@ -126,8 +126,7 @@ public class UpdateViewerHelper {
             EUpdateResult resultType = item.getResultObject().getResultType();
             if (resultType == EUpdateResult.UPDATE || resultType == EUpdateResult.ADD || resultType == EUpdateResult.DELETE) {
                 item.setChecked(false);
-            } else if ((jobletUpdate || jobletContext) && !isOpened
-                    && (resultType == EUpdateResult.JOBLET_UPDATE || resultType == EUpdateResult.RELOAD)) {
+            } else if ((jobletUpdate || jobletContext) && (resultType == EUpdateResult.JOBLET_UPDATE || resultType == EUpdateResult.RELOAD)) {
                 item.setChecked(state);
             }
         } else if (item.getResultObject().isReadOnly() && jobletUpdate) {

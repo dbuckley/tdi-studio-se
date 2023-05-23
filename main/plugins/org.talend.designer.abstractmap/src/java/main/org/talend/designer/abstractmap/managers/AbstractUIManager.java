@@ -13,6 +13,10 @@
 package org.talend.designer.abstractmap.managers;
 
 import org.apache.log4j.Level;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Display;
+import org.talend.commons.ui.runtime.ITalendThemeService;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.designer.abstractmap.ui.dnd.DraggingInfosPopup;
 import org.talend.designer.abstractmap.ui.properties.LINK_STYLE;

@@ -167,7 +167,7 @@ public class IncomingSchemaEnforcer {
      * @param isKey defines whether dynamic field is key field
      */
     public void addDynamicField(String name, String diType, String logicalType, String fieldPattern, String description,
-            boolean isNullable, boolean isKey) {
+            boolean isNullable, boolean isKey, Integer length, Integer precision) {
         if (!needsInitDynamicColumns())
             return;
         Schema fieldSchema = diToAvro(diType, logicalType);
@@ -202,6 +202,12 @@ public class IncomingSchemaEnforcer {
         if (isKey) {
             field.addProp(SchemaConstants.TALEND_COLUMN_IS_KEY, "true");
         }
+        if (length != null) {
+            field.addProp(SchemaConstants.TALEND_COLUMN_DB_LENGTH, String.valueOf(length));
+        }
+        if (precision != null) {
+            field.addProp(SchemaConstants.TALEND_COLUMN_PRECISION, String.valueOf(precision));
+        }
         dynamicFields.add(field);
     }
 
@@ -218,7 +224,7 @@ public class IncomingSchemaEnforcer {
     @Deprecated
     public void addDynamicField(String name, String diType, String logicalType, String fieldPattern, String description,
             boolean isNullable) {
-        addDynamicField(name, diType, logicalType, fieldPattern, description, isNullable, false);
+        addDynamicField(name, diType, logicalType, fieldPattern, description, isNullable, false, null, null);
     }
 
     public void addIncomingNodeField(String name, String className) {

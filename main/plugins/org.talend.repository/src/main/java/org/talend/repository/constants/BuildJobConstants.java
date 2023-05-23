@@ -27,6 +27,8 @@ public class BuildJobConstants {
     public static final Map<JobExportType, String> oldBuildTypeMap = new HashMap<>();
 
     public static final List<String> esbComponents;
+    
+    public static final List<String> esbComponents4OsgiBuildType;
 
     public static final Set<String> ESB_CXF_COMPONENTS;
 
@@ -36,6 +38,9 @@ public class BuildJobConstants {
         oldBuildTypeMap.put(JobExportType.OSGI, "OSGI");
         oldBuildTypeMap.put(JobExportType.MSESB, "REST_MS");
         oldBuildTypeMap.put(JobExportType.MSESB_IMAGE, "REST_MS");
+        
+        esbComponents4OsgiBuildType = Collections.unmodifiableList(Arrays.asList("tRESTClient", "tRESTRequest", "tESBConsumer",
+                "tESBProviderFault", "tESBProviderRequest", "tESBProviderResponse"));
 
         esbComponents = Collections.unmodifiableList(Arrays.asList("tRESTClient", "tRESTRequest", "tRESTResponse", "tESBConsumer",
                 "tESBProviderFault", "tESBProviderRequest", "tESBProviderResponse", "tRouteInput"));

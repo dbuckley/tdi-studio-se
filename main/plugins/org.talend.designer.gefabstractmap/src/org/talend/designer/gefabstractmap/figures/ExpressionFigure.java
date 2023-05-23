@@ -19,6 +19,7 @@ import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.PositionConstants;
 import org.talend.designer.gefabstractmap.figures.cells.IExpressionBuilderCell;
 import org.talend.designer.gefabstractmap.part.directedit.DirectEditType;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * DOC talend class global comment. Detailled comment
@@ -52,7 +53,7 @@ public class ExpressionFigure extends Label implements IExpressionBuilderCell {
     @Override
     protected void paintFigure(Graphics graphics) {
         super.paintFigure(graphics);
-        graphics.setForegroundColor(ColorConstants.menuBackground);
+        graphics.setForegroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
         paintLines(this, graphics);
     }
 

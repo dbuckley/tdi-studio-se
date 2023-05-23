@@ -37,6 +37,7 @@ import org.talend.core.model.properties.StatAndLogsSettings;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.cwm.helper.StudioEncryptionHelper;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
@@ -284,6 +285,10 @@ public class ElementParameter2ParameterType {
                             }
                             elemParam.setPropertyValue(pTypeName, tableValues);
                         } else if (EParameterFieldType.isPassword(param.getFieldType())) {
+                          //To avoid encrypt the same value (Cache original value)
+                            if (StudioEncryptionHelper.isLatestEncryptionKey(pType.getValue())) {
+                                param.setOrignEncryptedValue(pType.getValue());
+                            }
                             param.setValue(pType.getRawValue());
                         } else if (param.getFieldType().equals(EParameterFieldType.ENCODING_TYPE)) {
                             // fix for bug 2193
@@ -492,6 +497,7 @@ public class ElementParameter2ParameterType {
                     targetPramType.setValue(((Boolean) value).toString());
                 } else {
                     if (value instanceof String) {
+                        targetPramType.setValue(param.getOrignEncryptedValue());
                         targetPramType.setRawValue(value.toString());
                     }
                 }

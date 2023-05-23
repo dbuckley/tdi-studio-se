@@ -31,9 +31,8 @@ import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.talend.designer.gefabstractmap.resource.ColorInfo;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
 import org.talend.designer.gefabstractmap.resource.ImageProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * DOC hywang class global comment. Detailled comment
@@ -143,7 +142,7 @@ public class ToolBarButtonImageFigure extends ImageFigure {
 
     private void addLineBorder() {
         if (getBorder() instanceof MarginBorder) {
-            LineBorder outer = new LineBorder(ColorProviderMapper.getColor(ColorInfo.COLOR_TREE_BORDER));
+            LineBorder outer = new LineBorder(ColorInfo.COLOR_TREE_BORDER());
             CustomCompoundBorder border = new CustomCompoundBorder(outer, getBorder());
             setBorder(border);
         }
@@ -162,7 +161,7 @@ public class ToolBarButtonImageFigure extends ImageFigure {
 
     private Color getContainerBgColor(IFigure figure) {
         if (figure == null) {
-            return ColorConstants.menuBackground;
+            return ColorInfo.NODE_FIGURE_BACKGROUND();
         }
         if (figure.getParent() != null) {
             if (figure.getParent().isOpaque()) {
@@ -171,7 +170,7 @@ public class ToolBarButtonImageFigure extends ImageFigure {
                 return getContainerBgColor(figure.getParent());
             }
         } else {
-            return ColorConstants.menuBackground;
+            return ColorInfo.NODE_FIGURE_BACKGROUND();
         }
 
     }

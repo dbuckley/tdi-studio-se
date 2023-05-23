@@ -1117,4 +1117,8 @@ public class LoginHelper {
         });
         return aRef.get();
     }
+    
+    public IGITProviderService getGitProviderService() {
+        return this.gitProviderService;
+    }
 }

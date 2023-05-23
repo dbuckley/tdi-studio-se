@@ -35,5 +35,6 @@ Require-Bundle: org.eclipse.ui,
  org.talend.repository,
  org.talend.datatools.xml,
  org.talend.designer.gefabstractmap;visibility:=reexport,
- org.talend.components.api
+ org.talend.components.api,
+ org.talend.designer.mapper
 Bundle-ActivationPolicy: lazy

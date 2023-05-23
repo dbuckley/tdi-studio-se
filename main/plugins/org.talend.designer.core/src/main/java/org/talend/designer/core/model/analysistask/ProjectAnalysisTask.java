@@ -13,7 +13,6 @@
 package org.talend.designer.core.model.analysistask;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -156,7 +155,15 @@ public class ProjectAnalysisTask {
 
     public Collection<IResource> sortMembers(IResource[] members) {
         Map<String, IResource> membersMap = new HashMap<String, IResource>();
-        List<IResource> membersList = Arrays.asList(members);
+        List<IResource> membersList = new ArrayList<IResource>();
+        List<IResource> othersList = new ArrayList<IResource>();
+        for (IResource res : members) {
+            if (res instanceof IFile) {
+                membersList.add(res);
+            } else {
+                othersList.add(res);
+            }
+        }
         // sort
         membersList.sort(new Comparator<IResource>() {
 
@@ -172,6 +179,7 @@ public class ProjectAnalysisTask {
 
         });
         // filter
+        membersList.addAll(othersList);
         for (IResource resource : membersList) {
             String currentPath = resource.getFullPath().toPortableString();
             if (resource instanceof IFile) {

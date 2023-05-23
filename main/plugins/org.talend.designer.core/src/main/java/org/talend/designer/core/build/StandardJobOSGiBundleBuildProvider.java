@@ -61,7 +61,7 @@ public class StandardJobOSGiBundleBuildProvider extends RepositoryObjectTypeBuil
 
             IProcess2 process = (IProcess2) object;
             for (INode node : process.getGraphicalNodes()) {
-                if (BuildJobConstants.esbComponents.contains(node.getComponent().getName())) {
+                if (BuildJobConstants.esbComponents4OsgiBuildType.contains(node.getComponent().getName())) {
                     containsEsbComponent = true;
                     break;
                 }

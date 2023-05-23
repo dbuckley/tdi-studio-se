@@ -381,6 +381,9 @@ public enum EParameterName {
 
     REPAINT("REPAINT"), //$NON-NLS-1$
 
+    // for joblet short unique name
+    SHORT_UNIQUE_NAME("SHORT_UNIQUE_NAME"), //$NON-NLS-1$
+
     // for automap algorithms
     LEVENSHTEIN("LEVENSHTEIN"), //$NON-NLS-1$
     JACCARD("JACCARD"), //$NON-NLS-1$

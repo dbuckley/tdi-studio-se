@@ -8,3 +8,4 @@ Huge thanks to these people who contributed in making Talend product better:
  - [brazabr](https://github.com/brazabr) (Thiago Benvenuto)
  - [phoflack](https://jira.talendforge.org/secure/ViewProfile.jspa?name=phoflack) (Philip Hoflack)
  - [bgunics-talend](https://github.com/bgunics-talend) (Balasz Gunics)
+ - [cflamain](https://github.com/cflamain) (Christophe Flamain)

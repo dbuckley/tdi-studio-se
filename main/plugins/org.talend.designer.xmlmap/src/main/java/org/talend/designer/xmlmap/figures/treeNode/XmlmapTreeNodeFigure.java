@@ -16,8 +16,7 @@ import org.talend.designer.gefabstractmap.figures.ExpressionFigure;
 import org.talend.designer.gefabstractmap.figures.table.entity.TableEntityElement;
 import org.talend.designer.gefabstractmap.figures.table.entity.TableTreeEntityFigure;
 import org.talend.designer.gefabstractmap.figures.table.entity.TreeBranch;
-import org.talend.designer.gefabstractmap.resource.ColorInfo;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 import org.talend.designer.xmlmap.model.emf.xmlmap.InputXmlTree;
 import org.talend.designer.xmlmap.model.emf.xmlmap.OutputTreeNode;
 import org.talend.designer.xmlmap.model.emf.xmlmap.TreeNode;
@@ -67,7 +66,7 @@ public class XmlmapTreeNodeFigure extends TableTreeEntityFigure {
             expression.setText(treeNode.getExpression());
             if (!XmlMapUtil.isExpressionEditable(treeNode)) {
                 expression.setOpaque(true);
-                expression.setBackgroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_EXPREESION_DISABLE));
+                expression.setBackgroundColor(ColorInfo.COLOR_EXPREESION_DISABLE());
             } else {
                 expression.setOpaque(false);
             }

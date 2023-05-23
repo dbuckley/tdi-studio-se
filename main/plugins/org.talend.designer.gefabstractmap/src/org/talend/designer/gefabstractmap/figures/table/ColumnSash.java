@@ -22,6 +22,7 @@ import org.eclipse.draw2d.Shape;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Cursor;
 import org.talend.designer.gefabstractmap.figures.sash.ISash;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * DOC talend class global comment. Detailled comment
@@ -85,7 +86,7 @@ public class ColumnSash extends Shape implements ISash {
      */
     @Override
     protected void fillShape(Graphics graphics) {
-        graphics.setBackgroundColor(ColorConstants.menuBackground);
+        graphics.setBackgroundColor(ColorInfo.NODE_FIGURE_BACKGROUND());
         Rectangle bounds = getBounds();
         graphics.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 

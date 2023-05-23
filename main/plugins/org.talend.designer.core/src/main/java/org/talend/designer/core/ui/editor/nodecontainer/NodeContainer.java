@@ -13,7 +13,7 @@
 package org.talend.designer.core.ui.editor.nodecontainer;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -102,9 +102,9 @@ public class NodeContainer extends Element {
 
     private Rectangle errorRectangle;
 
-    protected Set<IConnection> outputs = new HashSet<IConnection>();
+    protected Set<IConnection> outputs = new LinkedHashSet<IConnection>();
 
-    protected Set<IConnection> inputs = new HashSet<IConnection>();
+    protected Set<IConnection> inputs = new LinkedHashSet<IConnection>();
 
     public NodeContainer(Node node) {
         this.node = node;

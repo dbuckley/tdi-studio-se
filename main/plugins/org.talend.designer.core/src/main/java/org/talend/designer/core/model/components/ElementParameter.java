@@ -150,6 +150,8 @@ public class ElementParameter implements IElementParameter {
     private String repositoryProperty;
 
     private Object defaultValue;
+    
+    private String originEncryptedValue;
 
     private Map<String, Object> taggedValues = new HashMap<>();
 
@@ -1059,6 +1061,7 @@ public class ElementParameter implements IElementParameter {
         clone.setShow(isDisplayedByDefault());
         clone.setShowIf(getShowIf());
         clone.setValue(getValue()); // ?
+        clone.setOrignEncryptedValue(getOrignEncryptedValue());
         // clone.setValueToDefault(null)
         clone.setNoContextAssist(isNoContextAssist());
         if (this.getChildParameters().size() > 0) {
@@ -1302,6 +1305,17 @@ public class ElementParameter implements IElementParameter {
 
     public boolean isFromUpdateNodeCommand() {
         return false;
+    }
+
+    @Override
+    public String getOrignEncryptedValue() {
+        return originEncryptedValue;
+    }
+
+    @Override
+    public void setOrignEncryptedValue(String value) {
+        this.originEncryptedValue = value;
+        
     }
 
 }

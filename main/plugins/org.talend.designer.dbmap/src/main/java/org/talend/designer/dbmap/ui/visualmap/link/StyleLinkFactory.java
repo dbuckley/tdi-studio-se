@@ -29,9 +29,8 @@ import org.talend.designer.abstractmap.ui.visualmap.link.IMapperLink;
 import org.talend.designer.abstractmap.ui.visualmap.link.LinkState;
 import org.talend.designer.abstractmap.ui.visualmap.link.PointLinkDescriptor;
 import org.talend.designer.dbmap.model.tableentry.FilterTableEntry;
-import org.talend.designer.dbmap.ui.color.ColorInfo;
-import org.talend.designer.dbmap.ui.color.ColorProviderMapper;
 import org.talend.designer.dbmap.ui.visualmap.zone.Zone;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
@@ -70,9 +69,7 @@ public class StyleLinkFactory {
      * DOC amaumont Comment method "init".
      */
     private void init() {
-
-        selectedZoneToZoneStyle = getSelectedZoneToOtherZoneStyle(ColorProviderMapper
-                .getColor(ColorInfo.COLOR_SELECTED_ZONE_TO_ZONE_LINK));
+        selectedZoneToZoneStyle = getSelectedZoneToOtherZoneStyle(ColorInfo.COLOR_SELECTED_ZONE_TO_ZONE_LINK());
         unselectedZoneToZoneStyle = getUnselectedZoneToZoneStyle();
 
         selectedFilterStyle = getSelectedFilterStyle();
@@ -153,7 +150,7 @@ public class StyleLinkFactory {
         ExtremityEastArrow eastArrowTarget = new ExtremityEastArrow(style);
         eastArrowTarget.setXOffset(-eastArrowTarget.getSize().x);
         style.setExtremity2(eastArrowTarget);
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_SELECTED_FILTER_LINK));
+        style.setForegroundColor(ColorInfo.COLOR_SELECTED_FILTER_LINK());
         return style;
     }
 
@@ -171,7 +168,7 @@ public class StyleLinkFactory {
         ExtremityEastArrow eastArrowTarget = new ExtremityEastArrow(style);
         eastArrowTarget.setXOffset(-eastArrowTarget.getSize().x);
         style.setExtremity2(eastArrowTarget);
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_UNSELECTED_FILTER_LINK));
+        style.setForegroundColor(ColorInfo.COLOR_UNSELECTED_FILTER_LINK());
         return style;
     }
 
@@ -200,7 +197,7 @@ public class StyleLinkFactory {
         ExtremityEastArrow eastArrowTarget = new ExtremityEastArrow(style);
         eastArrowTarget.setXOffset(-eastArrowTarget.getSize().x);
         style.setExtremity2(eastArrowTarget);
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_UNSELECTED_ZONE_TO_ZONE_LINK));
+        style.setForegroundColor(ColorInfo.COLOR_UNSELECTED_ZONE_TO_ZONE_LINK());
         return style;
     }
 
@@ -216,7 +213,7 @@ public class StyleLinkFactory {
         ExtremityEastArrow eastArrowTarget = new ExtremityEastArrow(style);
         eastArrowTarget.setXOffset(-eastArrowTarget.getSize().x);
         style.setExtremity2(eastArrowTarget);
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_UNSELECTED_LOOKUP_LINKS));
+        style.setForegroundColor(ColorInfo.COLOR_UNSELECTED_LOOKUP_LINKS());
         return style;
     }
 
@@ -236,7 +233,7 @@ public class StyleLinkFactory {
         ExtremityEastArrow eastArrowTarget = new ExtremityEastArrow(style);
         eastArrowTarget.setXOffset(-eastArrowTarget.getSize().x);
         style.setExtremity2(eastArrowTarget);
-        style.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_SELECTED_LOOKUP_LINKS));
+        style.setForegroundColor(ColorInfo.COLOR_SELECTED_LOOKUP_LINKS());
         return style;
     }
 

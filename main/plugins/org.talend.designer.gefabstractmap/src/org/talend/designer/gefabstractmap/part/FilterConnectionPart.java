@@ -17,8 +17,7 @@ import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
 import org.talend.designer.gefabstractmap.figures.routers.CurveConnectionRouter;
 import org.talend.designer.gefabstractmap.figures.routers.LookupConnectionRouter;
-import org.talend.designer.gefabstractmap.resource.ColorInfo;
-import org.talend.designer.gefabstractmap.resource.ColorProviderMapper;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * DOC wchen class global comment. Detailled comment
@@ -33,7 +32,7 @@ public abstract class FilterConnectionPart extends BaseConnectionEditPart {
     protected IFigure createFigure() {
         PolylineConnection connection = new PolylineConnection();
         connection.setTargetDecoration(new PolygonDecoration());
-        connection.setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_UNSELECTED_FILTER_LINK));
+        connection.setForegroundColor(ColorInfo.COLOR_UNSELECTED_FILTER_LINK());
         connection.setLineWidth(2);
 
         return connection;
@@ -64,9 +63,9 @@ public abstract class FilterConnectionPart extends BaseConnectionEditPart {
     @Override
     public void updateForegroundColor(boolean selected) {
         if (selected) {
-            getFigure().setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_SELECTED_FILTER_LINK));
+            getFigure().setForegroundColor(ColorInfo.COLOR_SELECTED_FILTER_LINK());
         } else {
-            getFigure().setForegroundColor(ColorProviderMapper.getColor(ColorInfo.COLOR_UNSELECTED_FILTER_LINK));
+            getFigure().setForegroundColor(ColorInfo.COLOR_UNSELECTED_FILTER_LINK());
         }
     }
 }

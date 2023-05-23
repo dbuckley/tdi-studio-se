@@ -12,11 +12,11 @@
 // ============================================================================
 package org.talend.designer.gefabstractmap.part;
 
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
 import org.talend.designer.gefabstractmap.figures.routers.CurveConnectionRouter;
+import org.talend.designer.mapper.ui.color.ColorInfo;
 
 /**
  * wchen class global comment. Detailled comment
@@ -30,7 +30,7 @@ public class ConnectionEditPart extends BaseConnectionEditPart {
         PolylineConnection connection = new PolylineConnection();
         connection.setTargetDecoration(new PolygonDecoration());
         curvrRouter = new CurveConnectionRouter();
-        connection.setForegroundColor(ColorConstants.gray);
+        connection.setForegroundColor(ColorInfo.COLOR_UNSELECTED_ZONE_TO_ZONE_LINK());
         connection.setLineWidth(2);
         connection.setConnectionRouter(curvrRouter);
         return connection;
@@ -38,9 +38,9 @@ public class ConnectionEditPart extends BaseConnectionEditPart {
 
     public void updateForegroundColor(boolean selected) {
         if (selected) {
-            getFigure().setForegroundColor(ColorConstants.yellow);
+            getFigure().setForegroundColor(ColorInfo.COLOR_SELECTED_ZONE_TO_ZONE_LINK());
         } else {
-            getFigure().setForegroundColor(ColorConstants.gray);
+            getFigure().setForegroundColor(ColorInfo.COLOR_UNSELECTED_ZONE_TO_ZONE_LINK());
         }
     }
 
