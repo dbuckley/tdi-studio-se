@@ -1626,6 +1626,14 @@
         </projecttask>
         <projecttask
               beforeLogon="false"
+              breaks="7.3.0"
+              class="org.talend.repository.model.migration.ChangeAmazonAuroraDBDefaultVersionMigrationTask"
+              id="org.talend.repository.model.migration.ChangeAmazonAuroraDBDefaultVersionMigrationTask"
+              name="Change AmazonAurora Default DBVersion"
+              version="7.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
               breaks="5.1.1"
               class="org.talend.repository.model.migration.MigratetFileOutputDelimitedAndtFileInputDelimitedMigrationTask"
               description="for bug TDI13497"
