@@ -142,8 +142,6 @@ public class UpdatesitePreferencePage extends PreferencePage {
     
     private static final boolean M2_DELETE_DEFAULT= false;
     
-    private static final String HOW_UPDATE_WORK_LINK = "https://help.talend.com/r/en-US/8.0/studio-user-guide/configuring-update-repositories";
-
     private static final String LINK_MORE_URL = "https://document-link.us.cloud.talend.com/ts_mg_update-studio?version=80&lang=en&env=prd";
     
     private static final String PROPERTY_REMOVE_M2 = "talend.studio.m2.clean";
@@ -296,7 +294,7 @@ public class UpdatesitePreferencePage extends PreferencePage {
 
                 @Override
                 public void widgetSelected(SelectionEvent e) {
-                    Program.launch(HOW_UPDATE_WORK_LINK);
+                    Program.launch(Messages.getString("UpdatesitePreferencePage.infoPanel.linkUrl"));
                 }
 
             });
