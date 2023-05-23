@@ -502,12 +502,8 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
                     .collect(toList());
             
             Set<ModuleNeeded> extractComponent = new HashSet<ModuleNeeded>();
-            connectors.stream()
-                    .flatMap((PropertyNode p) -> this.extractComponent(p, iNode, extractComponent)) // family name to Component Detail
-                    .filter(Objects::nonNull)
-                    .map((final ComponentDetail connectorDetails) -> this.connectorDependencies(dependencies, connectorDetails.getId()))
-                    .forEach(modules::addAll);
-            
+            connectors.forEach((PropertyNode p) -> this.extractComponent(p, iNode, extractComponent));  // extract connectors as maven references
+
            if (GlobalServiceRegister.getDefault().isServiceRegistered(IDataPrepLookupService.class)) {
                 IDataPrepLookupService service = GlobalServiceRegister.getDefault().getService(IDataPrepLookupService.class);
                 Set<ModuleNeeded> extractDependencies = new HashSet<ModuleNeeded>();
@@ -522,42 +518,18 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         return modules;
     }
 
-    private Stream<ComponentDetail> extractComponent(final PropertyNode property, final INode node, final Set<ModuleNeeded> extractComponent) {
-        return this.extractComponentRef(property, node, extractComponent)
-                .map((final ComponentReference ref) -> {
-                    final String connectorRef = ref.getFamily() + ref.getName();
-                    if (!StringUtils.isEmpty(ref.getMavenReferences())) {
-                        ModuleNeeded module = new ModuleNeeded(ref.getFamily() == null? "" : ref.getFamily(), ref.getName() == null ? "" : ref.getName(), true, ref.getMavenReferences());
-                        extractComponent.add(module);
-                    }
-                    return Lookups.service().getDetail(connectorRef).orElse(null);
+    private void extractComponent(final PropertyNode property, final INode node, final Set<ModuleNeeded> extractComponent) {
+        this.extractComponentRef(property, node, extractComponent)
+                .filter((final ComponentReference ref) -> !StringUtils.isEmpty(ref.getMavenReference()))
+                .forEach((final ComponentReference ref) -> {
+                    ModuleNeeded module = moduleDependency(ref.getMavenReference());    // mark as dependency of current component
+                    extractComponent.add(module);
                 });
     }
 
     private Stream<ComponentReference> extractComponentRef(final PropertyNode property, final INode node, final Set<ModuleNeeded> extractComponent) {
         return ComponentReferenceFinder.getFinder(property)
                 .find(property, node);
-    }
-
-    /**
-     * Metadata "dependencies::connector" means that a connector is a dependency of another.
-     * dependencies should contains dependencies of this connector plus the connector itself.
-     * @param dependencies : additional dependencies if needed (beam ...)
-     * @param componentId : id of dependency connector.
-     * @return all dependencies.
-     */
-    private List<ModuleNeeded> connectorDependencies(final ComponentService.Dependencies dependencies,
-                                                     final ComponentId componentId) {
-        // sub dependencies of connector.
-        final List<ModuleNeeded> modules = new ArrayList<>(30);
-        modules.addAll(this.componentDependencies(dependencies, componentId));
-
-        // connectors itself.
-        final String componentMavenLocation = Mvn.locationToMvn(componentId.getPluginLocation());
-        final ModuleNeeded connectorDep = this.moduleDependency(componentMavenLocation);
-        modules.add(connectorDep);
-
-        return modules;
     }
 
     private List<ModuleNeeded> componentDependencies(final ComponentService.Dependencies dependencies,
