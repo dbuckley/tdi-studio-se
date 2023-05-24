@@ -236,7 +236,11 @@ public abstract class AbstractValueSelectionController extends AbstractElementPr
             if (lastControl != null) {
                 data.left = new FormAttachment(lastControl, labelWidth);
             } else {
-                data.left = new FormAttachment(0, labelWidth);
+                int numerator = 0;
+                if (STANDARD_LABEL_WIDTH < labelWidth) {
+                    numerator = 1;
+                }
+                data.left = new FormAttachment(numerator, labelWidth);
             }
         } else {
             data.left = new FormAttachment(label, 0, SWT.RIGHT);
