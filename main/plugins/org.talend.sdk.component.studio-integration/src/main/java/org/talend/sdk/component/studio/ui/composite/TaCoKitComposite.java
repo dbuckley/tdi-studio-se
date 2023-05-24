@@ -364,12 +364,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
                     final Composite columnComposite = new Composite(levelComposite, SWT.NONE);
                     columnComposite.setLayout(new FormLayout());
                     columnComposite.setBackground(levelComposite.getBackground());
-                    final FormData columnLayoutData = new FormData();
-                    columnLayoutData.top = new FormAttachment(0, 0);
-                    columnLayoutData.left = new FormAttachment((100 / columnSize) * i, 0);
-                    columnLayoutData.right = new FormAttachment((100 / columnSize) * (i + 1), 0);
-                    columnLayoutData.bottom = new FormAttachment(100, 0);
-                    columnComposite.setLayoutData(columnLayoutData);
+                    columnComposite.setLayoutData(columnLevelLayoutData(previousLevel, column));
                     fillComposite(columnComposite, column, null);
                 }
             }
@@ -433,6 +428,26 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
         }
         layoutData.left = new FormAttachment(0, 0);
         layoutData.right = new FormAttachment(100, 0);
+        return layoutData;
+    }
+
+    private FormData columnLevelLayoutData(final Composite previousLevel, final Layout column) {
+        final FormData layoutData = new FormData();
+        layoutData.left = new FormAttachment(0, 0);
+        layoutData.right = new FormAttachment(100, 0);
+        layoutData.bottom = new FormAttachment(100, 0);
+        //
+        int offset = 0;
+        final String path = column.getPath();
+        final IElementParameter parameter = elem.getElementParameter(path);
+        if (doShow(parameter)) {
+            offset = 3;
+        }
+        if (previousLevel == null) {
+            layoutData.top = new FormAttachment(0, offset);
+        } else {
+            layoutData.top = new FormAttachment(previousLevel, offset);
+        }
         return layoutData;
     }
 
