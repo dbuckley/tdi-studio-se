@@ -3845,6 +3845,15 @@
               name="RemoveDuplicateContextReferencesMigrationTask"
               version="8.0.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="8.0.0"
+              class="org.talend.repository.model.migration.Change4OptionalTrustStore4tSetKeystore"
+              description="change ui for tsetkeystore optional truststore"
+              id="org.talend.repository.model.migration.Change4OptionalTrustStore4tSetKeystore"
+              name="Change4OptionalTrustStore4tSetKeystore"
+              version="8.0.1">
+        </projecttask>
    </extension>
 
    <extension
