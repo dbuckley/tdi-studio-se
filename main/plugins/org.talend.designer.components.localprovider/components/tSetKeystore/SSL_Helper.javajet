@@ -12,7 +12,7 @@ class SSL_HELPER{
 	}
 	
 	public boolean needTrustStore() {
-		return ElementParameterParser.getBooleanValue(node, "__SET_TRUSTSTORE__");
+		return ElementParameterParser.getBooleanValue(node, "__SET_TRUSTSTORE__") || ElementParameterParser.getBooleanValue(node, "__SET_TRUSTSTORE_KEYSTORE__");
 	}
 	
 	public String getTSType(){
@@ -28,7 +28,7 @@ class SSL_HELPER{
 	}
 	
 	public boolean needKS(){
-		return ElementParameterParser.getBooleanValue(node,"__NEED_CLIENT_AUTH__");
+		return ElementParameterParser.getBooleanValue(node,"__NEED_CLIENT_AUTH__") || ElementParameterParser.getBooleanValue(node, "__SET_TRUSTSTORE_KEYSTORE__");
 	}
 	
 	public String getKSType(){
