@@ -86,7 +86,7 @@
           REPOSITORY_VALUE="ENDPOINT"
           SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
         >
-          <DEFAULT>"https://login.salesforce.com/services/Soap/u/52.0"</DEFAULT>
+          <DEFAULT>"https://login.salesforce.com/services/Soap/u/57.0"</DEFAULT>
         </PARAMETER>
 
         <PARAMETER
@@ -339,15 +339,15 @@
     <CODEGENERATION>
       <IMPORTS>
         <IMPORT
-            NAME="force-wsc-53.1.0"
-            MODULE="force-wsc-53.1.0.jar"
-            MVN="mvn:com.force.api/force-wsc/53.1.0"
+            NAME="force-wsc-58.0.0"
+            MODULE="force-wsc-58.0.0.jar"
+            MVN="mvn:com.force.api/force-wsc/58.0.0"
             REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
         />
         <IMPORT
-            NAME="force-partner-api-53.0.0"
-            MODULE="force-partner-api-53.0.0.jar"
-            MVN="mvn:com.force.api/force-partner-api/53.0.0"
+            NAME="force-partner-api-58.0.0"
+            MODULE="force-partner-api-58.0.0.jar"
+            MVN="mvn:com.force.api/force-partner-api/58.0.0"
             REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
         />
         <IMPORT
@@ -363,9 +363,9 @@
             REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
         />
         <IMPORT 
-            NAME="jackson-core-2.13.4.jar"
-            MODULE="jackson-core-2.13.4.jar"
-            MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.13.4"
+            NAME="jackson-core-2.14.2.jar"
+            MODULE="jackson-core-2.14.2.jar"
+            MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.14.2"
             REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
             />
         <IMPORT 
