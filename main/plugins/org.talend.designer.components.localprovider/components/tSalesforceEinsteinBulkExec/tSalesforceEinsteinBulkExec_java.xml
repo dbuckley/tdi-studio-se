@@ -363,9 +363,9 @@
             REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
         />
         <IMPORT 
-            NAME="jackson-core-2.14.2.jar"
-            MODULE="jackson-core-2.14.2.jar"
-            MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.14.2"
+            NAME="jackson-core-2.13.4.jar"
+            MODULE="jackson-core-2.13.4.jar"
+            MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.13.4"
             REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
             />
         <IMPORT 
