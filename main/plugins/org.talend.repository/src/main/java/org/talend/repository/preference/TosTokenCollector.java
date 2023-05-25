@@ -341,28 +341,32 @@ public class TosTokenCollector extends AbstractTokenCollector {
     	String apiID = ComponentUtilities.getNodePropertyValue(node, "API_ID"); //$NON-NLS-1$
 
     	// decide build type for Job/Route
+    	// if build type is missing then it is treated as OSGI type i.e. for JOB buildType = OSGI and for Route buildType = ROUTE
+    	// for Microservice if buildType is missing then it will treated as OSGI type always 
     	if(!buildTypeIsPresent || null==buildType) {
-    		if ("tRESTRequest".equals(componentName)) {
+    		if (componentName.startsWith("t")) {
     			// if Build type is not present then treat this job as OSGI
     			buildType = OSGI;
-    		}else {
+    		}else if (componentName.startsWith("c")){
     			// if Build type is not present then treat this Route as OSGI
     			buildType = ROUTE;
     		}
     	}
 
-    	if ("tRESTRequest".equals(componentName)) {
-    		extractDataWhenItemHastRESTRequest(buildTypeDetails, buildType, nodeType, apiID);
-    		isItemChecked =true;
-    	} else if("cSOAP".equals(componentName)) {
-    		extractDataWhenItemHascSOAP(buildTypeDetails, buildType);
-    		isItemChecked =true;
-    	}else if("cREST".equals(componentName)) {
-    		extractDataWhenItemHascREST(buildTypeDetails, buildType, nodeType, apiID);
-    		isItemChecked =true;
-    	}else if(!componentNamesList.contains("cSOAP") && !componentNamesList.contains("cREST")  && !checkedItemSet.contains(itemID)) {
-    		extractDataForRouteWithoutcRESTorcSOAP(buildTypeDetails, buildType);
-    		isItemChecked =true;
+    	if(null != buildType) {
+    		if (componentNamesList.contains("tRESTRequest")) {
+    			extractDataWhenItemHastRESTRequest(buildTypeDetails, buildType, nodeType, apiID);
+    			isItemChecked =true;
+    		} else if(componentNamesList.contains("cSOAP")) {
+    			extractDataWhenItemHascSOAP(buildTypeDetails, buildType);
+    			isItemChecked =true;
+    		}else if(componentNamesList.contains("cREST")) {
+    			extractDataWhenItemHascREST(buildTypeDetails, buildType, nodeType, apiID);
+    			isItemChecked =true;
+    		}else if(!componentNamesList.contains("cSOAP") && !componentNamesList.contains("cREST")  && !checkedItemSet.contains(itemID)) {
+    			extractDataForRouteWithoutcRESTorcSOAP(buildTypeDetails, buildType);
+    			isItemChecked =true;
+    		}
     	}
 
     	if(isItemChecked) {
