@@ -55,7 +55,7 @@
 
                           String columnValue = connName+"."+column.getLabel();
                           if("Guid".equals(column.getType())){
-                                columnValue = "(("+columnValue+" == null) ? null : java.util.UUID.fromString("+columnValue+"))";
+                                columnValue = "(("+columnValue+" == null || "+columnValue+".isEmpty()) ? null : java.util.UUID.fromString("+columnValue+"))";
                           }
 
 			  if("String".equals(column.getType()) && "id_byte[]".equals(column.getTalendType())){
