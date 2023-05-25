@@ -12,22 +12,11 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.properties.controllers.ui;
 
-import org.eclipse.gef.commands.Command;
-import org.talend.core.model.process.IElementParameter;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
-public interface IControllerUI {
+public abstract class AbsWidgetContext implements IWidgetContext {
 
-    boolean openConfirm(String title, String msg);
-
-    void openWarning(String title, String msg);
-
-    void openError(String title, String msg);
-
-    void executeCommand(Command c);
-
-    void refresh(IElementParameter param, boolean check);
 
 }

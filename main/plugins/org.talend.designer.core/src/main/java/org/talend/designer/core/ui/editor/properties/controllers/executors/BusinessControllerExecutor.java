@@ -21,13 +21,10 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.gef.commands.Command;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
-import org.talend.commons.ui.utils.TypedTextCommandExecutor;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.database.EDatabase4DriverClassName;
@@ -51,14 +48,12 @@ import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContext;
-import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
-import org.talend.core.model.process.Problem;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
@@ -82,9 +77,7 @@ import org.talend.designer.core.ui.editor.cmd.QueryGuessCommand;
 import org.talend.designer.core.ui.editor.connections.TracesConnectionUtils;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
-import org.talend.designer.core.ui.editor.properties.controllers.IControllerContext;
 import org.talend.designer.core.ui.editor.properties.controllers.ui.IBusinessControllerUI;
-import org.talend.designer.core.ui.editor.properties.controllers.ui.IControllerUI;
 import org.talend.designer.core.ui.projectsetting.ImplicitContextLoadElement;
 import org.talend.designer.core.ui.projectsetting.StatsAndLogsElement;
 import org.talend.designer.core.utils.UpgradeParameterHelper;
@@ -103,64 +96,6 @@ import org.talend.repository.model.IProxyRepositoryFactory;
  * DOC cmeng  class global comment. Detailled comment
  */
 public abstract class BusinessControllerExecutor extends ControllerExecutor {
-
-
-    public static final String SQLEDITOR = "SQLEDITOR"; //$NON-NLS-1$
-
-    public static final String NAME = "NAME"; //$NON-NLS-1$
-
-    public static final String COLUMN = "COLUMN"; //$NON-NLS-1$
-
-    // PTODO qzhang use PARAMETER_NAME it for bug 853.
-    public static final String PARAMETER_NAME = TypedTextCommandExecutor.PARAMETER_NAME;
-
-    protected IElement elem;
-
-    protected IElementParameter curParameter;
-
-    protected ConnectionParameters connParameters;
-
-    protected EParameterFieldType paramFieldType;
-
-    protected INode connectionNode;
-
-    protected IContextManager contextManager;
-
-    protected EComponentCategory section;
-
-    private List<Problem> codeProblems;
-
-    private IProcess2 process;
-
-    public static Map<String, String> connKeyMap = new HashMap<String, String>(10);
-
-    protected Map<String, String> promptParameterMap = new HashMap<String, String>();
-
-    static {
-        connKeyMap.put("SERVER_NAME", "HOST"); //$NON-NLS-1$ //$NON-NLS-2$
-        connKeyMap.put("PORT", "PORT"); //$NON-NLS-1$ //$NON-NLS-2$
-        connKeyMap.put("SID", "DBNAME"); //$NON-NLS-1$ //$NON-NLS-2$
-        connKeyMap.put("SCHEMA", "SCHEMA_DB"); //$NON-NLS-1$ //$NON-NLS-2$
-        connKeyMap.put("USERNAME", "USER"); //$NON-NLS-1$ //$NON-NLS-2$
-        connKeyMap.put("PASSWORD", "PASS"); //$NON-NLS-1$ //$NON-NLS-2$
-        connKeyMap.put("PROPERTIES_STRING", "PROPERTIES"); //$NON-NLS-1$ //$NON-NLS-2$
-        connKeyMap.put("DIRECTORY", "DIRECTORY"); //$NON-NLS-1$ //$NON-NLS-2$
-        connKeyMap.put("FILE", "FILE"); //$NON-NLS-1$ //$NON-NLS-2$
-        connKeyMap.put("DATASOURCE", "DATASOURCE"); //$NON-NLS-1$ //$NON-NLS-2$
-    }
-
-    @Override
-    public void init(IControllerContext ctx, IControllerUI ui) {
-        super.init(ctx, ui);
-        this.elem = ctx.getElement();
-        this.curParameter = ctx.getCurParameter();
-        this.connParameters = ctx.getConnParameters();
-        this.paramFieldType = ctx.getParamFieldType();
-        this.connectionNode = ctx.getConnectionNode();
-        this.contextManager = ctx.getContextManager();
-        this.section = ctx.getSection();
-        this.codeProblems = ctx.getCodeProblems();
-    }
 
     @Override
     protected IBusinessControllerUI getUi() {
@@ -186,7 +121,7 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
     }
 
     protected String getValueFromRepositoryName(String repositoryName) {
-        for (IElementParameter param : (List<IElementParameter>) elem.getElementParameters()) {
+        for (IElementParameter param : (List<IElementParameter>) getElem().getElementParameters()) {
             if (param.getRepositoryValue() != null) {
                 if (param.getRepositoryValue().equals(repositoryName)) {
                     if (param.getFieldType().equals(EParameterFieldType.CLOSED_LIST)) {
@@ -334,7 +269,7 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
     }
 
     protected String getParaNameFromRepositoryName(String repositoryName, IElementParameter basePropertyParameter) {
-        return getParaNameFromRepositoryName(elem, repositoryName, basePropertyParameter);
+        return getParaNameFromRepositoryName(getElem(), repositoryName, basePropertyParameter);
     }
 
     protected String getParaNameFromRepositoryName(IElement elem2, String repositoryName,
@@ -360,7 +295,7 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
 
     private void setAllConnectionParameters(String typ, IElement element) {
         IElementParameter basePropertyParameter = null;
-        for (IElementParameter param : elem.getElementParameters()) {
+        for (IElementParameter param : getElem().getElementParameters()) {
             if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
                 if (param.getRepositoryValue().startsWith("DATABASE")) {
                     basePropertyParameter = param;
@@ -403,49 +338,49 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
             type = EDatabaseTypeName.HSQLDB_IN_PROGRESS.getDisplayName();
         }
         // If the dbtype has been setted don't reset it again unless the dbtype of connParameters is null.
-        if (StringUtils.trimToNull(type) == null && StringUtils.trimToNull(connParameters.getDbType()) == null) {
+        if (StringUtils.trimToNull(type) == null && StringUtils.trimToNull(getConnParameters().getDbType()) == null) {
             type = EDatabaseTypeName.GENERAL_JDBC.getXmlName();
         }
         if (StringUtils.trimToNull(type) != null) {
-            connParameters.setDbType(type);
+            getConnParameters().setDbType(type);
         }
 
         String frameWorkKey = getValueFromRepositoryName(element, "FRAMEWORK_TYPE", basePropertyParameter); //$NON-NLS-1$
-        connParameters.setFrameworkType(frameWorkKey);
+        getConnParameters().setFrameworkType(frameWorkKey);
 
         String schema = getValueFromRepositoryName(element, EConnectionParameterName.SCHEMA.getName(), basePropertyParameter);
-        connParameters.setSchema(schema);
+        getConnParameters().setSchema(schema);
 
-        if ((elem instanceof Node)
-                && (((Node) elem).getComponent().getComponentType().equals(EComponentType.GENERIC) || (element instanceof INode
+        if ((getElem() instanceof Node)
+                && (((Node) getElem()).getComponent().getComponentType().equals(EComponentType.GENERIC) || (element instanceof INode
                         && ((INode) element).getComponent().getComponentType().equals(EComponentType.GENERIC)))) {
             String userName = getValueFromRepositoryName(element, EConnectionParameterName.GENERIC_USERNAME.getDisplayName(),
                     basePropertyParameter);
-            connParameters.setUserName(userName);
+            getConnParameters().setUserName(userName);
 
             String password = getValueFromRepositoryName(element, EConnectionParameterName.GENERIC_PASSWORD.getDisplayName(),
                     basePropertyParameter);
-            connParameters.setPassword(password);
+            getConnParameters().setPassword(password);
 
             String url = getValueFromRepositoryName(element, EConnectionParameterName.GENERIC_URL.getDisplayName(),
                     basePropertyParameter);
-            connParameters.setUrl(TalendTextUtils.removeQuotes(url));
+            getConnParameters().setUrl(TalendTextUtils.removeQuotes(url));
 
             String driverJar = getValueFromRepositoryName(element, EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName(),
                     basePropertyParameter);
-            connParameters.setDriverJar(TalendTextUtils.removeQuotes(driverJar));
+            getConnParameters().setDriverJar(TalendTextUtils.removeQuotes(driverJar));
 
             String driverClass = getValueFromRepositoryName(element,
                     EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName(), basePropertyParameter);
-            connParameters.setDriverClass(TalendTextUtils.removeQuotes(driverClass));
+            getConnParameters().setDriverClass(TalendTextUtils.removeQuotes(driverClass));
         } else {
             String userName = getValueFromRepositoryName(element, EConnectionParameterName.USERNAME.getName(),
                     basePropertyParameter);
-            connParameters.setUserName(userName);
+            getConnParameters().setUserName(userName);
 
             String password = getValueFromRepositoryName(element, EConnectionParameterName.PASSWORD.getName(),
                     basePropertyParameter);
-            connParameters.setPassword(password);
+            getConnParameters().setPassword(password);
 
             // General jdbc
             String url = getValueFromRepositoryName(element, EConnectionParameterName.URL.getName(), basePropertyParameter);
@@ -460,24 +395,24 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
                             basePropertyParameter);
                 }
             }
-            connParameters.setUrl(TalendTextUtils.removeQuotes(url));
+            getConnParameters().setUrl(TalendTextUtils.removeQuotes(url));
 
             String driverJar = getValueFromRepositoryName(element, EConnectionParameterName.DRIVER_JAR.getName(),
                     basePropertyParameter);
-            connParameters.setDriverJar(TalendTextUtils.removeQuotes(driverJar));
+            getConnParameters().setDriverJar(TalendTextUtils.removeQuotes(driverJar));
 
             String driverClass = getValueFromRepositoryName(element, EConnectionParameterName.DRIVER_CLASS.getName(),
                     basePropertyParameter);
             String driverName = getValueFromRepositoryName(element, "DB_VERSION", basePropertyParameter); //$NON-NLS-1$
-            if (StringUtils.isBlank(driverName) && EDatabaseTypeName.MSSQL.getDisplayName().equals(connParameters.getDbType())) {
+            if (StringUtils.isBlank(driverName) && EDatabaseTypeName.MSSQL.getDisplayName().equals(getConnParameters().getDbType())) {
                 driverName = getValueFromRepositoryName(element, "DRIVER", basePropertyParameter); //$NON-NLS-1$
             }
             String dbVersionName = EDatabaseVersion4Drivers.getDbVersionName(type, driverName);
-            connParameters.setDbVersion(dbVersionName);
-            connParameters.setDriverClass(TalendTextUtils.removeQuotes(driverClass));
+            getConnParameters().setDbVersion(dbVersionName);
+            getConnParameters().setDriverClass(TalendTextUtils.removeQuotes(driverClass));
 
             if (driverClass != null && !"".equals(driverClass)
-                    && !EDatabaseTypeName.GENERAL_JDBC.getDisplayName().equals(connParameters.getDbType())) {
+                    && !EDatabaseTypeName.GENERAL_JDBC.getDisplayName().equals(getConnParameters().getDbType())) {
                 if (driverClass.startsWith("\"") && driverClass.endsWith("\"")) {
                     driverClass = TalendTextUtils.removeQuotes(driverClass);
                 }
@@ -489,20 +424,20 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
                 }
 
                 if (dbTypeByClassName != null) {
-                    connParameters.setDbType(dbTypeByClassName);
+                    getConnParameters().setDbType(dbTypeByClassName);
                 }
             }
         }
 
         String host = getValueFromRepositoryName(element, EConnectionParameterName.SERVER_NAME.getName(), basePropertyParameter);
-        connParameters.setHost(host);
+        getConnParameters().setHost(host);
 
         String port = getValueFromRepositoryName(element, EConnectionParameterName.PORT.getName(), basePropertyParameter);
-        connParameters.setPort(port);
+        getConnParameters().setPort(port);
 
         boolean https = Boolean.parseBoolean(
                 getValueFromRepositoryName(element, EConnectionParameterName.HTTPS.getName(), basePropertyParameter));
-        connParameters.setHttps(https);
+        getConnParameters().setHttps(https);
 
         boolean isOracleOCI = type.equals(EDatabaseTypeName.ORACLE_OCI.getXmlName())
                 || type.equals(EDatabaseTypeName.ORACLE_OCI.getDisplayName());
@@ -510,73 +445,73 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
             String localServiceName = getValueFromRepositoryNameAndParameterName(element, EConnectionParameterName.SID.getName(),
                     EParameterName.LOCAL_SERVICE_NAME.getName());
             // sid is the repository value both for DBName and Local_service_name
-            connParameters.setLocalServiceName(localServiceName);
+            getConnParameters().setLocalServiceName(localServiceName);
         }
 
         String datasource = getValueFromRepositoryName(element, EConnectionParameterName.DATASOURCE.getName(),
                 basePropertyParameter);
-        connParameters.setDatasource(datasource);
+        getConnParameters().setDatasource(datasource);
 
         // qli modified to fix the bug "7364".
 
         String dbName = getValueFromRepositoryName(element, EConnectionParameterName.SID.getName(), basePropertyParameter);
-        if (EDatabaseTypeName.EXASOL.getDisplayName().equals(connParameters.getDbType())) {
+        if (EDatabaseTypeName.EXASOL.getDisplayName().equals(getConnParameters().getDbType())) {
             if (dbName.contains("\\\"")) {
                 dbName = dbName.replace("\\\"", "");
             }
             dbName = TextUtil.removeQuots(dbName);
-        } else if (EDatabaseTypeName.GENERAL_JDBC.getDisplayName().equals(connParameters.getDbType())) {
+        } else if (EDatabaseTypeName.GENERAL_JDBC.getDisplayName().equals(getConnParameters().getDbType())) {
             dbName = ""; //$NON-NLS-1$
         }
-        connParameters.setDbName(dbName);
+        getConnParameters().setDbName(dbName);
         EDatabaseTypeName dbtype = EDatabaseTypeName.getTypeFromDbType(type);
         if (ManagerConnection.isSchemaFromSidOrDatabase(dbtype)) {
-            connParameters.setSchema(dbName);
+            getConnParameters().setSchema(dbName);
         }
-        if (connParameters.getDbType().equals(EDatabaseTypeName.SQLITE.getXmlName())
-                || connParameters.getDbType().equals(EDatabaseTypeName.ACCESS.getXmlName())
-                || connParameters.getDbType().equals(EDatabaseTypeName.FIREBIRD.getXmlName())) {
+        if (getConnParameters().getDbType().equals(EDatabaseTypeName.SQLITE.getXmlName())
+                || getConnParameters().getDbType().equals(EDatabaseTypeName.ACCESS.getXmlName())
+                || getConnParameters().getDbType().equals(EDatabaseTypeName.FIREBIRD.getXmlName())) {
             String file = getValueFromRepositoryName(element, EConnectionParameterName.FILE.getName(), basePropertyParameter);
-            connParameters.setFilename(file);
+            getConnParameters().setFilename(file);
         }
 
         String dir = getValueFromRepositoryName(element, EConnectionParameterName.DIRECTORY.getName(), basePropertyParameter);
         if (type.equals(EDatabaseTypeName.HSQLDB_IN_PROGRESS.getDisplayName())) {
-            dir = getValueFromRepositoryName(elem, EConnectionParameterName.DBPATH.getName(), basePropertyParameter);
+            dir = getValueFromRepositoryName(getElem(), EConnectionParameterName.DBPATH.getName(), basePropertyParameter);
         }
-        connParameters.setDirectory(dir);
+        getConnParameters().setDirectory(dir);
 
         String jdbcProps = getValueFromRepositoryName(element, EConnectionParameterName.PROPERTIES_STRING.getName(),
                 basePropertyParameter);
         if (EDatabaseTypeName.ORACLE_CUSTOM.getDbType().equals(typ)) {
             // for ssl
             String useSSL = getValueFromRepositoryName(element, "USE_SSL"); //$NON-NLS-1$
-            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_USE_SSL, useSSL);
+            getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_USE_SSL, useSSL);
             // trustStore
             String trustStore = getValueFromRepositoryName(element, "SSL_TRUSTSERVER_TRUSTSTORE");
-            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_TRUST_STORE_PATH,
+            getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_TRUST_STORE_PATH,
                     TalendQuoteUtils.removeQuotesIfExist(trustStore));
             // trusstStore pwd
             String trustStorePwd = getValueFromRepositoryName(element, "SSL_TRUSTSERVER_PASSWORD");
-            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_TRUST_STORE_PASSWORD,
+            getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_TRUST_STORE_PASSWORD,
                     TalendQuoteUtils.removeQuotesIfExist(trustStorePwd));
             // clientAuth
             String clientAuth = getValueFromRepositoryName(element, "NEED_CLIENT_AUTH");
-            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_NEED_CLIENT_AUTH, clientAuth);
+            getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_NEED_CLIENT_AUTH, clientAuth);
             // keyStore
             String keyStore = getValueFromRepositoryName(element, "SSL_KEYSTORE");
-            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_KEY_STORE_PATH,
+            getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_KEY_STORE_PATH,
                     TalendQuoteUtils.removeQuotesIfExist(keyStore));
             // keyStorePwd
             String keyStorePwd = getValueFromRepositoryName(element, "SSL_KEYSTORE_PASSWORD");
-            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_KEY_STORE_PASSWORD,
+            getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_KEY_STORE_PASSWORD,
                     TalendQuoteUtils.removeQuotesIfExist(keyStorePwd));
         }
-        connParameters.setJdbcProperties(jdbcProps);
+        getConnParameters().setJdbcProperties(jdbcProps);
 
         String realTableName = null;
-        if (EmfComponent.REPOSITORY.equals(elem.getPropertyValue(EParameterName.SCHEMA_TYPE.getName()))) {
-            final Object propertyValue = elem.getPropertyValue(EParameterName.REPOSITORY_SCHEMA_TYPE.getName());
+        if (EmfComponent.REPOSITORY.equals(getElem().getPropertyValue(EParameterName.SCHEMA_TYPE.getName()))) {
+            final Object propertyValue = getElem().getPropertyValue(EParameterName.REPOSITORY_SCHEMA_TYPE.getName());
             IMetadataTable metadataTable = null;
 
             String connectionId = propertyValue.toString().split(" - ")[0];
@@ -610,25 +545,25 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
                 realTableName = metadataTable.getTableName();
             }
         }
-        connParameters.setDbType(type);
+        getConnParameters().setDbType(type);
         if (!EDatabaseTypeName.GENERAL_JDBC.getDisplayName().equals(type)) {
-            connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(type));
+            getConnParameters().setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(type));
         }
-        connParameters.setSchemaName(QueryUtil.getTableName(elem, connParameters.getMetadataTable(),
+        getConnParameters().setSchemaName(QueryUtil.getTableName(getElem(), getConnParameters().getMetadataTable(),
                 TalendTextUtils.removeQuotes(schema), type, realTableName));
     }
 
     protected void initAlternateSchema(IElement element, IContext context) {
         String schemaName = getParameterValueWithContext(element, "ALTERNATE_SCHEMA", context, null);
         if (schemaName != null && !schemaName.trim().isEmpty()) {
-            connParameters.setSchema(schemaName);
+            getConnParameters().setSchema(schemaName);
         }
     }
 
     protected void initConnectionParametersWithContext(IElement element, IContext context) {
 
         IElementParameter basePropertyParameter = null;
-        for (IElementParameter param : elem.getElementParameters()) {
+        for (IElementParameter param : getElem().getElementParameters()) {
             if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
                 if (param.getRepositoryValue().startsWith("DATABASE")) {
                     basePropertyParameter = param;
@@ -642,30 +577,30 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
             basePropertyParameter = updateBasePropertyParameter;
         }
         // qli modified to fix the bug "7364".
-        if (connParameters == null) {
-            connParameters = new ConnectionParameters();
+        if (getConnParameters() == null) {
+            setConnParameters(new ConnectionParameters());
         }
 
-        String dbType = connParameters.getDbType();
-        Object value = elem.getPropertyValue("USE_EXISTING_CONNECTION"); //$NON-NLS-1$
-        IElementParameter compList = elem.getElementParameterFromField(EParameterFieldType.COMPONENT_LIST);
+        String dbType = getConnParameters().getDbType();
+        Object value = getElem().getPropertyValue("USE_EXISTING_CONNECTION"); //$NON-NLS-1$
+        IElementParameter compList = getElem().getElementParameterFromField(EParameterFieldType.COMPONENT_LIST);
         if (value != null && (value instanceof Boolean) && ((Boolean) value) && compList != null) {
-            if (connectionNode == null) {
+            if (getConnectionNode() == null) {
                 Object compValue = compList.getValue();
                 if (compValue != null && !compValue.equals("")) { //$NON-NLS-1$
                     List<? extends INode> nodes = getControllerContext().getProcess().getGeneratingNodes();
 
                     for (INode node : nodes) {
                         if (node.getUniqueName().equals(compValue) && (node instanceof INode)) {
-                            connectionNode = node;
+                            setConnectionNode(node);
                             break;
                         }
                     }
 
                 }
             }
-            if (connectionNode != null) {
-                element = connectionNode;
+            if (getConnectionNode() != null) {
+                element = getConnectionNode();
             }
         }
         String dbName = getParameterValueWithContext(element, EConnectionParameterName.SID.getName(), context,
@@ -679,33 +614,33 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
             dbName = ""; //$NON-NLS-1$
         }
         boolean isJDBCImplicitContext = EDatabaseTypeName.GENERAL_JDBC.getDisplayName().equals(dbType)
-                && elem instanceof ImplicitContextLoadElement;
-        connParameters.setDbName(dbName);
+                && getElem() instanceof ImplicitContextLoadElement;
+        getConnParameters().setDbName(dbName);
 
-        if ((elem instanceof Node)
-                && (((Node) elem).getComponent().getComponentType().equals(EComponentType.GENERIC) || (element instanceof INode
+        if ((getElem() instanceof Node)
+                && (((Node) getElem()).getComponent().getComponentType().equals(EComponentType.GENERIC) || (element instanceof INode
                         && ((INode) element).getComponent().getComponentType().equals(EComponentType.GENERIC)))) {
-            connParameters.setUserName(getParameterValueWithContext(element,
+            getConnParameters().setUserName(getParameterValueWithContext(element,
                     EConnectionParameterName.GENERIC_USERNAME.getDisplayName(), context, basePropertyParameter));
-            connParameters.setPassword(getParameterValueWithContext(element,
+            getConnParameters().setPassword(getParameterValueWithContext(element,
                     EConnectionParameterName.GENERIC_PASSWORD.getDisplayName(), context, basePropertyParameter));
             String url = TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
                     EConnectionParameterName.GENERIC_URL.getDisplayName(), context, basePropertyParameter));
-            connParameters.setUrl(url);
+            getConnParameters().setUrl(url);
             String jar = TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
                     EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName(), context, basePropertyParameter));
-            connParameters.setDriverJar(jar);
+            getConnParameters().setDriverJar(jar);
             String driverClass = TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
                     EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName(), context, basePropertyParameter));
-            connParameters.setDriverClass(driverClass);
+            getConnParameters().setDriverClass(driverClass);
         } else {
             IElementParameter elementParameter = element.getElementParameter("PASS");//$NON-NLS-1$
             boolean containContextParam = ContextParameterUtils.isContainContextParam(
                     (elementParameter != null && elementParameter.getValue() != null) ? elementParameter.getValue().toString()
                             : ""); //$NON-NLS-1$
-            connParameters.setPassword(getParameterValueWithContext(element, EConnectionParameterName.PASSWORD.getName(), context,
+            getConnParameters().setPassword(getParameterValueWithContext(element, EConnectionParameterName.PASSWORD.getName(), context,
                     basePropertyParameter), containContextParam);
-            connParameters.setUserName(getParameterValueWithContext(element, EConnectionParameterName.USERNAME.getName(), context,
+            getConnParameters().setUserName(getParameterValueWithContext(element, EConnectionParameterName.USERNAME.getName(), context,
                     basePropertyParameter));
             String url = TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
                     EConnectionParameterName.URL.getName(), context, basePropertyParameter));
@@ -724,7 +659,7 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
                             EConnectionParameterName.GENERIC_URL.getDisplayName(), context, basePropertyParameter));
                 }
             }
-            connParameters.setUrl(url);
+            getConnParameters().setUrl(url);
             String driverClass = TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
                     EConnectionParameterName.DRIVER_CLASS.getName(), context, basePropertyParameter));
             String jar = TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
@@ -734,22 +669,22 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
                     driverClass = TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
                             EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName(), context, basePropertyParameter));
                 }
-                connParameters.setDriverClass(driverClass);// tJDBCSCDELT
+                getConnParameters().setDriverClass(driverClass);// tJDBCSCDELT
                 if (StringUtils.isEmpty(jar)) {
                     jar = TalendTextUtils.removeQuotesIfExist(getParameterValueWithContext(element,
                             EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName(), context, basePropertyParameter));
                 }
             } else {
-                connParameters.setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(dbType));
+                getConnParameters().setDriverClass(EDatabase4DriverClassName.getDriverClassByDbType(dbType));
             }
-            connParameters.setDriverJar(jar);
+            getConnParameters().setDriverJar(jar);
         }
 
-        connParameters.setPort(
+        getConnParameters().setPort(
                 getParameterValueWithContext(element, EConnectionParameterName.PORT.getName(), context, basePropertyParameter));
-        connParameters.setSchema(
+        getConnParameters().setSchema(
                 getParameterValueWithContext(element, EConnectionParameterName.SCHEMA.getName(), context, basePropertyParameter));
-        connParameters.setHost(getParameterValueWithContext(element, EConnectionParameterName.SERVER_NAME.getName(), context,
+        getConnParameters().setHost(getParameterValueWithContext(element, EConnectionParameterName.SERVER_NAME.getName(), context,
                 basePropertyParameter));
 
         String dir = getParameterValueWithContext(element, EConnectionParameterName.DIRECTORY.getName(), context,
@@ -758,42 +693,42 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
             dir = getParameterValueWithContext(element, EConnectionParameterName.DBPATH.getName(), context,
                     basePropertyParameter);
         }
-        if (connParameters.getSchema() == null || connParameters.getSchema().equals("")) {
+        if (getConnParameters().getSchema() == null || getConnParameters().getSchema().equals("")) {
             if (EDatabaseTypeName.IBMDB2.getDisplayName().equals(dbType)
                     || EDatabaseTypeName.IBMDB2ZOS.getDisplayName().equals(dbType)) {
-                connParameters.setSchema(getParameterValueWithContext(element, EParameterName.SCHEMA_DB_DB2.getDisplayName(),
+                getConnParameters().setSchema(getParameterValueWithContext(element, EParameterName.SCHEMA_DB_DB2.getDisplayName(),
                         context, basePropertyParameter));
             }
         }
-        connParameters.setDirectory(dir);
-        connParameters.setHttps(Boolean.parseBoolean(
+        getConnParameters().setDirectory(dir);
+        getConnParameters().setHttps(Boolean.parseBoolean(
                 getParameterValueWithContext(element, EConnectionParameterName.HTTPS.getName(), context, basePropertyParameter)));
         // for jdbc connection from reposiotry
-        final String dbTypeByClassName = ExtractMetaDataUtils.getInstance().getDbTypeByClassName(connParameters.getDriverClass());
-        if (connParameters.getDbType() == null || EDatabaseTypeName.MYSQL.getDisplayName().equals(connParameters.getDbType())
+        final String dbTypeByClassName = ExtractMetaDataUtils.getInstance().getDbTypeByClassName(getConnParameters().getDriverClass());
+        if (getConnParameters().getDbType() == null || EDatabaseTypeName.MYSQL.getDisplayName().equals(getConnParameters().getDbType())
                 && !EDatabaseTypeName.MYSQL.getProduct().equals(dbTypeByClassName)) {
             if (dbTypeByClassName != null && !"".equals(dbTypeByClassName)) {
-                connParameters.setDbType(dbTypeByClassName);
+                getConnParameters().setDbType(dbTypeByClassName);
             }
         }
 
-        if (connParameters.getDbType().equals(EDatabaseTypeName.SQLITE.getXmlName())
-                || connParameters.getDbType().equals(EDatabaseTypeName.ACCESS.getXmlName())
-                || connParameters.getDbType().equals(EDatabaseTypeName.FIREBIRD.getXmlName())) {
-            connParameters.setFilename(getParameterValueWithContext(element, EConnectionParameterName.FILE.getName(), context,
+        if (getConnParameters().getDbType().equals(EDatabaseTypeName.SQLITE.getXmlName())
+                || getConnParameters().getDbType().equals(EDatabaseTypeName.ACCESS.getXmlName())
+                || getConnParameters().getDbType().equals(EDatabaseTypeName.FIREBIRD.getXmlName())) {
+            getConnParameters().setFilename(getParameterValueWithContext(element, EConnectionParameterName.FILE.getName(), context,
                     basePropertyParameter));
         }
-        connParameters.setJdbcProperties(getParameterValueWithContext(element,
+        getConnParameters().setJdbcProperties(getParameterValueWithContext(element,
                 EConnectionParameterName.PROPERTIES_STRING.getName(), context, basePropertyParameter));
-        connParameters.setDatasource(getParameterValueWithContext(element, EConnectionParameterName.DATASOURCE.getName(), context,
+        getConnParameters().setDatasource(getParameterValueWithContext(element, EConnectionParameterName.DATASOURCE.getName(), context,
                 basePropertyParameter));
         EDatabaseTypeName dbtypeName = EDatabaseTypeName.getTypeFromDbType(dbType);
         if (ManagerConnection.isSchemaFromSidOrDatabase(dbtypeName)
-                && (connParameters.getSchema() == null || connParameters.getSchema().length() <= 0)) {
-            connParameters.setSchema(dbName);
+                && (getConnParameters().getSchema() == null || getConnParameters().getSchema().length() <= 0)) {
+            getConnParameters().setSchema(dbName);
         }
         if (context != null) {
-            connParameters.setSelectContext(context.getName());
+            getConnParameters().setSelectContext(context.getName());
         }
     }
 
@@ -862,8 +797,8 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
     protected String getImplicitRepositoryId() {
         // TDI-17078:when db connection with jdbc work as the implicit context,the elem is Process intance ,it also need
         // get the ImplicitRepositoryId
-        if (elem instanceof ImplicitContextLoadElement || elem instanceof Process) {
-            IElementParameter implicitContext = elem.getElementParameter("PROPERTY_TYPE_IMPLICIT_CONTEXT");
+        if (getElem() instanceof ImplicitContextLoadElement || getElem() instanceof Process) {
+            IElementParameter implicitContext = getElem().getElementParameter("PROPERTY_TYPE_IMPLICIT_CONTEXT");
             if (implicitContext != null) {
                 Map<String, IElementParameter> childParameters = implicitContext.getChildParameters();
                 if (childParameters != null) {
@@ -888,8 +823,8 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
      * @return
      */
     protected String getStatsLogRepositoryId() {
-        if (elem instanceof StatsAndLogsElement || elem instanceof Process) {
-            IElementParameter statsLogContext = elem.getElementParameter("PROPERTY_TYPE");
+        if (getElem() instanceof StatsAndLogsElement || getElem() instanceof Process) {
+            IElementParameter statsLogContext = getElem().getElementParameter("PROPERTY_TYPE");
             if (statsLogContext != null) {
                 Map<String, IElementParameter> childParameters = statsLogContext.getChildParameters();
                 if (childParameters != null) {
@@ -910,48 +845,48 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
 
     private void setHiveRelatedParams(IElement element) {
         // hive embedded model, all parameters below should not be null
-        String distroKey = getValueFromRepositoryName(elem, "DISTRIBUTION");
-        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_DISTRIBUTION, distroKey);
+        String distroKey = getValueFromRepositoryName(getElem(), "DISTRIBUTION");
+        getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_DISTRIBUTION, distroKey);
 
-        String distroVersion = getValueFromRepositoryName(elem, "HIVE_VERSION");
-        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_VERSION, distroVersion);
+        String distroVersion = getValueFromRepositoryName(getElem(), "HIVE_VERSION");
+        getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_VERSION, distroVersion);
 
-        String hiveModel = getValueFromRepositoryName(elem, "CONNECTION_MODE");
-        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_MODE, hiveModel);
+        String hiveModel = getValueFromRepositoryName(getElem(), "CONNECTION_MODE");
+        getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_MODE, hiveModel);
 
-        String hiveServerVersion = getValueFromRepositoryName(elem, "HIVE_SERVER");
-        connParameters.getParameters().put(ConnParameterKeys.HIVE_SERVER_VERSION, hiveServerVersion);
+        String hiveServerVersion = getValueFromRepositoryName(getElem(), "HIVE_SERVER");
+        getConnParameters().getParameters().put(ConnParameterKeys.HIVE_SERVER_VERSION, hiveServerVersion);
 
         String nameNodeURI = getValueFromRepositoryName(element, EParameterNameForComponent.PARA_NAME_FS_DEFAULT_NAME.getName());
-        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_NAME_NODE_URL, nameNodeURI);
+        getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_NAME_NODE_URL, nameNodeURI);
 
         String jobTrackerURI = getValueFromRepositoryName(element, EParameterNameForComponent.PARA_NAME_MAPRED_JT.getName());
-        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_JOB_TRACKER_URL, jobTrackerURI);
+        getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_JOB_TRACKER_URL, jobTrackerURI);
 
         // for ssl
-        String useSSL = getValueFromRepositoryName(elem, "USE_SSL"); //$NON-NLS-1$
-        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_USE_SSL, useSSL);
+        String useSSL = getValueFromRepositoryName(getElem(), "USE_SSL"); //$NON-NLS-1$
+        getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_USE_SSL, useSSL);
 
-        String trustStorePath = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(elem, "SSL_TRUST_STORE")); //$NON-NLS-1$
-        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_TRUST_STORE_PATH, trustStorePath);
+        String trustStorePath = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(getElem(), "SSL_TRUST_STORE")); //$NON-NLS-1$
+        getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_TRUST_STORE_PATH, trustStorePath);
 
-        String trustStorePassword = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(elem, "SSL_TRUST_STORE_PASSWORD")); //$NON-NLS-1$
-        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_TRUST_STORE_PASSWORD, trustStorePassword);
+        String trustStorePassword = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(getElem(), "SSL_TRUST_STORE_PASSWORD")); //$NON-NLS-1$
+        getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_TRUST_STORE_PASSWORD, trustStorePassword);
 
-        String additionalJDBCSetting = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(elem, "HIVE_ADDITIONAL_JDBC")); //$NON-NLS-1$
+        String additionalJDBCSetting = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(getElem(), "HIVE_ADDITIONAL_JDBC")); //$NON-NLS-1$
         if (StringUtils.isNotEmpty(additionalJDBCSetting)) {
-            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_ADDITIONAL_JDBC_SETTINGS,
+            getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_ADDITIONAL_JDBC_SETTINGS,
                     additionalJDBCSetting);
         }
 
-        String hiveEnableHa = getValueFromRepositoryName(elem, "ENABLE_HIVE_HA"); //$NON-NLS-1$
-        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_ENABLE_HA, hiveEnableHa);
+        String hiveEnableHa = getValueFromRepositoryName(getElem(), "ENABLE_HIVE_HA"); //$NON-NLS-1$
+        getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_ENABLE_HA, hiveEnableHa);
 
-        String hiveMetastoreUris = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(elem, "HIVE_METASTORE_URIS")); //$NON-NLS-1$
-        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_METASTORE_URIS, hiveMetastoreUris);
+        String hiveMetastoreUris = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(getElem(), "HIVE_METASTORE_URIS")); //$NON-NLS-1$
+        getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_METASTORE_URIS, hiveMetastoreUris);
 
-        String hiveThriftPort = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(elem, "THRIFTPORT")); //$NON-NLS-1$
-        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_THRIFTPORT, hiveThriftPort);
+        String hiveThriftPort = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(getElem(), "THRIFTPORT")); //$NON-NLS-1$
+        getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_THRIFTPORT, hiveThriftPort);
 
     }
 
@@ -968,14 +903,14 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
         String schemaName = "";
 
         // Only for getting the real table name.
-        if (elem.getPropertyValue(EParameterName.SCHEMA_TYPE.getName()).equals(EmfComponent.REPOSITORY)) {
+        if (getElem().getPropertyValue(EParameterName.SCHEMA_TYPE.getName()).equals(EmfComponent.REPOSITORY)) {
 
-            IElementParameter repositorySchemaTypeParameter = elem
+            IElementParameter repositorySchemaTypeParameter = getElem()
                     .getElementParameter(EParameterName.REPOSITORY_SCHEMA_TYPE.getName());
 
             if (repositorySchemaTypeParameter != null) {
                 final Object value = repositorySchemaTypeParameter.getValue();
-                if (elem instanceof Node) {
+                if (getElem() instanceof Node) {
                     /* value can be devided means the value like "connectionid - label" */
                     String[] keySplitValues = value.toString().split(" - ");
                     if (keySplitValues.length > 1) {
@@ -1027,11 +962,11 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
 
         Connection repositoryConnection = null;
         boolean useExisting = false;
-        IElementParameter elementParameter = elem.getElementParameter(EParameterName.USE_EXISTING_CONNECTION.name());
-        if (elem instanceof Node) {
-            IProcess process = ((Node) elem).getProcess();
+        IElementParameter elementParameter = getElem().getElementParameter(EParameterName.USE_EXISTING_CONNECTION.name());
+        if (getElem() instanceof Node) {
+            IProcess process = ((Node) getElem()).getProcess();
             if (elementParameter != null && Boolean.valueOf(String.valueOf(elementParameter.getValue()))) {
-                String connName = (String) elem.getPropertyValue("CONNECTION");
+                String connName = (String) getElem().getPropertyValue("CONNECTION");
                 for (INode node : process.getGraphicalNodes()) {
                     if (node.getElementName().equals(connName)) {
                         useExisting = true;
@@ -1054,7 +989,7 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
                                 repositoryConnection = ((ConnectionItem) item).getConnection();
                             } else {
                                 initConnectionParameters();
-                                repositoryConnection = TracesConnectionUtils.createConnection(connParameters);
+                                repositoryConnection = TracesConnectionUtils.createConnection(getConnParameters());
 
                             }
                         }
@@ -1063,8 +998,8 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
                 }
             }
         }
-        if (!useExisting && elem.getPropertyValue(EParameterName.PROPERTY_TYPE.getName()).equals(EmfComponent.REPOSITORY)) {
-            final Object propertyValue = elem.getPropertyValue(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+        if (!useExisting && getElem().getPropertyValue(EParameterName.PROPERTY_TYPE.getName()).equals(EmfComponent.REPOSITORY)) {
+            final Object propertyValue = getElem().getPropertyValue(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
             if (propertyValue != null) {
                 IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
                 Item item = null;
@@ -1085,15 +1020,15 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
             }
         } else {
             initConnectionParameters();
-            repositoryConnection = TracesConnectionUtils.createConnection(connParameters);
+            repositoryConnection = TracesConnectionUtils.createConnection(getConnParameters());
         }
 
         QueryGuessCommand cmd = null;
         INode node = null;
-        if (elem instanceof INode) {
-            node = (INode) elem;
+        if (getElem() instanceof INode) {
+            node = (INode) getElem();
         } else { // else instanceof Connection
-            node = ((IConnection) elem).getSource();
+            node = ((IConnection) getElem()).getSource();
         }
 
         List<IMetadataTable> metadataList = node.getMetadataList();
@@ -1108,7 +1043,7 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
             if (schemaSelected != null) {
                 // repositoryMetadata = repositoryTableMap.get(schemaSelected);
             } else if (newRepositoryMetadata == null) {
-                MessageDialog.openWarning(DisplayUtils.getDefaultShell(false), Messages.getString("QueryTypeController.alert"), //$NON-NLS-1$
+                getUi().openWarning(Messages.getString("QueryTypeController.alert"), //$NON-NLS-1$
                         Messages.getString("QueryTypeController.nothingToGuess")); //$NON-NLS-1$
                 return cmd;
             }
@@ -1126,10 +1061,10 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
 
     protected void initConnectionParameters() {
 
-        connParameters = null;
+        setConnParameters(null);
 
         IElementParameter basePropertyParameter = null;
-        for (IElementParameter param : elem.getElementParameters()) {
+        for (IElementParameter param : getElem().getElementParameters()) {
             if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
                 if (param.getRepositoryValue().startsWith("DATABASE")) {
                     basePropertyParameter = param;
@@ -1142,12 +1077,12 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
         if (updateBasePropertyParameter != null && !updateBasePropertyParameter.equals(basePropertyParameter)) {
             basePropertyParameter = updateBasePropertyParameter;
         }
-        connParameters = new ConnectionParameters();
-        String type = getValueFromRepositoryName(elem, "TYPE", basePropertyParameter); //$NON-NLS-1$
-        Object isUseExistingConnection = elem.getPropertyValue("USE_EXISTING_CONNECTION"); //$NON-NLS-1$
+        setConnParameters(new ConnectionParameters());
+        String type = getValueFromRepositoryName(getElem(), "TYPE", basePropertyParameter); //$NON-NLS-1$
+        Object isUseExistingConnection = getElem().getPropertyValue("USE_EXISTING_CONNECTION"); //$NON-NLS-1$
         boolean isUserExistionConnectionType = false;
         if (type.equals("Oracle") || type.contains("OCLE")) {
-            IElementParameter ele = elem.getElementParameter("CONNECTION_TYPE");
+            IElementParameter ele = getElem().getElementParameter("CONNECTION_TYPE");
             if (ele != null) {
                 type = (String) ele.getValue();
             } else {
@@ -1159,25 +1094,25 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
         } else if (EDatabaseTypeName.HIVE.getProduct().equalsIgnoreCase(type)) {
             // if (EDatabaseVersion4Drivers.HIVE_EMBEDDED.getVersionValue().equals(
             // elem.getElementParameter("CONNECTION_MODE").getValue())) {
-            setHiveRelatedParams(elem);
+            setHiveRelatedParams(getElem());
             // }
         } else if (EDatabaseTypeName.IMPALA.getProduct().equalsIgnoreCase(type)) {
-            String distroKey = getValueFromRepositoryName(elem, "DISTRIBUTION");
-            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_IMPALA_DISTRIBUTION, distroKey);
+            String distroKey = getValueFromRepositoryName(getElem(), "DISTRIBUTION");
+            getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_IMPALA_DISTRIBUTION, distroKey);
 
-            String distroVersion = getValueFromRepositoryName(elem, "IMPALA_VERSION");
-            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_IMPALA_VERSION, distroVersion);
+            String distroVersion = getValueFromRepositoryName(getElem(), "IMPALA_VERSION");
+            getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_IMPALA_VERSION, distroVersion);
         } else if (EDatabaseTypeName.REDSHIFT.getDisplayName().equalsIgnoreCase(type)
                 || EDatabaseTypeName.REDSHIFT_SSO.getDisplayName().equalsIgnoreCase(type)) {
-            String driverVersion = getValueFromRepositoryName(elem, "DRIVER_VERSION", basePropertyParameter); //$NON-NLS-1$
-            connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_DRIVER, driverVersion);
+            String driverVersion = getValueFromRepositoryName(getElem(), "DRIVER_VERSION", basePropertyParameter); //$NON-NLS-1$
+            getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_DRIVER, driverVersion);
             if (ERedshiftDriver.DRIVER_V2.name().equalsIgnoreCase(driverVersion)) {
-                IElementParameter entryPropertiesParam = elem.getElementParameter("ENTRY_PROPERTIES");
+                IElementParameter entryPropertiesParam = getElem().getElementParameter("ENTRY_PROPERTIES");
                 if (entryPropertiesParam != null) {
                     Object value = entryPropertiesParam.getValue();
                     if (value != null && value instanceof List) {
                         List<Map<String, Object>> entryProperties = (List<Map<String, Object>>) value;
-                        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_PARATABLE,
+                        getConnParameters().getParameters().put(ConnParameterKeys.CONN_PARA_KEY_REDSHIFT_PARATABLE,
                                 ConvertionHelper.getEntryPropertiesString(entryProperties));
                     }
                 }
@@ -1185,54 +1120,54 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
         }
         // Get real hsqldb type
         if (type.equals(EDatabaseTypeName.HSQLDB.name())
-                && getValueFromRepositoryName(elem, "RUNNING_MODE").equals("HSQLDB_INPROGRESS_PERSISTENT")) {//$NON-NLS-1$
+                && getValueFromRepositoryName(getElem(), "RUNNING_MODE").equals("HSQLDB_INPROGRESS_PERSISTENT")) {//$NON-NLS-1$
             type = EDatabaseTypeName.HSQLDB_IN_PROGRESS.getDisplayName();
         }
-        connParameters.setDbType(type);
+        getConnParameters().setDbType(type);
 
-        String driverName = getValueFromRepositoryName(elem, "DB_VERSION", basePropertyParameter); //$NON-NLS-1$
-        if (StringUtils.isBlank(driverName) && EDatabaseTypeName.MSSQL.getDisplayName().equals(connParameters.getDbType())) {
-            driverName = getValueFromRepositoryName(elem, "DRIVER", basePropertyParameter); //$NON-NLS-1$
+        String driverName = getValueFromRepositoryName(getElem(), "DB_VERSION", basePropertyParameter); //$NON-NLS-1$
+        if (StringUtils.isBlank(driverName) && EDatabaseTypeName.MSSQL.getDisplayName().equals(getConnParameters().getDbType())) {
+            driverName = getValueFromRepositoryName(getElem(), "DRIVER", basePropertyParameter); //$NON-NLS-1$
         }
         String dbVersionName = EDatabaseVersion4Drivers.getDbVersionName(type, driverName);
         if (EDatabaseTypeName.HIVE.getProduct().equalsIgnoreCase(type)) {
-            IElementParameter connectionMode = elem.getElementParameter("CONNECTION_MODE");
+            IElementParameter connectionMode = getElem().getElementParameter("CONNECTION_MODE");
             if (connectionMode != null
                     && EDatabaseVersion4Drivers.HIVE_EMBEDDED.getVersionValue().equals(connectionMode.getValue())) {
-                connParameters.setDbVersion(EDatabaseVersion4Drivers.HIVE_EMBEDDED.getVersionValue());
+                getConnParameters().setDbVersion(EDatabaseVersion4Drivers.HIVE_EMBEDDED.getVersionValue());
             } else {
-                connParameters.setDbVersion(EDatabaseVersion4Drivers.HIVE.getVersionValue());
+                getConnParameters().setDbVersion(EDatabaseVersion4Drivers.HIVE.getVersionValue());
             }
         } else {
-            connParameters.setDbVersion(dbVersionName);
+            getConnParameters().setDbVersion(dbVersionName);
         }
 
-        connParameters.setNode(elem);
-        String selectedComponentName = (String) elem.getPropertyValue(EParameterName.UNIQUE_NAME.getName());
-        connParameters.setSelectedComponentName(selectedComponentName);
-        connParameters.setFieldType(paramFieldType);
-        if (elem instanceof Node && !((Node) elem).getMetadataList().isEmpty()) {
-            connParameters.setMetadataTable(((Node) elem).getMetadataList().get(0));
+        getConnParameters().setNode(getElem());
+        String selectedComponentName = (String) getElem().getPropertyValue(EParameterName.UNIQUE_NAME.getName());
+        getConnParameters().setSelectedComponentName(selectedComponentName);
+        getConnParameters().setFieldType(getParamFieldType());
+        if (getElem() instanceof Node && !((Node) getElem()).getMetadataList().isEmpty()) {
+            getConnParameters().setMetadataTable(((Node) getElem()).getMetadataList().get(0));
         }
 
-        connParameters
-                .setSchemaRepository(EmfComponent.REPOSITORY.equals(elem.getPropertyValue(EParameterName.SCHEMA_TYPE.getName())));
-        connParameters.setFromDBNode(true);
+        getConnParameters()
+                .setSchemaRepository(EmfComponent.REPOSITORY.equals(getElem().getPropertyValue(EParameterName.SCHEMA_TYPE.getName())));
+        getConnParameters().setFromDBNode(true);
 
-        connParameters.setQuery(""); //$NON-NLS-1$
+        getConnParameters().setQuery(""); //$NON-NLS-1$
 
-        List<? extends IElementParameter> list = elem.getElementParameters();
+        List<? extends IElementParameter> list = getElem().getElementParameters();
         boolean end = false;
         for (int i = 0; i < list.size() && !end; i++) {
             IElementParameter param = list.get(i);
             if (param.getFieldType() == EParameterFieldType.MEMO_SQL) {
-                connParameters.setNodeReadOnly(param.isReadOnly());
+                getConnParameters().setNodeReadOnly(param.isReadOnly());
                 end = true;
             }
 
         }
 
-        IElementParameter compList = elem.getElementParameterFromField(EParameterFieldType.COMPONENT_LIST);
+        IElementParameter compList = getElem().getElementParameterFromField(EParameterFieldType.COMPONENT_LIST);
         if (isUseExistingConnection != null && (isUseExistingConnection instanceof Boolean) && ((Boolean) isUseExistingConnection)
                 && compList != null) {
             Object compValue = compList.getValue();
@@ -1241,25 +1176,25 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
                 List<? extends INode> nodes = getControllerContext().getProcess().getGraphicalNodes();
                 for (INode node : nodes) {
                     if (node.getUniqueName().equals(compValue) && (node instanceof Node)) {
-                        connectionNode = node;
+                        setConnectionNode(node);
                         break;
                     }
                 }
-                if (connectionNode == null) {
+                if (getConnectionNode() == null) {
                     nodes = getControllerContext().getProcess().getGeneratingNodes();
                     for (INode node : nodes) {
                         if (node.getUniqueName().equals(compValue) && (node instanceof INode)) {
-                            connectionNode = node;
+                            setConnectionNode(node);
                             break;
                         }
                     }
                 }
-                if (connectionNode == null) {
+                if (getConnectionNode() == null) {
                     INode node = null;
-                    if (elem instanceof INode) {
-                        node = (INode) elem;
+                    if (getElem() instanceof INode) {
+                        node = (INode) getElem();
                     } else { // else instanceof Connection
-                        node = ((IConnection) elem).getSource();
+                        node = ((IConnection) getElem()).getSource();
                     }
                     if (node != null) {
                         List<IMultipleComponentManager> multipleComponentManagers = node.getComponent()
@@ -1269,16 +1204,16 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
                             String componentValue = compValue + "_" + inName;
                             for (INode gnode : nodes) {
                                 if (gnode.getUniqueName().equals(componentValue) && (gnode instanceof INode)) {
-                                    connectionNode = gnode;
+                                    setConnectionNode(gnode);
                                     break;
                                 }
                             }
                         }
                     }
                 }
-                if (connectionNode != null) {
+                if (getConnectionNode() != null) {
                     if (isUserExistionConnectionType) {
-                        IElementParameter ele = connectionNode.getElementParameter("CONNECTION_TYPE");
+                        IElementParameter ele = getConnectionNode().getElementParameter("CONNECTION_TYPE");
                         if (ele != null) {
                             type = (String) ele.getValue();
                             if ("ORACLE_RAC".equals(ele.getValue())) {
@@ -1286,17 +1221,17 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
                             }
                         }
                     }
-                    setAllConnectionParameters(type, connectionNode);
+                    setAllConnectionParameters(type, getConnectionNode());
                 }
             }
         } else {
-            setAllConnectionParameters(null, elem);
+            setAllConnectionParameters(null, getElem());
         }
 
-        if (connectionNode != null) {
-            setConnectionParameterNames(connectionNode, connParameters, basePropertyParameter);
+        if (getConnectionNode() != null) {
+            setConnectionParameterNames(getConnectionNode(), getConnParameters(), basePropertyParameter);
         } else {
-            setConnectionParameterNames(elem, connParameters, basePropertyParameter);
+            setConnectionParameterNames(getElem(), getConnParameters(), basePropertyParameter);
         }
     }
 
@@ -1341,10 +1276,10 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
             return false;
         }
 
-        if (contextManager != null && contextManager.getDefaultContext().getContextParameterList().size() != 0) {
-            initConnectionParametersWithContext(elem, contextManager.getDefaultContext());
+        if (getContextManager() != null && getContextManager().getDefaultContext().getContextParameterList().size() != 0) {
+            initConnectionParametersWithContext(getElem(), getContextManager().getDefaultContext());
         }
-        DatabaseConnection connection = service.createConnection(connParameters);
+        DatabaseConnection connection = service.createConnection(getConnParameters());
         if (connection != null) {
             IMetadataConnection metadataConnection = null;
             metadataConnection = ConvertionHelper.convert(connection);
@@ -1401,8 +1336,8 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
      */
     private boolean sameExtraParameter(IElementParameter param) {
         // for job settings extra.(feature 2710)
-        if (curParameter != null) {
-            boolean extra = JobSettingsConstants.isExtraParameter(this.curParameter.getName());
+        if (getCurParameter() != null) {
+            boolean extra = JobSettingsConstants.isExtraParameter(this.getCurParameter().getName());
             boolean paramFlag = JobSettingsConstants.isExtraParameter(param.getName());
             return extra == paramFlag;
         }
@@ -1410,7 +1345,7 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
     }
 
     protected boolean isUseExistingConnection() {
-        IElementParameter elementParameter = elem.getElementParameter(EParameterName.USE_EXISTING_CONNECTION.getName());
+        IElementParameter elementParameter = getElem().getElementParameter(EParameterName.USE_EXISTING_CONNECTION.getName());
         if (elementParameter != null) {
             Boolean value = (Boolean) elementParameter.getValue();
             return value;
@@ -1419,7 +1354,7 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
     }
 
     protected boolean isUseAlternateSchema() {
-        IElementParameter elementParameter = elem.getElementParameter("USE_ALTERNATE_SCHEMA");
+        IElementParameter elementParameter = getElem().getElementParameter("USE_ALTERNATE_SCHEMA");
         if (elementParameter != null) {
             Boolean value = (Boolean) elementParameter.getValue();
             return value;
@@ -1437,27 +1372,27 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
      */
     protected String openSQLBuilder(String repositoryType, String propertyName, String query, IContext context) {
         if (repositoryType.equals(EmfComponent.BUILTIN)) {
-            connParameters.setQuery(query, true);
-            if (connParameters.isShowConfigParamDialog()) {
+            getConnParameters().setQuery(query, true);
+            if (getConnParameters().isShowConfigParamDialog()) {
                 if (!isUseExistingConnection()) {
-                    initConnectionParametersWithContext(elem, context);
+                    initConnectionParametersWithContext(getElem(), context);
                 } else {
-                    initConnectionParametersWithContext(connectionNode, context);
+                    initConnectionParametersWithContext(getConnectionNode(), context);
                 }
             }
             // add for bug TDI-20335
             if (isInWizard()) {
-                getUi().openSqlBuilder(connParameters);
+                getUi().openSqlBuilder(getConnParameters());
             } else {
-                openSqlBuilderBuildIn(connParameters, propertyName);
+                openSqlBuilderBuildIn(getConnParameters(), propertyName);
             }
 
         } else if (repositoryType.equals(EmfComponent.REPOSITORY)) {
             String repositoryName2 = ""; //$NON-NLS-1$
             String repositoryId = null;
-            IElementParameter memoParam = elem.getElementParameter(propertyName);
+            IElementParameter memoParam = getElem().getElementParameter(propertyName);
             IElementParameter repositoryParam = null;
-            for (IElementParameter param : elem.getElementParameters()) {
+            for (IElementParameter param : getElem().getElementParameters()) {
                 if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE
                         && param.getRepositoryValue().startsWith("DATABASE")) {
                     if (memoParam != null && param.getCategory().equals(memoParam.getCategory())) {
@@ -1469,7 +1404,7 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
             }
             // in case no database property found, take the first property (to keep compatibility with old code)
             if (repositoryParam == null) {
-                for (IElementParameter param : elem.getElementParameters()) {
+                for (IElementParameter param : getElem().getElementParameters()) {
                     if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
                         repositoryParam = param;
                         break;
@@ -1504,8 +1439,7 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
             }
             // When no repository avaiable on "Repository" mode, open a MessageDialog.
             if (repositoryName2 == null || repositoryName2.length() == 0) {
-                MessageDialog.openError(composite.getShell(), Messages.getString("NoRepositoryDialog.Title"), Messages //$NON-NLS-1$
-                        .getString("NoRepositoryDialog.Text")); //$NON-NLS-1$
+                getUi().openError(Messages.getString("NoRepositoryDialog.Title"), Messages.getString("NoRepositoryDialog.Text"));
                 return null;
             }
 
@@ -1513,16 +1447,16 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
             String processName = "";//$NON-NLS-1$
             String key = "";//$NON-NLS-1$
 
-            if (elem instanceof Node) {
-                processName = ((Node) elem).getProcess().getName();
-                key = processName + ((Node) elem).getUniqueName();
-            } else if (elem instanceof IProcess) {
-                processName = ((IProcess) elem).getName();
+            if (getElem() instanceof Node) {
+                processName = ((Node) getElem()).getProcess().getName();
+                key = processName + ((Node) getElem()).getUniqueName();
+            } else if (getElem() instanceof IProcess) {
+                processName = ((IProcess) getElem()).getName();
                 key = processName;
             }
             key += repositoryName2;
 
-            return getUi().openSqlBuilder(elem, connParameters, key, repositoryName2, repositoryId, processName, query);
+            return getUi().openSqlBuilder(getElem(), getConnParameters(), key, repositoryName2, repositoryId, processName, query);
         }
         return null;
     }
@@ -1534,21 +1468,21 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
     public Command changeToBuildInCommand(String curSubParam) {
         final String typeName = ":" + EParameterName.PROPERTY_TYPE.getName(); //$NON-NLS-1$
 
-        if (curParameter != null) {
+        if (getCurParameter() != null) {
             String parentName = null;
-            if (curParameter.getCategory() == EComponentCategory.EXTRA) {
+            if (getCurParameter().getCategory() == EComponentCategory.EXTRA) {
                 parentName = JobSettingsConstants.getExtraParameterName(EParameterName.PROPERTY_TYPE.getName());
-            } else if (curParameter.getCategory() == EComponentCategory.STATSANDLOGS) {
+            } else if (getCurParameter().getCategory() == EComponentCategory.STATSANDLOGS) {
                 parentName = EParameterName.PROPERTY_TYPE.getName();
             }
             if (parentName != null) {
-                return new ChangeValuesFromRepository(elem, null, parentName + typeName, EmfComponent.BUILTIN);
+                return new ChangeValuesFromRepository(getElem(), null, parentName + typeName, EmfComponent.BUILTIN);
             }
         }
         String property = null;
-        if (curSubParam != null && elem != null) {
+        if (curSubParam != null && getElem() != null) {
             if (!curSubParam.isEmpty()) {
-                IElementParameter iElementParam = elem.getElementParameter(curSubParam);
+                IElementParameter iElementParam = getElem().getElementParameter(curSubParam);
                 if (iElementParam != null) {
                     property = iElementParam.getRepositoryProperty();
                 }
@@ -1557,20 +1491,20 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
         if (property == null || property.trim().isEmpty()) {
             property = UpgradeParameterHelper.PROPERTY;
         }
-        return new ChangeValuesFromRepository(elem, null, property + typeName, EmfComponent.BUILTIN);
+        return new ChangeValuesFromRepository(getElem(), null, property + typeName, EmfComponent.BUILTIN);
     }
 
     public Command refreshConnectionCommand(String paramName) {
         if (paramName != null) {
 
-            IElementParameter param = elem.getElementParameter(paramName);
+            IElementParameter param = getElem().getElementParameter(paramName);
             String propertyParamName = null;
             if (param.getRepositoryProperty() != null) {
                 propertyParamName = param.getRepositoryProperty();
             } else {
-                propertyParamName = elem.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE).getName();
+                propertyParamName = getElem().getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE).getName();
             }
-            final IElementParameter propertyParam = elem.getElementParameter(propertyParamName);
+            final IElementParameter propertyParam = getElem().getElementParameter(propertyParamName);
 
             if (propertyParam != null) {
                 final IElementParameter repositoryParam = propertyParam.getChildParameters()
@@ -1580,8 +1514,8 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
                         IRepositoryViewObject o = RepositoryPlugin.getDefault().getRepositoryService().getProxyRepositoryFactory()
                                 .getLastVersion((String) repositoryParam.getValue());
                         // for bug 14535
-                        if (o != null && elem instanceof INode) {
-                            INode node = (INode) elem;
+                        if (o != null && getElem() instanceof INode) {
+                            INode node = (INode) getElem();
                             IMetadataService metadataService = CorePlugin.getDefault().getMetadataService();
                             if (metadataService != null) {
                                 metadataService.openMetadataConnection(o, node);
@@ -1602,11 +1536,11 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
     }
 
     private IElementParameter updateBasePropertyParameter() {
-        if (EComponentCategory.EXTRA.equals(section)) {
-            return elem.getElementParameter("PROPERTY_TYPE_IMPLICIT_CONTEXT"); //$NON-NLS-1$
+        if (EComponentCategory.EXTRA.equals(getSection())) {
+            return getElem().getElementParameter("PROPERTY_TYPE_IMPLICIT_CONTEXT"); //$NON-NLS-1$
         }
-        if (EComponentCategory.STATSANDLOGS.equals(section)) {
-            return elem.getElementParameter("PROPERTY_TYPE"); //$NON-NLS-1$
+        if (EComponentCategory.STATSANDLOGS.equals(getSection())) {
+            return getElem().getElementParameter("PROPERTY_TYPE"); //$NON-NLS-1$
         }
         return null;
     }
@@ -1622,7 +1556,7 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
     }
 
     protected boolean canAddRepositoryDecoration(IElementParameter param) {
-        return !(elem instanceof FakeElement) && param.isRepositoryValueUsed();
+        return !(getElem() instanceof FakeElement) && param.isRepositoryValueUsed();
     }
 
     protected void updatePromptParameter(IElementParameter parameter) {
@@ -1650,8 +1584,8 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
                     String value = JavaSqlFactory.getReportPromptConValueFromCache(connection.getContextName(),
                             connection.getContextId(), paramValue.toString());
                     if (StringUtils.isNotBlank(value)) {
-                        promptParameterMap.put(param.getName(), paramValue.toString());
-                        elem.setPropertyValue(param.getName(), value);
+                        getPromptParameterMap().put(param.getName(), paramValue.toString());
+                        getElem().setPropertyValue(param.getName(), value);
                     }
                 }
             }
@@ -1683,8 +1617,8 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
                     Object paramValue = param.getValue();
                     if (paramValue != null && !"".equals(paramValue)) { //$NON-NLS-1$
                         if (promptNeededMap.containsKey(paramValue)) {
-                            promptParameterMap.put(param.getName(), paramValue.toString());
-                            elem.setPropertyValue(param.getName(), promptNeededMap.get(paramValue));
+                            getPromptParameterMap().put(param.getName(), paramValue.toString());
+                            getElem().setPropertyValue(param.getName(), promptNeededMap.get(paramValue));
                         }
                     }
                 }
@@ -1693,11 +1627,11 @@ public abstract class BusinessControllerExecutor extends ControllerExecutor {
     }
 
     protected void resetPromptParameter() {
-        Iterator<String> iter = promptParameterMap.keySet().iterator();
+        Iterator<String> iter = getPromptParameterMap().keySet().iterator();
         while (iter.hasNext()) {
             String key = iter.next();
-            String value = promptParameterMap.get(key);
-            elem.setPropertyValue(key, value);
+            String value = getPromptParameterMap().get(key);
+            getElem().setPropertyValue(key, value);
         }
     }
 

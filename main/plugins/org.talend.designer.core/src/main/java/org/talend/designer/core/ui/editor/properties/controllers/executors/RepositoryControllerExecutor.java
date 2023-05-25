@@ -30,7 +30,7 @@ import org.talend.repository.UpdateRepositoryUtils;
  */
 public abstract class RepositoryControllerExecutor extends BusinessControllerExecutor {
 
-    public static final String REPOSITORY_CHOICE = "REPOSITORY_CHOICE"; //$NON-NLS-1$
+    public static final String REPOSITORY_CHOICE = IRepositoryControllerUI.REPOSITORY_CHOICE;
 
     public abstract String getRepositoryTypeParamName();
 
@@ -52,13 +52,13 @@ public abstract class RepositoryControllerExecutor extends BusinessControllerExe
      * @return
      */
     public Connection getConnection() {
-        if (this.elem == null) {
+        if (this.getElem() == null) {
             return null;
         }
-        if (elem instanceof Node) {
-            IElementParameter elementParameter = ((Node) elem).getElementParameter(EParameterName.PROPERTY_TYPE.getName());
+        if (getElem() instanceof Node) {
+            IElementParameter elementParameter = ((Node) getElem()).getElementParameter(EParameterName.PROPERTY_TYPE.getName());
             if (elementParameter != null && !EmfComponent.BUILTIN.equals(elementParameter.getValue())) {
-                String propertyValue = (String) (((Node) elem)
+                String propertyValue = (String) (((Node) getElem())
                         .getPropertyValue(EParameterName.REPOSITORY_PROPERTY_TYPE.getName()));
                 IRepositoryViewObject lastVersion = UpdateRepositoryUtils.getRepositoryObjectById(propertyValue);
                 if (lastVersion != null) {

@@ -123,7 +123,15 @@ import org.talend.designer.runprocess.IRunProcessService;
  */
 public abstract class AbsBusinessControllerUI extends ControllerUI implements IBusinessControllerUI {
 
-    protected static final String SQLEDITOR = "SQLEDITOR"; //$NON-NLS-1$
+    protected static final int MAX_PERCENT = 100;
+
+    protected static final int STANDARD_LABEL_WIDTH = 100;
+
+    protected static final int STANDARD_HEIGHT = 20;
+
+    protected static final int STANDARD_BUTTON_WIDTH = 25;
+
+    protected static final String DOTS_BUTTON = "icons/dots_button.gif"; //$NON-NLS-1$ s
 
     private Map<String, Dialog> sqlbuilers = new HashMap<String, Dialog>();
 
@@ -145,26 +153,6 @@ public abstract class AbsBusinessControllerUI extends ControllerUI implements IB
 
     private List<Problem> proForJavaErrorMark = null;
 
-    protected static final String VARIABLE_TOOLTIP = Messages
-            .getString("AbstractElementPropertySectionController.variableTooltip"); //$NON-NLS-1$
-
-    public static final String NAME = "NAME"; //$NON-NLS-1$
-
-    public static final String COLUMN = "COLUMN"; //$NON-NLS-1$
-
-    // PTODO qzhang use PARAMETER_NAME it for bug 853.
-    public static final String PARAMETER_NAME = TypedTextCommandExecutor.PARAMETER_NAME;
-
-    protected static final int MAX_PERCENT = 100;
-
-    protected static final int STANDARD_LABEL_WIDTH = 100;
-
-    protected static final int STANDARD_HEIGHT = 20;
-
-    protected static final int STANDARD_BUTTON_WIDTH = 25;
-
-    protected static final String DOTS_BUTTON = "icons/dots_button.gif"; //$NON-NLS-1$ s
-
     private static Map<String, Problem> proForPerlErrorMark = new HashMap<String, Problem>();
 
     protected EParameterFieldType paramFieldType;
@@ -176,18 +164,18 @@ public abstract class AbsBusinessControllerUI extends ControllerUI implements IB
 
     protected IContextManager contextManager;
 
+    protected INode connectionNode;
+
     private IControllerContext ctx;
 
     private BusinessControllerExecutor controllerExecutor;
 
-    public static Map<String, String> connKeyMap = new HashMap<String, String>(10);
-
     protected Map<String, String> promptParameterMap = new HashMap<String, String>();
 
-    public AbsBusinessControllerUI(IDynamicProperty dp, IControllerContext ctx, BusinessControllerExecutor controllerExecutor) {
-        this.ctx = ctx;
+    public AbsBusinessControllerUI(IDynamicProperty dp, BusinessControllerExecutor controllerExecutor) {
         this.controllerExecutor = controllerExecutor;
         init(dp);
+        this.ctx = createControllerContext();
     }
 
     public void init(IDynamicProperty dp) {
@@ -204,6 +192,20 @@ public abstract class AbsBusinessControllerUI extends ControllerUI implements IB
         composite = dp.getComposite();
 
         editionControlHelper = new EditionControlHelper();
+    }
+
+    protected IControllerContext createControllerContext() {
+        return new BusinessControllerContext();
+    }
+
+    @Override
+    public boolean openConfirm(String title, String msg) {
+        return MessageDialog.openConfirm(composite.getShell(), title, msg);
+    }
+
+    @Override
+    public void openWarning(String title, String msg) {
+        MessageDialog.openWarning(DisplayUtils.getDefaultShell(false), title, msg);
     }
 
     @Override
@@ -1360,6 +1362,116 @@ public abstract class AbsBusinessControllerUI extends ControllerUI implements IB
         public void unregister(Control control) {
             this.checkErrorsHelper.unregister(control);
             this.undoRedoHelper.unregister(control);
+        }
+
+    }
+
+    protected class BusinessControllerContext implements IControllerContext {
+
+        @Override
+        public IElement getElement() {
+            return AbsBusinessControllerUI.this.elem;
+        }
+
+        @Override
+        public void setElement(IElement elem) {
+            AbsBusinessControllerUI.this.elem = elem;
+        }
+
+        @Override
+        public IElementParameter getCurParameter() {
+            return AbsBusinessControllerUI.this.curParameter;
+        }
+
+        @Override
+        public void setCurParameter(IElementParameter param) {
+            AbsBusinessControllerUI.this.curParameter = param;
+        }
+
+        @Override
+        public ConnectionParameters getConnParameters() {
+            return AbsBusinessControllerUI.this.connParameters;
+        }
+
+        @Override
+        public void setConnParameters(ConnectionParameters params) {
+            AbsBusinessControllerUI.this.connParameters = params;
+        }
+
+        @Override
+        public EParameterFieldType getParamFieldType() {
+            return AbsBusinessControllerUI.this.paramFieldType;
+        }
+
+        @Override
+        public void setParamFieldType(EParameterFieldType paramFieldType) {
+            AbsBusinessControllerUI.this.paramFieldType = paramFieldType;
+        }
+
+        @Override
+        public IContextManager getContextManager() {
+            return AbsBusinessControllerUI.this.contextManager;
+        }
+
+        @Override
+        public void setContextManager(IContextManager contextManager) {
+            AbsBusinessControllerUI.this.contextManager = contextManager;
+        }
+
+        @Override
+        public EComponentCategory getSection() {
+            return AbsBusinessControllerUI.this.section;
+        }
+
+        @Override
+        public void setSection(EComponentCategory section) {
+            AbsBusinessControllerUI.this.section = section;
+        }
+
+        @Override
+        public List<Problem> getCodeProblems() {
+            return AbsBusinessControllerUI.this.codeProblems;
+        }
+
+        @Override
+        public void setCodeProblems(List<Problem> codeProblems) {
+            AbsBusinessControllerUI.this.codeProblems = codeProblems;
+        }
+
+        @Override
+        public boolean isInWizard() {
+            return AbsBusinessControllerUI.this.isInWizard();
+        }
+
+        @Override
+        public IProcess2 getProcess() {
+            return (IProcess2) AbsBusinessControllerUI.this.getProcess(AbsBusinessControllerUI.this.elem,
+                    AbsBusinessControllerUI.this.part);
+        }
+
+        @Override
+        public Map<String, String> getTableIdAndDbTypeMap() {
+            return AbsBusinessControllerUI.this.dynamicProperty.getTableIdAndDbTypeMap();
+        }
+
+        @Override
+        public Map<String, String> getTableIdAndDbSchemaMap() {
+            return AbsBusinessControllerUI.this.dynamicProperty.getTableIdAndDbSchemaMap();
+        }
+
+        @Override
+        public INode getConnectionNode() {
+            return AbsBusinessControllerUI.this.connectionNode;
+        }
+
+        @Override
+        public void setConnectionNode(INode node) {
+            AbsBusinessControllerUI.this.connectionNode = node;
+        }
+
+        @Override
+        public Map<String, String> getPromptParameterMap() {
+            return AbsBusinessControllerUI.this.promptParameterMap;
         }
 
     }

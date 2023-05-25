@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.repository.ui.dialog;
 
-import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.ui.runtime.custom.AbsBusinessHandler;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.repository.model.RepositoryNode;
@@ -24,26 +23,15 @@ public class RepositoryReviewBusinessHandler extends AbsBusinessHandler<Reposito
 
     private static final String UI_KEY = "RepositoryReviewDialog";
 
-    private Shell parentShell;
-
     private ERepositoryObjectType type;
 
     private String repositoryType;
 
     private RepositoryNode result;
 
-    public RepositoryReviewBusinessHandler(Shell parentShell, ERepositoryObjectType type, String repositoryType) {
-        this.parentShell = parentShell;
+    public RepositoryReviewBusinessHandler(ERepositoryObjectType type, String repositoryType) {
         this.type = type;
         this.repositoryType = repositoryType;
-    }
-
-    public Shell getParentShell() {
-        return parentShell;
-    }
-
-    public void setParentShell(Shell parentShell) {
-        this.parentShell = parentShell;
     }
 
     public ERepositoryObjectType getType() {

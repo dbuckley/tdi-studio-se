@@ -43,17 +43,13 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.ControllerRepositoryValueHander;
-import org.talend.designer.core.ui.editor.properties.controllers.IControllerContext;
 import org.talend.designer.core.ui.editor.properties.controllers.creator.SelectAllTextControlCreator;
-import org.talend.designer.core.ui.editor.properties.controllers.executors.IRepositoryControllerExecutor;
 import org.talend.designer.core.ui.editor.properties.controllers.executors.RepositoryControllerExecutor;
 
 /**
  * DOC cmeng class global comment. Detailled comment
  */
 public abstract class AbsRepositoryControllerUI extends AbsBusinessControllerUI implements IRepositoryControllerUI {
-
-    public static final String REPOSITORY_CHOICE = "REPOSITORY_CHOICE"; //$NON-NLS-1$
 
     protected static final int STANDARD_REPOSITORY_WIDTH = 250;
 
@@ -64,8 +60,8 @@ public abstract class AbsRepositoryControllerUI extends AbsBusinessControllerUI 
      *
      * @param dp
      */
-    public AbsRepositoryControllerUI(IDynamicProperty dp, IControllerContext ctx, IRepositoryControllerExecutor executor) {
-        super(dp, ctx, executor);
+    public AbsRepositoryControllerUI(IDynamicProperty dp, RepositoryControllerExecutor executor) {
+        super(dp, executor);
         repositoryValueHander = new ControllerRepositoryValueHander();
     }
 
@@ -251,10 +247,10 @@ public abstract class AbsRepositoryControllerUI extends AbsBusinessControllerUI 
 
     private Command createCommand(SelectionEvent selectionEvent) {
         if (selectionEvent.getSource() instanceof Button) {
-            return getControllerExecutor().createButtonCommand((Button) selectionEvent.getSource());
+            return getControllerExecutor().createButtonCommand(new StudioWidgetContext((Button) selectionEvent.getSource()));
         }
         if (selectionEvent.getSource() instanceof CCombo) {
-            return getControllerExecutor().createComboCommand((CCombo) selectionEvent.getSource());
+            return getControllerExecutor().createComboCommand(new StudioWidgetContext((CCombo) selectionEvent.getSource()));
         }
         return null;
     }

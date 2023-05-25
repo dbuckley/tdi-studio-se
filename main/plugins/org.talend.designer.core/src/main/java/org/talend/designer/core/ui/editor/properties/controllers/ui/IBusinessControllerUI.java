@@ -12,14 +12,27 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.properties.controllers.ui;
 
+import org.talend.commons.ui.utils.TypedTextCommandExecutor;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.sqlbuilder.util.ConnectionParameters;
+import org.talend.designer.core.i18n.Messages;
 
 /**
  * DOC cmeng  class global comment. Detailled comment
  */
 public interface IBusinessControllerUI extends IControllerUI {
+
+    public static final String SQLEDITOR = "SQLEDITOR"; //$NON-NLS-1$
+
+    public static final String VARIABLE_TOOLTIP = Messages.getString("AbstractElementPropertySectionController.variableTooltip"); //$NON-NLS-1$
+
+    public static final String NAME = "NAME"; //$NON-NLS-1$
+
+    public static final String COLUMN = "COLUMN"; //$NON-NLS-1$
+
+    // PTODO qzhang use PARAMETER_NAME it for bug 853.
+    public static final String PARAMETER_NAME = TypedTextCommandExecutor.PARAMETER_NAME;
 
     void openSqlBuilder(ConnectionParameters connParameters);
 

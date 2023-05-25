@@ -18,4 +18,6 @@ package org.talend.designer.core.ui.editor.properties.controllers.ui;
  */
 public interface IRepositoryControllerUI extends IBusinessControllerUI {
 
+    public static final String REPOSITORY_CHOICE = "REPOSITORY_CHOICE"; //$NON-NLS-1$
+
 }

@@ -70,4 +70,6 @@ public interface IControllerContext {
 
     Map<String, String> getTableIdAndDbSchemaMap();
 
+    Map<String, String> getPromptParameterMap();
+
 }

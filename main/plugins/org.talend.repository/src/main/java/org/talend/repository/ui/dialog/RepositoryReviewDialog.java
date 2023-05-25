@@ -179,8 +179,8 @@ public class RepositoryReviewDialog extends Dialog {
         typeProcessor = createMultiTypesProcessor();
     }
 
-    public RepositoryReviewDialog(RepositoryReviewBusinessHandler handler) {
-        this(handler.getParentShell(), handler.getType(), handler.getRepositoryType());
+    public RepositoryReviewDialog(RepositoryReviewBusinessHandler handler, Shell parentShell) {
+        this(parentShell, handler.getType(), handler.getRepositoryType());
     }
 
     /**
