@@ -183,24 +183,28 @@ public class TaCoKitGuessSchemaProcess {
                 List<INode> nodes = new ArrayList<>();
                 IComponent nodeComp = node.getComponent();
 
-                /**
-                 * If it is an input component and guess schema action is provided, calling the action is enough
-                 */
+                boolean isProcessor = false;
                 if (ComponentModel.class.isInstance(nodeComp)) {
                     ComponentModel compModel = (ComponentModel) nodeComp;
-                    if (ETaCoKitComponentType.input.equals(compModel.getTaCoKitComponentType())) {
-
-                        node.setIncomingConnections(new ArrayList<>());
+                    if (compModel.getTaCoKitComponentType() != null) {
+                        if(compModel.getTaCoKitComponentType() == ETaCoKitComponentType.input || compModel.getTaCoKitComponentType() == ETaCoKitComponentType.standalone) {
+                            node.setIncomingConnections(new ArrayList<>());
+                        }
+                        if(compModel.getTaCoKitComponentType() == ETaCoKitComponentType.processor) {
+                            isProcessor = true;
+                        }
                         nodes.add(node);
                         if (TaCoKitUtil.isUseExistConnection(node)) {
                             updateDatastoreParameterFromConnection(node);
                         }
                     }
                 }
-                /**
-                 * Else, still need to build the sub job
-                 */
-                if (nodes.isEmpty()) {
+                
+                //TODO consider to remove it too as why we need the input line's schema for guessing processor schema? sync columns?
+                //here follow the design of DiscoverSchemaExtended, that support to use that schema to guess, in my view, we no need to promise that thing, 1% usage improvement, but with bug risk.
+                //And here have a side effect before already: if job design is : (tsetproxy==>on_subjob_ok==>tfixedflowinput==>a tacokit processor connector), that tsetproxy will affect guess schema result, 
+                //IMHO, we should never promise that, as user will find that example not works for tck input connector. Here revert the wrong promise for standalone connector, but not processor connector.
+                if (isProcessor) {//when processor tck connector, here only keep the old action, TODO remove this special code.
                     retrieveNodes(nodes, new HashSet<>(), node);
                 }
 

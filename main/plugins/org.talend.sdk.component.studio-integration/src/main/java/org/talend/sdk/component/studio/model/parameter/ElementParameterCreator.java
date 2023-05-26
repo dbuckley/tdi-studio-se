@@ -631,16 +631,15 @@ public class ElementParameterCreator {
      */
     private void addParallelizeParameter() {
         if (isCamelCategory()) {
-            boolean readonly = true;
             final ElementParameter parameter = new ElementParameter(node);
-            parameter.setReadOnly(readonly);
             parameter.setName(EParameterName.PARALLELIZE.getName());
             parameter.setValue(Boolean.FALSE);
             parameter.setDisplayName(EParameterName.PARALLELIZE.getDisplayName());
             parameter.setFieldType(EParameterFieldType.CHECK);
             parameter.setCategory(ADVANCED);
             parameter.setNumRow(200);
-            parameter.setShow(!readonly);
+            parameter.setReadOnly(!component.canParallelize());
+            parameter.setShow(component.canParallelize());
             parameter.setDefaultValue(parameter.getValue());
             parameters.add(parameter);
         }
@@ -653,14 +652,15 @@ public class ElementParameterCreator {
     private void addParallelizeNumberParameter() {
         if (isCamelCategory()) {
             final ElementParameter parameter = new ElementParameter(node);
-            parameter.setReadOnly(true);
             parameter.setName(EParameterName.PARALLELIZE_NUMBER.getName());
-            parameter.setValue(2);
+            parameter.setValue("2"); //$NON-NLS-1$
             parameter.setDisplayName(EParameterName.PARALLELIZE_NUMBER.getDisplayName());
             parameter.setFieldType(EParameterFieldType.TEXT);
             parameter.setCategory(ADVANCED);
-            parameter.setNumRow(200);
+            parameter.setNumRow(201);
             parameter.setShowIf(EParameterName.PARALLELIZE.getName() + " == 'true'");
+            parameter.setReadOnly(!component.canParallelize());
+            parameter.setShow(component.canParallelize());
             parameter.setDefaultValue(parameter.getValue());
             parameters.add(parameter);
         }

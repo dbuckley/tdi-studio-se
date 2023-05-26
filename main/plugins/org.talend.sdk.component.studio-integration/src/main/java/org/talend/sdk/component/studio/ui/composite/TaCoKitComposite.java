@@ -215,7 +215,9 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
         final Composite propertyComposite = addPropertyType(composite, unifiedComposite);
         final Composite existConnectionComposite = addUseExistConnection(composite, propertyComposite);
         final Composite schemaComposite = addSchemas(composite, existConnectionComposite);
-        final Composite lastComposite = addStatCatcher(schemaComposite);
+        final Composite statCatcherComposite = addStatCatcher(schemaComposite);
+        final Composite paralelizeComposite = addParalelize(composite, statCatcherComposite);
+        final Composite lastComposite = addParalelizeNum(composite, paralelizeComposite);
         return lastComposite;
     }
 
@@ -307,6 +309,26 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
             addWidget(parent, parameter, null);
         }
         return parent;
+    }
+
+    protected Composite addParalelize(final Composite parent, final Composite previous) {
+        final Composite composite = new Composite(parent, SWT.NONE);
+        composite.setBackground(parent.getBackground());
+        composite.setLayout(new FormLayout());
+        composite.setLayoutData(levelLayoutData(previous));
+        final IElementParameter parameter = elem.getElementParameter(EParameterName.PARALLELIZE.getName());
+        addWidgetIfActive(composite, parameter);
+        return composite;
+    }
+
+    protected Composite addParalelizeNum(final Composite parent, final Composite previous) {
+        final Composite composite = new Composite(parent, SWT.NONE);
+        composite.setBackground(parent.getBackground());
+        composite.setLayout(new FormLayout());
+        composite.setLayoutData(levelLayoutData(previous));
+        final IElementParameter parameter = elem.getElementParameter(EParameterName.PARALLELIZE_NUMBER.getName());
+        addWidgetIfActive(composite, parameter);
+        return composite;
     }
 
     private boolean isNotPresentOnLayout(final IElementParameter schema) {
