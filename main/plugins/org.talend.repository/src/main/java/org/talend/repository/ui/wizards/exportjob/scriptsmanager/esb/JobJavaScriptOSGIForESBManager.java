@@ -1141,6 +1141,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
         Set<String> fileterdImportPackage = new HashSet<>();
 
+        privateNonRepetitivePackages.removeIf(p-> p.startsWith("javax.ws.rs"));
+        
         for (String p : importNonRepetitivePackages) {
             if (!privateNonRepetitivePackages.contains(p.replace(RESOLUTION_OPTIONAL, "")) || p.startsWith("routines")) {
                 fileterdImportPackage.add(p);
