@@ -33,7 +33,7 @@ import org.talend.core.ui.metadata.editor.MetadataTableEditor;
 import org.talend.core.ui.metadata.editor.MetadataTableEditorView;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.properties.DynamicTabbedPropertySection;
-import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
+import org.talend.designer.core.ui.editor.properties.controllers.ISWTBusinessControllerUI;
 
 /**
  * Main Section of the property for the connections. <br/>
@@ -63,7 +63,7 @@ public class MainConnectionSection extends DynamicTabbedPropertySection {
             for (IElementParameter cur : listParam) {
                 if ((cur.getFieldType() == EParameterFieldType.SCHEMA_TYPE || cur.getFieldType() == EParameterFieldType.SCHEMA_REFERENCE)
                         && (cur.getContext().equals(((Connection) elem).getConnectorName()))) {
-                    AbstractElementPropertySectionController contorller = generator.getController(
+                    ISWTBusinessControllerUI contorller = generator.getController(
                             EParameterFieldType.SCHEMA_TYPE, this);
                     contorller.createControl(composite, cur, 0, 0, 0, null);
                 }

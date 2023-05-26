@@ -73,8 +73,8 @@ import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
-import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
 import org.talend.designer.core.ui.editor.properties.controllers.GroupController;
+import org.talend.designer.core.ui.editor.properties.controllers.ISWTBusinessControllerUI;
 import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainer;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.ProjectManager;
@@ -420,7 +420,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
         int additionalHeightSize = 0;
         boolean hasDynamicRow = false;
         for (IElementParameter curParam : currentValidParameters) {
-            AbstractElementPropertySectionController controller = generator.getController(curParam.getFieldType(), this);
+            ISWTBusinessControllerUI controller = generator.getController(curParam.getFieldType(), this);
 
             if (controller == null) {
                 continue;
@@ -449,7 +449,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
                 updateParameter(curParam);
                 if (curParam.getNumRow() == curRow && isShouldDisParameter(curParam)) {
                     numInRow++;
-                    AbstractElementPropertySectionController controller = generator.getController(curParam.getFieldType(), this);
+                    ISWTBusinessControllerUI controller = generator.getController(curParam.getFieldType(), this);
 
                     if (controller == null) {
                         continue;
@@ -617,7 +617,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
                         if (curParam.isShow(listParam)) {
                             // System.out.println("show:" + curParam.getName()+
                             // " field:"+curParam.getField());
-                            AbstractElementPropertySectionController controller = generator.getController(
+                            ISWTBusinessControllerUI controller = generator.getController(
                                     curParam.getFieldType(), this);
 
                             if (controller == null) {
@@ -715,7 +715,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
                     final List<Problem> nodePros = javaProblem;
 
                     if (generator != null) {
-                        AbstractElementPropertySectionController controller = generator.getController(e.getFieldType(),
+                        ISWTBusinessControllerUI controller = generator.getController(e.getFieldType(),
                                 MultipleThreadDynamicComposite.this);
                         if (controller != null) {
                             controller.updateCodeProblems(nodePros);

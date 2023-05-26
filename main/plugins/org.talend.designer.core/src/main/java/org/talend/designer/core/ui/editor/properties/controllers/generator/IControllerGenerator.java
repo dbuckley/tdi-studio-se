@@ -16,8 +16,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
-import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
 import org.talend.designer.core.ui.editor.properties.controllers.IControllerContext;
+import org.talend.designer.core.ui.editor.properties.controllers.ISWTBusinessControllerUI;
 import org.talend.designer.core.ui.editor.properties.controllers.executors.IControllerExecutor;
 
 /**
@@ -28,7 +28,7 @@ import org.talend.designer.core.ui.editor.properties.controllers.executors.ICont
  */
 public interface IControllerGenerator {
 
-    public AbstractElementPropertySectionController generate();
+    public ISWTBusinessControllerUI generate();
 
     public void setDynamicProperty(IDynamicProperty dp);
 

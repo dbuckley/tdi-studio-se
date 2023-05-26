@@ -171,7 +171,7 @@ import org.talend.repository.model.IProxyRepositoryFactory;
  *
  */
 
-public abstract class AbstractElementPropertySectionController implements PropertyChangeListener {
+public abstract class AbstractElementPropertySectionController implements PropertyChangeListener, ISWTBusinessControllerUI {
 
     protected static final String SQLEDITOR = "SQLEDITOR"; //$NON-NLS-1$
 
@@ -258,9 +258,11 @@ public abstract class AbstractElementPropertySectionController implements Proper
      * @param lastControl. The latest control created beside current being created. @return. The control created by this
      * method will be the paramenter of next be called createControl method for position calculate.
      */
+    @Override
     public abstract Control createControl(final Composite subComposite, final IElementParameter param, final int numInRow,
             final int nbInRow, final int top, final Control lastControl);
 
+    @Override
     public abstract int estimateRowSize(final Composite subComposite, final IElementParameter param);
 
     protected int getColorStyledTextRowSize(int nbLines) {
@@ -287,6 +289,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
      *
      * @return
      */
+    @Override
     public boolean hasDynamicRowSize() {
         return false;
     }
@@ -296,6 +299,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
      *
      * @param height
      */
+    @Override
     public void setAdditionalHeightSize(int height) {
         this.additionalHeightSize = height;
     }
@@ -510,6 +514,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
      *
      * Configuration for necessay parameters from class DynamicTabbedPropertiesSection.
      */
+    @Override
     public void init(IDynamicProperty dp) {
         this.dynamicProperty = dp;
         hashCurControls = dp.getHashCurControls();
@@ -1342,6 +1347,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
         }
     }
 
+    @Override
     public abstract void refresh(IElementParameter param, boolean check);
 
     /**
@@ -2620,6 +2626,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
         return null;
     }
 
+    @Override
     public void dispose() {
         if (widgetFactory != null) {
             widgetFactory.dispose();
@@ -2795,6 +2802,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
         return this.codeProblems;
     }
 
+    @Override
     public void updateCodeProblems(List<Problem> codeProblems) {
         if (codeProblems != null) {
             this.codeProblems = new ArrayList<Problem>(codeProblems);

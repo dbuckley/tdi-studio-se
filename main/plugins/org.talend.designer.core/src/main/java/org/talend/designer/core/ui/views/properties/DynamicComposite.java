@@ -78,8 +78,8 @@ import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.editor.properties.DynamicTabbedPropertySection;
-import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
 import org.talend.designer.core.ui.editor.properties.controllers.GroupController;
+import org.talend.designer.core.ui.editor.properties.controllers.ISWTBusinessControllerUI;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.RepositoryNode;
@@ -93,6 +93,7 @@ import org.talend.repository.viewer.ui.provider.RepositoryContentProvider;
  *
  * @deprecated use MultipleThreadDynamicComposite instead.
  */
+@Deprecated
 public class DynamicComposite extends ScrolledComposite implements IDynamicProperty {
 
     protected AbstractMultiPageTalendEditor part;
@@ -220,6 +221,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
     private void sortList(List<String> compareList) {
         Collections.sort(compareList, new Comparator<String>() {
 
+            @Override
             public int compare(String str1, String str2) {
 
                 // For example: avoid job name "a_b_c" before "a_b" in the job
@@ -335,6 +337,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
     // }
     // }
 
+    @Override
     public String getRepositoryAliasName(ConnectionItem connectionItem) {
         ERepositoryObjectType repositoryObjectType = ERepositoryObjectType.getItemType(connectionItem);
         String aliasName = repositoryObjectType.getAlias();
@@ -669,6 +672,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
      *
      * @return an instance of Element
      */
+    @Override
     public Element getElement() {
         return elem;
     }
@@ -766,7 +770,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
             if (curParam.getCategory() == section) {
                 if (curParam.getFieldType() != EParameterFieldType.TECHNICAL) {
                     if (curParam.isShow(listParam)) {
-                        AbstractElementPropertySectionController controller = generator.getController(curParam.getFieldType(),
+                        ISWTBusinessControllerUI controller = generator.getController(curParam.getFieldType(),
                                 this);
 
                         if (controller == null) {
@@ -809,7 +813,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
                             // System.out.println("show:" + curParam.getName()+
                             // " field:"+curParam.getField());
                             numInRow++;
-                            AbstractElementPropertySectionController controller = generator.getController(
+                            ISWTBusinessControllerUI controller = generator.getController(
                                     curParam.getFieldType(), this);
 
                             if (controller == null) {
@@ -995,7 +999,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
                         if (curParam.isShow(listParam)) {
                             // System.out.println("show:" + curParam.getName()+
                             // " field:"+curParam.getField());
-                            AbstractElementPropertySectionController controller = generator.getController(
+                            ISWTBusinessControllerUI controller = generator.getController(
                                     curParam.getFieldType(), this);
 
                             if (controller == null) {
@@ -1042,6 +1046,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
         propertyResized = true;
     }
 
+    @Override
     public void refresh() {
         TimeMeasure.display = false;
         TimeMeasure.measureActive = true;
@@ -1073,7 +1078,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
         for (int i = 0; i < listParam.size(); i++) {
             if (listParam.get(i).getCategory() == section) {
                 if (listParam.get(i).isShow(listParam)) {
-                    AbstractElementPropertySectionController controller = generator.getController(
+                    ISWTBusinessControllerUI controller = generator.getController(
                             listParam.get(i).getFieldType(), this);
                     if (controller != null) {
                         controller.refresh(listParam.get(i), checkErrorsWhenViewRefreshed);
@@ -1098,6 +1103,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     private final Listener resizeListener = new Listener() {
 
+        @Override
         public void handleEvent(Event event) {
             resizeLimiter.resetTimer();
             resizeLimiter.startIfExecutable(true, null);
@@ -1111,6 +1117,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
             if (!isDisposed()) {
                 getDisplay().asyncExec(new Runnable() {
 
+                    @Override
                     public void run() {
                         if (!isDisposed() && !getParent().isDisposed()) {
                             int currentSize = getParent().getClientArea().height;
@@ -1195,6 +1202,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
         addListener(SWT.Resize, resizeListener);
         addListener(SWT.FocusOut, new Listener() {
 
+            @Override
             public void handleEvent(Event event) {
                 // if the focus is lost reinitialise all information from repository
                 repositoryTableMap.clear();
@@ -1238,6 +1246,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
 
     CommandStackEventListener commandStackEventListener = new CommandStackEventListener() {
 
+        @Override
         public void stackChanged(CommandStackEvent event) {
             int detail = event.getDetail();
             if ((getElement() instanceof org.talend.designer.core.ui.editor.connections.Connection)
@@ -1264,6 +1273,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
      *
      * @param curRowSize int
      */
+    @Override
     public void setCurRowSize(int curRowSize) {
         this.curRowSize = curRowSize;
     }
@@ -1306,6 +1316,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
      *
      * @return the curRowSize
      */
+    @Override
     public int getCurRowSize() {
         return this.curRowSize;
     }
@@ -1315,6 +1326,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
      *
      * @return the hashCurControls
      */
+    @Override
     public BidiMap getHashCurControls() {
         return this.hashCurControls;
     }
@@ -1324,6 +1336,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
      *
      * @return the part
      */
+    @Override
     public AbstractMultiPageTalendEditor getPart() {
         return this.part;
     }
@@ -1333,6 +1346,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
      *
      * @return the section
      */
+    @Override
     public EComponentCategory getSection() {
         return this.section;
     }
@@ -1454,6 +1468,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
      *
      * @return the tableIdAndDbTypeMap
      */
+    @Override
     public Map<String, String> getTableIdAndDbTypeMap() {
         return this.tableIdAndDbTypeMap;
     }
@@ -1463,6 +1478,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
      *
      * @return the tableIdAndDbSchemaMap
      */
+    @Override
     public Map<String, String> getTableIdAndDbSchemaMap() {
         return this.tableIdAndDbSchemaMap;
     }
@@ -1481,6 +1497,7 @@ public class DynamicComposite extends ScrolledComposite implements IDynamicPrope
      *
      * @see org.talend.designer.core.ui.editor.properties.controllers.generator.IDynamicProperty#getComposite()
      */
+    @Override
     public Composite getComposite() {
         return composite;
     }

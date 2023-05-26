@@ -33,7 +33,7 @@ import org.talend.core.ui.metadata.editor.MetadataTableEditor;
 import org.talend.core.ui.metadata.editor.MetadataTableEditorView;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.connections.Connection;
-import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
+import org.talend.designer.core.ui.editor.properties.controllers.ISWTBusinessControllerUI;
 import org.talend.designer.core.ui.views.properties.MultipleThreadDynamicComposite;
 
 /**
@@ -67,7 +67,7 @@ public class MainConnectionComposite extends MultipleThreadDynamicComposite {
 
                     if ((cur.getFieldType() == EParameterFieldType.SCHEMA_TYPE || cur.getFieldType() == EParameterFieldType.SCHEMA_REFERENCE)
                             && (cur.getContext().equals(((Connection) elem).getConnectorName()))) {
-                        AbstractElementPropertySectionController contorller = generator.getController(
+                        ISWTBusinessControllerUI contorller = generator.getController(
                                 EParameterFieldType.SCHEMA_TYPE, this);
                         contorller.createControl(composite, cur, 1, 1, 0, null);
                     }

@@ -106,6 +106,7 @@ import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.ContextParameterExtractor;
 import org.talend.designer.core.ui.editor.properties.controllers.IControllerContext;
+import org.talend.designer.core.ui.editor.properties.controllers.ISWTBusinessControllerUI;
 import org.talend.designer.core.ui.editor.properties.controllers.executors.BusinessControllerExecutor;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.ui.viewer.ReconcilerStyledText;
@@ -121,7 +122,7 @@ import org.talend.designer.runprocess.IRunProcessService;
 /**
  * DOC cmeng class global comment. Detailled comment
  */
-public abstract class AbsBusinessControllerUI extends ControllerUI implements IBusinessControllerUI {
+public abstract class AbsBusinessControllerUI extends ControllerUI implements IBusinessControllerUI, ISWTBusinessControllerUI {
 
     protected static final int MAX_PERCENT = 100;
 
@@ -178,6 +179,7 @@ public abstract class AbsBusinessControllerUI extends ControllerUI implements IB
         this.ctx = createControllerContext();
     }
 
+    @Override
     public void init(IDynamicProperty dp) {
         this.dynamicProperty = dp;
         hashCurControls = dp.getHashCurControls();
@@ -302,9 +304,11 @@ public abstract class AbsBusinessControllerUI extends ControllerUI implements IB
      * @param lastControl. The latest control created beside current being created. @return. The control created by this
      * method will be the paramenter of next be called createControl method for position calculate.
      */
+    @Override
     public abstract Control createControl(final Composite subComposite, final IElementParameter param, final int numInRow,
             final int nbInRow, final int top, final Control lastControl);
 
+    @Override
     public abstract int estimateRowSize(final Composite subComposite, final IElementParameter param);
 
     protected int getColorStyledTextRowSize(int nbLines) {
@@ -331,6 +335,7 @@ public abstract class AbsBusinessControllerUI extends ControllerUI implements IB
      *
      * @return
      */
+    @Override
     public boolean hasDynamicRowSize() {
         return false;
     }
@@ -340,6 +345,7 @@ public abstract class AbsBusinessControllerUI extends ControllerUI implements IB
      *
      * @param height
      */
+    @Override
     public void setAdditionalHeightSize(int height) {
         this.additionalHeightSize = height;
     }
@@ -1148,6 +1154,7 @@ public abstract class AbsBusinessControllerUI extends ControllerUI implements IB
 
     protected ConnectionParameters connParameters;
 
+    @Override
     public void dispose() {
         if (widgetFactory != null) {
             widgetFactory.dispose();
@@ -1258,6 +1265,7 @@ public abstract class AbsBusinessControllerUI extends ControllerUI implements IB
         return this.codeProblems;
     }
 
+    @Override
     public void updateCodeProblems(List<Problem> codeProblems) {
         if (codeProblems != null) {
             this.codeProblems = new ArrayList<Problem>(codeProblems);

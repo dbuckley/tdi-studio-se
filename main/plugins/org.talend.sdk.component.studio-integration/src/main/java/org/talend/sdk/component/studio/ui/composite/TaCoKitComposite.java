@@ -42,7 +42,7 @@ import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.EParameterName;
-import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
+import org.talend.designer.core.ui.editor.properties.controllers.ISWTBusinessControllerUI;
 import org.talend.designer.core.ui.views.properties.composites.MissingSettingsMultiThreadDynamicComposite;
 import org.talend.sdk.component.studio.model.parameter.Layout;
 import org.talend.sdk.component.studio.model.parameter.LayoutParameter;
@@ -405,7 +405,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
         if (EParameterFieldType.TABLE == parameter.getFieldType()) {
             fieldType = EParameterFieldType.TACOKIT_TABLE;
         }
-        final AbstractElementPropertySectionController controller = generator.getController(fieldType, this);
+        final ISWTBusinessControllerUI controller = generator.getController(fieldType, this);
         return controller.createControl(parent, parameter, 1, 1, OPTIONS_INDENT, previous);
     }
 

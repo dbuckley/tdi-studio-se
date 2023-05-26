@@ -95,7 +95,7 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.nodes.NodeLabel;
 import org.talend.designer.core.ui.editor.outline.NodeReturnsTreeEditPart;
 import org.talend.designer.core.ui.editor.outline.NodeTreeEditPart;
-import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
+import org.talend.designer.core.ui.editor.properties.controllers.ISWTBusinessControllerUI;
 import org.talend.designer.core.ui.views.properties.DynamicPropertyGenerator;
 import org.talend.repository.model.IProxyRepositoryFactory;
 
@@ -772,7 +772,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
                 if (curParam.getCategory() == section) {
                     if (curParam.getFieldType() != EParameterFieldType.TECHNICAL) {
                         if (curParam.isShow(listParam)) {
-                            AbstractElementPropertySectionController controller = generator.getController(
+                            ISWTBusinessControllerUI controller = generator.getController(
                                     curParam.getFieldType(), this);
 
                             if (controller == null) {
@@ -817,7 +817,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
                             // System.out.println("show:" + curParam.getName()+
                             // " field:"+curParam.getField());
                             numInRow++;
-                            AbstractElementPropertySectionController controller = generator.getController(
+                            ISWTBusinessControllerUI controller = generator.getController(
                                     curParam.getFieldType(), this);
 
                             if (controller == null) {
@@ -880,7 +880,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
                         if (curParam.isShow(listParam)) {
                             // System.out.println("show:" + curParam.getName()+
                             // " field:"+curParam.getField());
-                            AbstractElementPropertySectionController controller = generator.getController(
+                            ISWTBusinessControllerUI controller = generator.getController(
                                     curParam.getFieldType(), this);
 
                             if (controller == null) {
@@ -1002,7 +1002,7 @@ public class DynamicTabbedPropertySection extends AbstractPropertySection implem
         for (int i = 0; i < listParam.size(); i++) {
             if (listParam.get(i).getCategory() == section) {
                 if (listParam.get(i).isShow(listParam)) {
-                    AbstractElementPropertySectionController controller = generator.getController(
+                    ISWTBusinessControllerUI controller = generator.getController(
                             listParam.get(i).getFieldType(), this);
                     if (controller != null) {
                         controller.refresh(listParam.get(i), checkErrorsWhenViewRefreshed);

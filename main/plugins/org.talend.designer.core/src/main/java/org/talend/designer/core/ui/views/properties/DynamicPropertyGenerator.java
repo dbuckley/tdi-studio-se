@@ -23,9 +23,9 @@ import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
-import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController;
 import org.talend.designer.core.ui.editor.properties.controllers.ControllerRepositoryValueHander;
+import org.talend.designer.core.ui.editor.properties.controllers.ISWTBusinessControllerUI;
 import org.talend.designer.core.ui.editor.properties.controllers.generator.IControllerGenerator;
 
 /**
@@ -44,7 +44,7 @@ public class DynamicPropertyGenerator {
 
     IConfigurationElement[] extensionElements = registry.getConfigurationElementsFor("org.talend.designer.core.generators"); //$NON-NLS-1$
 
-    private Map<EParameterFieldType, AbstractElementPropertySectionController> dtpControls = new HashMap<EParameterFieldType, AbstractElementPropertySectionController>();
+    private Map<EParameterFieldType, ISWTBusinessControllerUI> dtpControls = new HashMap<>();
 
     private Map<EParameterFieldType, IControllerGenerator> generatorMap = new HashMap<>();
 
@@ -84,7 +84,7 @@ public class DynamicPropertyGenerator {
         if (!initialized) {
             getGeneratorMap().forEach((key, gen) -> {
                 gen.setDynamicProperty(dp);
-                AbstractElementPropertySectionController controller = gen.generate();
+                ISWTBusinessControllerUI controller = gen.generate();
                 dtpControls.put(key, controller);
                 if (controller instanceof AbstractRepositoryController) {
                     ControllerRepositoryValueHander repositoryValueHander = ((AbstractRepositoryController) controller)
@@ -107,9 +107,9 @@ public class DynamicPropertyGenerator {
      * @param dtp
      * @return
      */
-    public AbstractElementPropertySectionController getController(EParameterFieldType controllerName, IDynamicProperty dp) {
+    public ISWTBusinessControllerUI getController(EParameterFieldType controllerName, IDynamicProperty dp) {
 
-        AbstractElementPropertySectionController controller = null;
+        ISWTBusinessControllerUI controller = null;
         if (dtpControls.containsKey(controllerName)) {
             controller = dtpControls.get(controllerName);
             if (controller != null) {
@@ -124,7 +124,7 @@ public class DynamicPropertyGenerator {
 
     public void dispose() {
         if (dtpControls != null) {
-            for (AbstractElementPropertySectionController controller : dtpControls.values()) {
+            for (ISWTBusinessControllerUI controller : dtpControls.values()) {
                 controller.dispose();
             }
             dtpControls.clear();
