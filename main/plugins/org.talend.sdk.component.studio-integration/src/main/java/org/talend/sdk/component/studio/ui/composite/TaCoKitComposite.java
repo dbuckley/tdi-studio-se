@@ -386,7 +386,16 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
                     final Composite columnComposite = new Composite(levelComposite, SWT.NONE);
                     columnComposite.setLayout(new FormLayout());
                     columnComposite.setBackground(levelComposite.getBackground());
-                    columnComposite.setLayoutData(columnLevelLayoutData(previousLevel, column));
+                    if (columnSize == 1) {
+                        columnComposite.setLayoutData(columnLevelLayoutData(previousLevel, column));
+                    } else {
+                        final FormData columnLayoutData = new FormData();
+                        columnLayoutData.top = new FormAttachment(0, 2);
+                        columnLayoutData.left = new FormAttachment((100 / columnSize) * i, 0);
+                        columnLayoutData.right = new FormAttachment((100 / columnSize) * (i + 1), 0);
+                        columnLayoutData.bottom = new FormAttachment(100, 0);
+                        columnComposite.setLayoutData(columnLayoutData);
+                    }
                     fillComposite(columnComposite, column, null);
                 }
             }
