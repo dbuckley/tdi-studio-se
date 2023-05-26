@@ -15,6 +15,8 @@ public class APIParam {
     private Integer length;
 
     private String defaultValue;
+    
+    private String description;
 
     public APIParam(String name, EParamType type, EParamKind paramKind) {
         super();
@@ -77,6 +79,14 @@ public class APIParam {
 
     public void setRequired(boolean required) {
         this.required = required;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
