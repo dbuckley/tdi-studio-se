@@ -163,7 +163,7 @@ public class IncomingSchemaEnforcerTest {
      * 5. Check whether dynamic fields are initialized - should be true
      * 6. Get runtime schema
      * 7. Check DI data to IndexedRecord conversion for several data objects
-     * <p>
+     *
      * in case dynamic column is on the 0 position
      * This test uses old deprecated API
      */
@@ -209,7 +209,7 @@ public class IncomingSchemaEnforcerTest {
      * 5. Check whether dynamic fields are initialized - should be true
      * 6. Get runtime schema
      * 7. Check DI data to IndexedRecord conversion for several data objects
-     * <p>
+     *
      * in case dynamic column is on the 0 position
      */
     @Test
@@ -254,7 +254,7 @@ public class IncomingSchemaEnforcerTest {
      * 5. Check whether dynamic fields are initialized - should be true
      * 6. Get runtime schema
      * 7. Check DI data to IndexedRecord conversion for several data objects
-     * <p>
+     *
      * in case dynamic column is in the middle position
      */
     @Test
@@ -298,7 +298,7 @@ public class IncomingSchemaEnforcerTest {
      * 5. Check whether dynamic fields are initialized - should be true
      * 6. Get runtime schema
      * 7. Check DI data to IndexedRecord conversion for several data objects
-     * <p>
+     *
      * in case dynamic column is in the middle position
      */
     @Test
@@ -343,7 +343,7 @@ public class IncomingSchemaEnforcerTest {
      * 5. Check whether dynamic fields are initialized - should be true
      * 6. Get runtime schema
      * 7. Check DI data to IndexedRecord conversion for several data objects
-     * <p>
+     *
      * in case dynamic column is in the last position
      */
     @Test
@@ -388,7 +388,7 @@ public class IncomingSchemaEnforcerTest {
      * 5. Check whether dynamic fields are initialized - should be true
      * 6. Get runtime schema
      * 7. Check DI data to IndexedRecord conversion for several data objects
-     * <p>
+     *
      * in case dynamic column is in the last position
      */
     @Test
@@ -442,9 +442,9 @@ public class IncomingSchemaEnforcerTest {
         assertFalse(enforcer.areDynamicFieldsInitialized());
         assertThat(enforcer.getRuntimeSchema(), nullValue());
 
-        enforcer.addDynamicField("性别", "id_Boolean", null, null, null, false, false, null, null);
-        enforcer.addDynamicField("address#", "id_String", null, null, null, false, false, null, null);
-        enforcer.addDynamicField("comment$", "id_String", null, null, null, false, false, null, null);
+        enforcer.addDynamicField("性别", "id_Boolean", null, null, null, false, false);
+        enforcer.addDynamicField("address#", "id_String", null, null, null, false, false);
+        enforcer.addDynamicField("comment$", "id_String", null, null, null, false, false);
         assertFalse(enforcer.areDynamicFieldsInitialized());
         enforcer.createRuntimeSchema();
         assertTrue(enforcer.areDynamicFieldsInitialized());
@@ -770,7 +770,6 @@ public class IncomingSchemaEnforcerTest {
     @Test
     public void testAddDynamicFieldKey() {
         Schema expectedRuntimeSchema = SchemaBuilder.builder().record("Record").fields().name("id")
-                .prop(SchemaConstants.TALEND_COLUMN_DB_LENGTH, "15").prop(SchemaConstants.TALEND_COLUMN_PRECISION, "3")
                 .prop(SchemaConstants.TALEND_COLUMN_IS_KEY, "true").type().intType().noDefault().endRecord();
 
         Schema designSchema = SchemaBuilder.builder().record("Record").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true")
@@ -778,7 +777,7 @@ public class IncomingSchemaEnforcerTest {
 
         IncomingSchemaEnforcer enforcer = new IncomingSchemaEnforcer(designSchema);
 
-        enforcer.addDynamicField("id", "id_Integer", null, null, null, false, true, 15, 3);
+        enforcer.addDynamicField("id", "id_Integer", null, null, null, false, true);
 
         enforcer.createRuntimeSchema();
         assertTrue(enforcer.areDynamicFieldsInitialized());

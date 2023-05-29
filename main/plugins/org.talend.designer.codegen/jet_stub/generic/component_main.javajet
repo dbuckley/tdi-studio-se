@@ -121,9 +121,7 @@ if(hasInput){
                             dm_<%=cid%>.getFormat(),
                             dm_<%=cid%>.getDescription(),
                             dm_<%=cid%>.isNullable(),
-                            dm_<%=cid%>.isKey(),
-                            dm_<%=cid%>.getLength(),
-                            dm_<%=cid%>.getPrecision());
+                            dm_<%=cid%>.isKey());
                 }
                 incomingEnforcer_<%=cid%>.createRuntimeSchema();
             }
