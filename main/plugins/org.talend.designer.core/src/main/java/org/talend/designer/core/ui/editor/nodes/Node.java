@@ -1321,31 +1321,7 @@ public class Node extends Element implements IGraphicalNode {
      */
     @Override
     public void addInput(final IConnection conn) {
-        if(inputs.size() == 0) {
-            this.inputs.add(conn);
-        } else {
-            if(conn instanceof Connection) {
-                int order = ((Connection) conn).getInputOrder();
-                if (order != -1) {
-                    int index = 0;
-                    for(; index < inputs.size() && index < order; index++) {
-                        IConnection iConnection = inputs.get(index);
-                        if(iConnection instanceof Connection && ((Connection)iConnection).getInputOrder() >= order) {
-                            break;
-                        }
-                    }
-                    if(index == 0) {
-                        this.inputs.add(0, conn);
-                    } else if(index == inputs.size()) {
-                        this.inputs.add(conn);
-                    } else {
-                        this.inputs.add(index - 1, conn);
-                    }
-                } else {
-                    this.inputs.add(conn);
-                }
-            }
-        }
+        addInputConnectionInOrder(inputs, conn);
         fireStructureChange(INPUTS, conn);
 
         if (conn instanceof Connection) {
@@ -1583,6 +1559,34 @@ public class Node extends Element implements IGraphicalNode {
                 }
             }
             calculateSubtreeStartAndEnd();
+        }
+    }
+
+    protected void addInputConnectionInOrder(List<IConnection> _inputs, final IConnection _conn) {
+        if (_inputs.size() == 0) {
+            _inputs.add(_conn);
+        } else {
+            if (_conn instanceof Connection) {
+                int order = ((Connection) _conn).getInputOrder();
+                if (order != -1) {
+                    int index = 0;
+                    for (; index < _inputs.size() && index < order; index++) {
+                        IConnection iConnection = _inputs.get(index);
+                        if (iConnection instanceof Connection && ((Connection) iConnection).getInputOrder() >= order) {
+                            break;
+                        }
+                    }
+                    if (index == 0) {
+                        _inputs.add(0, _conn);
+                    } else if (index == _inputs.size()) {
+                        _inputs.add(_conn);
+                    } else {
+                        _inputs.add(index, _conn);
+                    }
+                } else {
+                    _inputs.add(_conn);
+                }
+            }
         }
     }
 
