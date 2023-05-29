@@ -1576,9 +1576,8 @@ public class Node extends Element implements IGraphicalNode {
                             break;
                         }
                     }
-                    if (index == 0) {
-                        _inputs.add(0, _conn);
-                    } else if (index == _inputs.size()) {
+                    
+                    if (index == _inputs.size()) {
                         _inputs.add(_conn);
                     } else {
                         _inputs.add(index, _conn);
