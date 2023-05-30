@@ -193,9 +193,9 @@
 			    REQUIRED_IF="(READ_BY == 'JSONPATH') AND (JSON_PATH_VERSION == '2_1_0')" />
 			<IMPORT NAME="json-path-1.2.0.jar" MODULE="json-path-1.2.0.jar" MVN="mvn:org.talend.libraries/json-path-1.2.0/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.json/lib/json-path-1.2.0.jar"
                 REQUIRED_IF="(READ_BY == 'JSONPATH') AND (JSON_PATH_VERSION == '1_2_0')" />
-            <IMPORT NAME="json-smart-2.4.9.jar" MODULE="json-smart-2.4.9.jar" MVN="mvn:net.minidev/json-smart/2.4.9"
+            <IMPORT NAME="json-smart-2.4.11.jar" MODULE="json-smart-2.4.11.jar" MVN="mvn:net.minidev/json-smart/2.4.11"
                 REQUIRED_IF="(READ_BY == 'JSONPATH')" />
-            <IMPORT NAME="accessors-smart-2.4.9.jar" MODULE="accessors-smart-2.4.9.jar" MVN="mvn:net.minidev/accessors-smart/2.4.9"
+            <IMPORT NAME="accessors-smart-2.4.11.jar" MODULE="accessors-smart-2.4.11.jar" MVN="mvn:net.minidev/accessors-smart/2.4.11"
                 REQUIRED_IF="(READ_BY == 'JSONPATH')" />
             <IMPORT NAME="slf4j-api-1.7.34.jar" MODULE="slf4j-api-1.7.34.jar" MVN="mvn:org.slf4j/slf4j-api/1.7.34"
                 REQUIRED_IF="(READ_BY == 'JSONPATH')" BundleID="" />
