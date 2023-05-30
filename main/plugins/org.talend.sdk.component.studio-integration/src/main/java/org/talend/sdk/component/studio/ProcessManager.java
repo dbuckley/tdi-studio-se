@@ -34,6 +34,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -653,6 +654,18 @@ public class ProcessManager implements AutoCloseable {
             Mvn.withDependencies(serverJar, "TALEND-INF/dependencies.txt", false, deps -> {
                 aggregateDeps(paths, deps);
                 return null;
+            });
+        }
+        // server extensions : A comma separated list of gav to locate the extensions
+        final String extensions = System.getProperty("component.server.extensions", "");
+        if (!extensions.isEmpty()) {
+            Arrays.stream(extensions.split(",")).distinct().forEach(extension -> {
+                try {
+                    System.out.println(String.format("Adding extension: %s.", extension));
+                    paths.add(mvnResolver.apply(extension).toURI().toURL());
+                } catch (MalformedURLException e) {
+                    System.err.println(String.format("Error with extension %s : %s.", extension, e.getMessage()));
+                }
             });
         }
         // beam if needed
