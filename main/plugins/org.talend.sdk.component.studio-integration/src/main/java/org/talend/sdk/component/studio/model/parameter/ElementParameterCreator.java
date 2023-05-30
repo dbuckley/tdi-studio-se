@@ -275,6 +275,10 @@ public class ElementParameterCreator {
         if (this.component instanceof VirtualComponentModel) {
             return ((VirtualComponentModel) component).isShowPropertyParameter();
         }
+        String name = detail.getId().getName();
+        if ("Commit".equals(name) || "Rollback".equals(name)) { //$NON-NLS-1$ //$NON-NLS-2$
+            return false;
+        }
         return true;
     }
 
