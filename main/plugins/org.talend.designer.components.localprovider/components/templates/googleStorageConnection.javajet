@@ -20,8 +20,12 @@ if(("true").equals(useExistingConn)) {
 %>
 com.google.auth.Credentials credential_<%=cid%> = null;
 try {
-  credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials
-      .fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
+  if (pathToServerAccoutKeyFile == null || ("").equals(pathToServerAccoutKeyFile)) {
+      credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials.GetApplicationDefault();
+  } else {
+      credential_<%=cid%> = com.google.auth.oauth2.GoogleCredentials
+         .fromStream(new java.io.FileInputStream(<%=pathToServerAccoutKeyFile%>));
+  }
 } catch (IOException e_<%=cid%>) {
 globalMap.put("<%=cid%>_ERROR_MESSAGE",e_<%=cid%>.getMessage());
   <% if(isLog4jEnabled) { %>
